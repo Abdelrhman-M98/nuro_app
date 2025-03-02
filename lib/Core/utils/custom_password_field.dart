@@ -18,10 +18,10 @@ class CustomPasswordField extends StatefulWidget {
   final String? Function(String?)? validator;
 
   @override
-  _CustomPasswordFieldState createState() => _CustomPasswordFieldState();
+  CustomPasswordFieldState createState() => CustomPasswordFieldState();
 }
 
-class _CustomPasswordFieldState extends State<CustomPasswordField> {
+class CustomPasswordFieldState extends State<CustomPasswordField> {
   bool isPasswordVisible = false;
 
   void _togglePasswordVisibility() {

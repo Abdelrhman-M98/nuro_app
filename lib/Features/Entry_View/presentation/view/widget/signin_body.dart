@@ -1,9 +1,16 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:neuro_app/Core/utils/custom_button.dart';
+import 'package:neuro_app/Core/utils/custom_divider.dart';
 import 'package:neuro_app/Core/utils/custom_password_field.dart';
 import 'package:neuro_app/Core/utils/custom_text_field.dart';
+import 'package:neuro_app/Core/utils/google_button.dart';
 import 'package:neuro_app/Core/utils/styles.dart';
+import 'package:neuro_app/Core/utils/custom_text_button.dart';
 
 class SigninBody extends StatefulWidget {
   const SigninBody({super.key});
@@ -79,8 +86,17 @@ class _SigninBodyState extends State<SigninBody> {
                 ],
               ),
             ),
-            SizedBox(height: 50.h),
-            ElevatedButton(onPressed: validateForm, child: Text("Login")),
+            SizedBox(height: 25.h),
+            Align(
+              alignment: Alignment.centerRight,
+              child: CustomTextButton(text: "Forgot Password?"),
+            ),
+            SizedBox(height: 25.h),
+            CustomButton(onPressed: validateForm),
+            SizedBox(height: 96.h),
+            CustomDivider(),
+            SizedBox(height: 46.h),
+            GoogleButton(),
           ],
         ),
       ),
