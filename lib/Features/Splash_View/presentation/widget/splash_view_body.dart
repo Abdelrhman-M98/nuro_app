@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:neuro_app/Core/utils/app_assets.dart';
 import 'package:neuro_app/Core/utils/app_routes.dart';
@@ -43,7 +42,7 @@ class _SplashViewBodyState extends State<SplashViewBody>
           builder: (context, child) {
             return SlideTransition(position: slideAnimation, child: child);
           },
-          child: SvgPicture.asset(
+          child: Image.asset(
             AppAssets.kSplashImage,
             width: 200.w,
             height: 200.h,

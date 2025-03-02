@@ -1,3 +1,3 @@
 class AppAssets {
-  static const String kSplashImage = 'assets/images/coffee-img.svg';
+  static const String kSplashImage = 'assets/images/BLUE2COLOR.png';
 }
