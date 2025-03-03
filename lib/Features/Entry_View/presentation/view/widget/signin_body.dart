@@ -92,7 +92,7 @@ class _SigninBodyState extends State<SigninBody> {
               child: CustomTextButton(text: "Forgot Password?"),
             ),
             SizedBox(height: 25.h),
-            CustomButton(onPressed: validateForm),
+            CustomButton(onPressed: validateForm, text: "Login"),
             SizedBox(height: 96.h),
             CustomDivider(),
             SizedBox(height: 46.h),

@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
+import 'package:neuro_app/Core/utils/app_routes.dart';
 import 'package:neuro_app/Core/utils/custom_button.dart';
 import 'package:neuro_app/Core/utils/custom_divider.dart';
 import 'package:neuro_app/Core/utils/custom_password_field.dart';
@@ -25,6 +27,7 @@ class _SignupBodyState extends State<SignupBody> {
   void validateForm() {
     if (formKey.currentState!.validate()) {
       print("Form is valid!");
+      GoRouter.of(context).go(AppRouter.kUserTypeView);
     } else {
       print("Form has errors!");
     }
@@ -62,12 +65,12 @@ class _SignupBodyState extends State<SignupBody> {
                     label: "name",
                     icon: FontAwesomeIcons.solidUser,
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Username is required";
-                      } else if (value.length < 4) {
-                        return "Username must be at least 4 characters";
-                      }
-                      return null;
+                      //   if (value == null || value.isEmpty) {
+                      //     return "Username is required";
+                      //   } else if (value.length < 4) {
+                      //     return "Username must be at least 4 characters";
+                      //   }
+                      //   return null;
                     },
                   ),
                   SizedBox(height: 19.h),
@@ -76,12 +79,12 @@ class _SignupBodyState extends State<SignupBody> {
                     label: "Username",
                     icon: FontAwesomeIcons.solidCircleUser,
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Username is required";
-                      } else if (value.length < 4) {
-                        return "Username must be at least 4 characters";
-                      }
-                      return null;
+                      // if (value == null || value.isEmpty) {
+                      //   return "Username is required";
+                      // } else if (value.length < 4) {
+                      //   return "Username must be at least 4 characters";
+                      // }
+                      // return null;
                     },
                   ),
                   SizedBox(height: 19.h),
@@ -90,12 +93,12 @@ class _SignupBodyState extends State<SignupBody> {
                     label: "phone",
                     icon: FontAwesomeIcons.squarePhone,
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Username is required";
-                      } else if (value.length < 4) {
-                        return "Username must be at least 4 characters";
-                      }
-                      return null;
+                      // if (value == null || value.isEmpty) {
+                      //   return "Username is required";
+                      // } else if (value.length < 4) {
+                      //   return "Username must be at least 4 characters";
+                      // }
+                      // return null;
                     },
                   ),
                   SizedBox(height: 19.h),
@@ -104,12 +107,12 @@ class _SignupBodyState extends State<SignupBody> {
                     label: "Password",
                     icon: FontAwesomeIcons.lock,
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Password is required";
-                      } else if (value.length < 6) {
-                        return "Password must be at least 6 characters";
-                      }
-                      return null;
+                      // if (value == null || value.isEmpty) {
+                      //   return "Password is required";
+                      // } else if (value.length < 6) {
+                      //   return "Password must be at least 6 characters";
+                      // }
+                      // return null;
                     },
                   ),
                 ],
@@ -117,7 +120,7 @@ class _SignupBodyState extends State<SignupBody> {
             ),
 
             SizedBox(height: 33.h),
-            CustomButton(onPressed: validateForm),
+            CustomButton(onPressed: validateForm, text: "Register Now"),
             SizedBox(height: 67.h),
             CustomDivider(),
             SizedBox(height: 29.h),

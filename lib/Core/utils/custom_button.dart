@@ -6,8 +6,9 @@ import 'package:neuro_app/Core/utils/const.dart';
 import 'package:neuro_app/Core/utils/styles.dart';
 
 class CustomButton extends StatelessWidget {
-  const CustomButton({super.key, this.onPressed});
+  const CustomButton({super.key, this.onPressed, required this.text});
   final void Function()? onPressed;
+  final String text;
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
@@ -21,7 +22,7 @@ class CustomButton extends StatelessWidget {
         ),
       ),
       child: Text(
-        "Login",
+        text,
         style: FontStyles.roboto16.copyWith(
           color: Colors.white,
           fontWeight: FontWeight.w800,
