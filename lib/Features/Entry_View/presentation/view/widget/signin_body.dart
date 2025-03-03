@@ -43,7 +43,7 @@ class _SigninBodyState extends State<SigninBody> {
             SizedBox(height: 31.h),
             Align(
               alignment: Alignment.centerLeft,
-              child: Text("Welcome!", style: FontStyles.roboto24),
+              child: Text("Welcome Back", style: FontStyles.roboto24),
             ),
             SizedBox(height: 14.h),
             Align(
