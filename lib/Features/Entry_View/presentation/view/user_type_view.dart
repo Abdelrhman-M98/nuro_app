@@ -11,10 +11,10 @@ class UserTypeView extends StatefulWidget {
   const UserTypeView({super.key});
 
   @override
-  _UserTypeViewState createState() => _UserTypeViewState();
+  UserTypeViewState createState() => UserTypeViewState();
 }
 
-class _UserTypeViewState extends State<UserTypeView> {
+class UserTypeViewState extends State<UserTypeView> {
   final ValueNotifier<String?> selectedUserType = ValueNotifier<String?>(null);
 
   @override
@@ -95,7 +95,9 @@ class _UserTypeViewState extends State<UserTypeView> {
                     GoRouter.of(context).go(AppRouter.kPatientInfoView);
                   } else if (selectedUserType.value == "Doctor") {
                     GoRouter.of(context).go(AppRouter.kDoctorInfoView);
-                  } else {}
+                  } else {
+                    GoRouter.of(context).go(AppRouter.kDetailsForDoctorView);
+                  }
                 },
               ),
             ],
