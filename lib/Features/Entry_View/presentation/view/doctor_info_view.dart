@@ -15,7 +15,7 @@ class DoctorInfoView extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 45.w),
           child: Column(
             children: [
-              CustomAppBar(
+              CustomAppBarButton(
                 onPressed: () {
                   GoRouter.of(context).go(AppRouter.kUserTypeView);
                 },

@@ -45,15 +45,9 @@ class DynamicLineChartState extends State<DynamicLineChart> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Dotted Grid & Border Line Chart")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: LineChartContainer(
-          dataPoints: dataPoints,
-          timeCounter: _timeCounter,
-        ),
-      ),
+    return LineChartContainer(
+      dataPoints: dataPoints,
+      timeCounter: _timeCounter,
     );
   }
 }
