@@ -7,6 +7,7 @@ import 'package:neuro_app/Features/Entry_View/presentation/view/entry_view.dart'
 import 'package:neuro_app/Features/Entry_View/presentation/view/patient_info_view.dart';
 import 'package:neuro_app/Features/Entry_View/presentation/view/user_type_view.dart';
 import 'package:neuro_app/Features/Splash_View/presentation/splash_view.dart';
+import 'package:neuro_app/Features/Verifying_Data/Presentation/view/verifying_data_view.dart';
 
 abstract class AppRouter {
   static const kLoginView = '/loginView';
@@ -15,6 +16,7 @@ abstract class AppRouter {
   static const kDoctorInfoView = '/doctorInfoView';
   static const kDetailsForDoctorView = '/detailsForDoctorView';
   static const kAllPatientsView = '/allPatientsView';
+  static const kVerifyDataView = '/verifyDataView';
 
   static final router = GoRouter(
     routes: [
@@ -53,6 +55,10 @@ abstract class AppRouter {
       GoRoute(
         path: kAllPatientsView,
         builder: (context, state) => AllPatientsView(),
+      ),
+      GoRoute(
+        path: kVerifyDataView,
+        builder: (context, state) => VerifyingDataView(),
       ),
     ],
   );
