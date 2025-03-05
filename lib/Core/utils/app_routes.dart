@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:neuro_app/Features/All_patients/presentation/view/all_patients_view.dart';
 import 'package:neuro_app/Features/Doctor_Info/Presentation/view/details_for_doctor_view.dart';
 import 'package:neuro_app/Features/Entry_View/presentation/view/doctor_info_view.dart';
 import 'package:neuro_app/Features/Entry_View/presentation/view/entry_view.dart';
@@ -13,6 +14,7 @@ abstract class AppRouter {
   static const kPatientInfoView = '/patientInfoView';
   static const kDoctorInfoView = '/doctorInfoView';
   static const kDetailsForDoctorView = '/detailsForDoctorView';
+  static const kAllPatientsView = '/allPatientsView';
 
   static final router = GoRouter(
     routes: [
@@ -47,6 +49,10 @@ abstract class AppRouter {
       GoRoute(
         path: kDetailsForDoctorView,
         builder: (context, state) => DetailsForDoctorView(),
+      ),
+      GoRoute(
+        path: kAllPatientsView,
+        builder: (context, state) => AllPatientsView(),
       ),
     ],
   );

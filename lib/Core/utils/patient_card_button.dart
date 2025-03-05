@@ -73,14 +73,17 @@ class PatientsCardButton extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(width: 50.w),
-            Text(
-              "$percentage%",
-              style: TextStyle(
-                fontFamily: 'Roboto',
-                fontSize: 32.sp,
-                fontWeight: FontWeight.w700,
-                color: Colors.white,
+            Spacer(),
+            Padding(
+              padding: EdgeInsets.only(right: 29.w),
+              child: Text(
+                "$percentage%",
+                style: TextStyle(
+                  fontFamily: 'Roboto',
+                  fontSize: 32.sp,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
               ),
             ),
           ],
