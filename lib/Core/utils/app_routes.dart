@@ -2,10 +2,13 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:neuro_app/Features/All_patients/presentation/view/all_patients_view.dart';
 import 'package:neuro_app/Features/Doctor_Info/Presentation/view/details_for_doctor_view.dart';
-import 'package:neuro_app/Features/Entry_View/presentation/view/doctor_info_view.dart';
+import 'package:neuro_app/Features/Entry_View/presentation/view/forgot_password_view.dart';
+import 'package:neuro_app/Features/Entry_View/presentation/view/doctor_home_view.dart';
 import 'package:neuro_app/Features/Entry_View/presentation/view/entry_view.dart';
 import 'package:neuro_app/Features/Entry_View/presentation/view/patient_info_view.dart';
+import 'package:neuro_app/Features/Entry_View/presentation/view/reset_password_view.dart';
 import 'package:neuro_app/Features/Entry_View/presentation/view/user_type_view.dart';
+import 'package:neuro_app/Features/Entry_View/presentation/view/verification_password_view.dart';
 import 'package:neuro_app/Features/Splash_View/presentation/splash_view.dart';
 import 'package:neuro_app/Features/Verifying_Data/Presentation/view/verifying_data_view.dart';
 
@@ -17,6 +20,9 @@ abstract class AppRouter {
   static const kDetailsForDoctorView = '/detailsForDoctorView';
   static const kAllPatientsView = '/allPatientsView';
   static const kVerifyDataView = '/verifyDataView';
+  static const kForgotPasswordView = '/forgotPasswordView';
+  static const kVerificationPasswordView = '/verificationPasswordView';
+  static const kResetPasswordView = '/resetPasswordView';
 
   static final router = GoRouter(
     routes: [
@@ -46,7 +52,7 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kDoctorInfoView,
-        builder: (context, state) => DoctorInfoView(),
+        builder: (context, state) => DoctorHomeView(),
       ),
       GoRoute(
         path: kDetailsForDoctorView,
@@ -59,6 +65,18 @@ abstract class AppRouter {
       GoRoute(
         path: kVerifyDataView,
         builder: (context, state) => VerifyingDataView(),
+      ),
+      GoRoute(
+        path: kForgotPasswordView,
+        builder: (context, state) => ForgotPasswordView(),
+      ),
+      GoRoute(
+        path: kVerificationPasswordView,
+        builder: (context, state) => VerificationPasswordView(),
+      ),
+      GoRoute(
+        path: kResetPasswordView,
+        builder: (context, state) => ResetPasswordView(),
       ),
     ],
   );

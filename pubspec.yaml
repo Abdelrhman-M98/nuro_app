@@ -39,6 +39,7 @@ dependencies:
   flutter_svg: ^2.0.17
   font_awesome_flutter: ^10.8.0
   fl_chart: ^0.70.2
+  flutter_otp_text_field: ^1.5.1+1
 
 dev_dependencies:
   flutter_test:

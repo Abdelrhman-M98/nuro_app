@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:neuro_app/Core/utils/app_routes.dart';
 import 'package:neuro_app/Core/utils/custom_appbar_button.dart';
 
-class DoctorInfoView extends StatelessWidget {
-  const DoctorInfoView({super.key});
+class DoctorHomeView extends StatelessWidget {
+  const DoctorHomeView({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import 'package:neuro_app/Core/utils/app_assets.dart';
+import 'package:neuro_app/Core/utils/app_routes.dart';
 import 'package:neuro_app/Core/utils/const.dart';
 import 'package:neuro_app/Core/utils/styles.dart';
 
@@ -27,7 +29,9 @@ class SuccessValidation extends StatelessWidget {
             ),
             SizedBox(height: 175.h),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                GoRouter.of(context).go(AppRouter.kAllPatientsView);
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(vertical: 15.h),

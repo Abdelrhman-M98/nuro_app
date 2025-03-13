@@ -4,6 +4,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
+import 'package:neuro_app/Core/utils/app_routes.dart';
 import 'package:neuro_app/Core/utils/custom_button.dart';
 import 'package:neuro_app/Core/utils/custom_divider.dart';
 import 'package:neuro_app/Core/utils/custom_password_field.dart';
@@ -89,7 +91,12 @@ class _SigninBodyState extends State<SigninBody> {
             SizedBox(height: 25.h),
             Align(
               alignment: Alignment.centerRight,
-              child: CustomTextButton(text: "Forgot Password?"),
+              child: CustomTextButton(
+                text: "Forgot Password?",
+                onPressed: () {
+                  GoRouter.of(context).go(AppRouter.kForgotPasswordView);
+                },
+              ),
             ),
             SizedBox(height: 25.h),
             CustomButton(onPressed: validateForm, text: "Login"),
