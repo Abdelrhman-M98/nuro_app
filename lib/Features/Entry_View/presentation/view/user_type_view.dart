@@ -96,7 +96,7 @@ class UserTypeViewState extends State<UserTypeView> {
                   } else if (selectedUserType.value == "Doctor") {
                     GoRouter.of(context).go(AppRouter.kDoctorInfoView);
                   } else {
-                    GoRouter.of(context).go(AppRouter.kDetailsForDoctorView);
+                    GoRouter.of(context).go(AppRouter.kHomeView);
                   }
                 },
               ),

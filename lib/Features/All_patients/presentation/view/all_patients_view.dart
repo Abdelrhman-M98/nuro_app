@@ -209,7 +209,7 @@ class _PatientsListSection extends StatelessWidget {
             imageUrl: patient["imageUrl"],
             percentage: patient["percentage"],
             onPressed: () {
-              GoRouter.of(context).go(AppRouter.kDetailsForDoctorView);
+              GoRouter.of(context).go(AppRouter.kHomeView);
             },
           ),
         );

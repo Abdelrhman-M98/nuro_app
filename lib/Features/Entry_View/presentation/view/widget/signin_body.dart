@@ -2,6 +2,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -13,6 +14,8 @@ import 'package:neuro_app/Core/utils/custom_text_field.dart';
 import 'package:neuro_app/Core/utils/google_button.dart';
 import 'package:neuro_app/Core/utils/styles.dart';
 import 'package:neuro_app/Core/utils/custom_text_button.dart';
+import 'package:neuro_app/Features/Entry_View/presentation/auth/auth_cubit.dart';
+import 'package:neuro_app/Features/Entry_View/presentation/auth/auth_state.dart';
 
 class SigninBody extends StatefulWidget {
   const SigninBody({super.key});
@@ -23,88 +26,115 @@ class SigninBody extends StatefulWidget {
 
 class _SigninBodyState extends State<SigninBody> {
   final formKey = GlobalKey<FormState>();
-  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   void validateForm() {
     if (formKey.currentState!.validate()) {
-      print("Form is valid!");
-    } else {
-      print("Form has errors!");
+      BlocProvider.of<AuthCubit>(
+        context,
+      ).login(emailController.text.trim(), passwordController.text.trim());
     }
+  }
+
+  void signInWithGoogle() {
+    BlocProvider.of<AuthCubit>(context).loginWithGoogle();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 48.w),
-        child: Column(
-          children: [
-            SizedBox(height: 31.h),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text("Welcome Back", style: FontStyles.roboto24),
-            ),
-            SizedBox(height: 14.h),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text("Nice to see you again", style: FontStyles.roboto16),
-            ),
-            SizedBox(height: 75.h),
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is AuthLoading) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text("Signing in...")));
+        } else if (state is AuthSuccess) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text("Login Successful!")));
+          GoRouter.of(context).go(AppRouter.kHomeView);
+        } else if (state is AuthFailure) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.error)));
+        }
+      },
+      child: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 48.w),
+          child: Column(
+            children: [
+              SizedBox(height: 31.h),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text("Welcome Back", style: FontStyles.roboto24),
+              ),
+              SizedBox(height: 14.h),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Nice to see you again",
+                  style: FontStyles.roboto16,
+                ),
+              ),
+              SizedBox(height: 75.h),
 
-            Form(
-              key: formKey,
-              child: Column(
-                children: [
-                  CustomTextField(
-                    controller: usernameController,
-                    label: "Username",
-                    icon: FontAwesomeIcons.solidUser,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Username is required";
-                      } else if (value.length < 4) {
-                        return "Username must be at least 4 characters";
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 34.h),
-                  CustomPasswordField(
-                    controller: passwordController,
-                    label: "Password",
-                    icon: FontAwesomeIcons.lock,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Password is required";
-                      } else if (value.length < 6) {
-                        return "Password must be at least 6 characters";
-                      }
-                      return null;
-                    },
-                  ),
-                ],
+              Form(
+                key: formKey,
+                child: Column(
+                  children: [
+                    CustomTextField(
+                      controller: emailController,
+                      label: "Email",
+                      icon: FontAwesomeIcons.envelope,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Email is required";
+                        } else if (!RegExp(
+                          r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+                        ).hasMatch(value)) {
+                          return "Enter a valid email";
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 34.h),
+                    CustomPasswordField(
+                      controller: passwordController,
+                      label: "Password",
+                      icon: FontAwesomeIcons.lock,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Password is required";
+                        } else if (value.length < 6) {
+                          return "Password must be at least 6 characters";
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-            SizedBox(height: 25.h),
-            Align(
-              alignment: Alignment.centerRight,
-              child: CustomTextButton(
-                text: "Forgot Password?",
-                onPressed: () {
-                  GoRouter.of(context).go(AppRouter.kForgotPasswordView);
-                },
+              SizedBox(height: 25.h),
+              Align(
+                alignment: Alignment.centerRight,
+                child: CustomTextButton(
+                  text: "Forgot Password?",
+                  onPressed: () {
+                    GoRouter.of(context).go(AppRouter.kForgotPasswordView);
+                  },
+                ),
               ),
-            ),
-            SizedBox(height: 25.h),
-            CustomButton(onPressed: validateForm, text: "Login"),
-            SizedBox(height: 96.h),
-            CustomDivider(),
-            SizedBox(height: 46.h),
-            GoogleButton(),
-          ],
+              SizedBox(height: 25.h),
+              CustomButton(onPressed: validateForm, text: "Login"),
+              SizedBox(height: 96.h),
+              CustomDivider(),
+              SizedBox(height: 46.h),
+              GoogleButton(onPressed: signInWithGoogle),
+            ],
+          ),
         ),
       ),
     );

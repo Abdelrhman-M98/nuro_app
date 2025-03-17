@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "571849249430",
+    "firebase_url": "https://nuro-af526-default-rtdb.firebaseio.com",
+    "project_id": "nuro-af526",
+    "storage_bucket": "nuro-af526.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:571849249430:android:c88c10b546ed33b8b228b7",
+        "android_client_info": {
+          "package_name": "com.example.neuro_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSBf9LBPCZDd94rX6sCkQ50RJOvd0Pl7Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

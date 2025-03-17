@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:neuro_app/Features/All_patients/presentation/view/all_patients_view.dart';
-import 'package:neuro_app/Features/Doctor_Info/Presentation/view/details_for_doctor_view.dart';
+import 'package:neuro_app/Features/Home_view/home_view.dart';
 import 'package:neuro_app/Features/Entry_View/presentation/view/forgot_password_view.dart';
-import 'package:neuro_app/Features/Entry_View/presentation/view/doctor_home_view.dart';
+import 'package:neuro_app/Features/Entry_View/presentation/view/doctor_info_view.dart';
 import 'package:neuro_app/Features/Entry_View/presentation/view/entry_view.dart';
 import 'package:neuro_app/Features/Entry_View/presentation/view/patient_info_view.dart';
 import 'package:neuro_app/Features/Entry_View/presentation/view/reset_password_view.dart';
@@ -17,7 +17,7 @@ abstract class AppRouter {
   static const kUserTypeView = '/userTypeView';
   static const kPatientInfoView = '/patientInfoView';
   static const kDoctorInfoView = '/doctorInfoView';
-  static const kDetailsForDoctorView = '/detailsForDoctorView';
+  static const kHomeView = '/homeView';
   static const kAllPatientsView = '/allPatientsView';
   static const kVerifyDataView = '/verifyDataView';
   static const kForgotPasswordView = '/forgotPasswordView';
@@ -52,12 +52,9 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kDoctorInfoView,
-        builder: (context, state) => DoctorHomeView(),
+        builder: (context, state) => DoctorInfoView(),
       ),
-      GoRoute(
-        path: kDetailsForDoctorView,
-        builder: (context, state) => DetailsForDoctorView(),
-      ),
+      GoRoute(path: kHomeView, builder: (context, state) => HomeView()),
       GoRoute(
         path: kAllPatientsView,
         builder: (context, state) => AllPatientsView(),
