@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print, body_might_complete_normally_nullable
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -40,19 +38,33 @@ class _SignupBodyState extends State<SignupBody> {
 
   void validateAndRegister(BuildContext context) {
     if (formKey.currentState!.validate()) {
-      BlocProvider.of<AuthCubit>(context).signUp(
-        username: nameController.text,
-        email: emailController.text,
-        phone: phoneController.text,
-        password: passwordController.text,
+      FocusScope.of(context).unfocus();
+      context.read<AuthCubit>().signUp(
+        username: nameController.text.trim(),
+        email: emailController.text.trim(),
+        phone: phoneController.text.trim(),
+        password: passwordController.text.trim(),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthCubit, AuthState>(
+    return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+        if (state is AuthLoading) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder:
+                (context) => const Center(child: CircularProgressIndicator()),
+          );
+        } else {
+          Navigator.of(context, rootNavigator: true).pop();
+        }
+
         if (state is AuthFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.error), backgroundColor: Colors.red),
@@ -67,107 +79,109 @@ class _SignupBodyState extends State<SignupBody> {
           GoRouter.of(context).go(AppRouter.kHomeView);
         }
       },
-      builder: (context, state) {
-        return SizedBox(
-          width: double.infinity,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 48.w),
-            child: Column(
-              children: [
-                SizedBox(height: 31.h),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text("Hello There", style: FontStyles.roboto24),
+      child: SizedBox(
+        width: double.infinity,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 48.w),
+          child: Column(
+            children: [
+              SizedBox(height: 31.h),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text("Hello There", style: FontStyles.roboto24),
+              ),
+              SizedBox(height: 14.h),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Nice to see you for the first time!",
+                  style: FontStyles.roboto16,
                 ),
-                SizedBox(height: 14.h),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Nice to see you for the first time!",
-                    style: FontStyles.roboto16,
-                  ),
-                ),
-                SizedBox(height: 35.h),
+              ),
+              SizedBox(height: 35.h),
 
-                Form(
-                  key: formKey,
-                  child: Column(
-                    children: [
-                      CustomTextField(
-                        controller: nameController,
-                        label: "Full Name",
-                        icon: FontAwesomeIcons.solidUser,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Name is required";
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 19.h),
-                      CustomTextField(
-                        controller: emailController,
-                        label: "Email",
-                        icon: FontAwesomeIcons.solidEnvelope,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Email is required";
-                          } else if (!RegExp(
-                            r'^[^@]+@[^@]+\.[^@]+',
-                          ).hasMatch(value)) {
-                            return "Enter a valid email";
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 19.h),
-                      CustomTextField(
-                        controller: phoneController,
-                        label: "Phone",
-                        icon: FontAwesomeIcons.phone,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Phone is required";
-                          } else if (!RegExp(r'^[0-9]{10,}$').hasMatch(value)) {
-                            return "Enter a valid phone number";
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 19.h),
-                      CustomPasswordField(
-                        controller: passwordController,
-                        label: "Password",
-                        icon: FontAwesomeIcons.lock,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Password is required";
-                          } else if (value.length < 6) {
-                            return "Password must be at least 6 characters";
-                          }
-                          return null;
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-
-                SizedBox(height: 33.h),
-                state is AuthLoading
-                    ? const CircularProgressIndicator()
-                    : CustomButton(
-                      onPressed: () => validateAndRegister(context),
-                      text: "Register Now",
+              Form(
+                key: formKey,
+                child: Column(
+                  children: [
+                    CustomTextField(
+                      controller: nameController,
+                      label: "Full Name",
+                      icon: FontAwesomeIcons.solidUser,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Name is required";
+                        }
+                        return null;
+                      },
                     ),
-                SizedBox(height: 67.h),
-                CustomDivider(),
-                SizedBox(height: 29.h),
-                // GoogleButton(),
-              ],
-            ),
+                    SizedBox(height: 19.h),
+                    CustomTextField(
+                      controller: emailController,
+                      label: "Email",
+                      icon: FontAwesomeIcons.solidEnvelope,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Email is required";
+                        } else if (!RegExp(
+                          r'^[^@]+@[^@]+\.[^@]+',
+                        ).hasMatch(value)) {
+                          return "Enter a valid email";
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 19.h),
+                    CustomTextField(
+                      controller: phoneController,
+                      label: "Phone",
+                      icon: FontAwesomeIcons.phone,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Phone is required";
+                        } else if (!RegExp(r'^[0-9]{10,}$').hasMatch(value)) {
+                          return "Enter a valid phone number";
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 19.h),
+                    CustomPasswordField(
+                      controller: passwordController,
+                      label: "Password",
+                      icon: FontAwesomeIcons.lock,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Password is required";
+                        } else if (value.length < 6) {
+                          return "Password must be at least 6 characters";
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: 33.h),
+              CustomButton(
+                onPressed: () => validateAndRegister(context),
+                text: "Register Now",
+              ),
+              SizedBox(height: 67.h),
+              CustomDivider(),
+              SizedBox(height: 29.h),
+
+              GoogleButton(
+                onPressed: () {
+                  FocusScope.of(context).unfocus();
+                  context.read<AuthCubit>().loginWithGoogle();
+                },
+              ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

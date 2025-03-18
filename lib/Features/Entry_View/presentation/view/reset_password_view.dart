@@ -39,14 +39,18 @@ class ResetPasswordView extends StatelessWidget {
                 controller: passwordController,
                 label: "Password",
                 icon: FontAwesomeIcons.lock,
-                validator: (value) {},
+                validator: (value) {
+                  return null;
+                },
               ),
               SizedBox(height: 35.h),
               CustomPasswordField(
                 controller: confirmPasswordController,
                 label: "Confirm Password",
                 icon: FontAwesomeIcons.lock,
-                validator: (value) {},
+                validator: (value) {
+                  return null;
+                },
               ),
               SizedBox(height: 59.h),
               CustomButton(text: "Reset Password", onPressed: () {}),

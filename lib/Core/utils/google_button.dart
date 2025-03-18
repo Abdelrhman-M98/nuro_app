@@ -4,8 +4,8 @@ import 'package:neuro_app/Core/utils/const.dart';
 import 'package:neuro_app/Core/utils/styles.dart';
 
 class GoogleButton extends StatelessWidget {
-  final VoidCallback onPressed;
-  const GoogleButton({super.key, required this.onPressed});
+  final VoidCallback? onPressed;
+  const GoogleButton({super.key, this.onPressed});
 
   @override
   Widget build(BuildContext context) {

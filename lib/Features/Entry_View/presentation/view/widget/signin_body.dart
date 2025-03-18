@@ -1,6 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-// ignore_for_file: avoid_print
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -29,35 +26,33 @@ class _SigninBodyState extends State<SigninBody> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  void validateForm() {
-    if (formKey.currentState!.validate()) {
-      BlocProvider.of<AuthCubit>(
-        context,
-      ).login(emailController.text.trim(), passwordController.text.trim());
-    }
-  }
-
-  void signInWithGoogle() {
-    BlocProvider.of<AuthCubit>(context).loginWithGoogle();
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
         if (state is AuthLoading) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text("Signing in...")));
-        } else if (state is AuthSuccess) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text("Login Successful!")));
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder:
+                (context) => const Center(child: CircularProgressIndicator()),
+          );
+        } else {
+          Navigator.of(context, rootNavigator: true).pop();
+        }
+
+        if (state is AuthSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Login Successful!"),
+              backgroundColor: Colors.green,
+            ),
+          );
           GoRouter.of(context).go(AppRouter.kHomeView);
         } else if (state is AuthFailure) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.error)));
+          SnackBar(content: Text(state.error), backgroundColor: Colors.red);
         }
       },
       child: SizedBox(
@@ -80,7 +75,6 @@ class _SigninBodyState extends State<SigninBody> {
                 ),
               ),
               SizedBox(height: 75.h),
-
               Form(
                 key: formKey,
                 child: Column(
@@ -128,15 +122,32 @@ class _SigninBodyState extends State<SigninBody> {
                 ),
               ),
               SizedBox(height: 25.h),
-              CustomButton(onPressed: validateForm, text: "Login"),
+
+              CustomButton(onPressed: _validateForm, text: "Login"),
               SizedBox(height: 96.h),
               CustomDivider(),
               SizedBox(height: 46.h),
-              GoogleButton(onPressed: signInWithGoogle),
+
+              GoogleButton(onPressed: _signInWithGoogle),
             ],
           ),
         ),
       ),
     );
+  }
+
+  void _validateForm() {
+    if (formKey.currentState!.validate()) {
+      FocusScope.of(context).unfocus();
+      context.read<AuthCubit>().login(
+        emailController.text.trim(),
+        passwordController.text.trim(),
+      );
+    }
+  }
+
+  void _signInWithGoogle() {
+    FocusScope.of(context).unfocus();
+    context.read<AuthCubit>().loginWithGoogle();
   }
 }
