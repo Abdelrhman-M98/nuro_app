@@ -76,7 +76,7 @@ class _SignupBodyState extends State<SignupBody> {
               backgroundColor: Colors.green,
             ),
           );
-          GoRouter.of(context).go(AppRouter.kHomeView);
+          GoRouter.of(context).go(AppRouter.kUserInfoView);
         }
       },
       child: SizedBox(

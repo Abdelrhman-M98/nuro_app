@@ -50,7 +50,7 @@ class _SigninBodyState extends State<SigninBody> {
               backgroundColor: Colors.green,
             ),
           );
-          GoRouter.of(context).go(AppRouter.kHomeView);
+          GoRouter.of(context).go(AppRouter.kUserInfoView);
         } else if (state is AuthFailure) {
           SnackBar(content: Text(state.error), backgroundColor: Colors.red);
         }

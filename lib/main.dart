@@ -11,18 +11,24 @@ import 'package:neuro_app/firebase_options.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
+
+  final authRepository = AuthRepository();
+  final authCubit = AuthCubit(authRepository);
+
+  authCubit.initializeAuth();
+
+  runApp(MyApp(authCubit: authCubit));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final AuthCubit authCubit;
+
+  const MyApp({super.key, required this.authCubit});
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => AuthCubit(AuthRepository())),
-      ],
+      providers: [BlocProvider<AuthCubit>.value(value: authCubit)],
       child: ScreenUtilInit(
         designSize: const Size(412, 917),
         minTextAdapt: true,

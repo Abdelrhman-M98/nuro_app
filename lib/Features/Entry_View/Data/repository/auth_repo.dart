@@ -7,6 +7,14 @@ class AuthRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
+  User? getCurrentUser() {
+    return _auth.currentUser;
+  }
+
+  String? getUserId() {
+    return _auth.currentUser?.uid;
+  }
+
   Future<User?> signUpWithEmail({
     required String username,
     required String email,
@@ -27,8 +35,8 @@ class AuthRepository {
         );
       }
       return user;
-    } catch (e) {
-      print("❌ Sign-up error: $e");
+    } on FirebaseAuthException catch (e) {
+      print("❌ Sign-up error: ${e.message}");
       return null;
     }
   }
@@ -40,8 +48,8 @@ class AuthRepository {
         password: password,
       );
       return userCredential.user;
-    } catch (e) {
-      print("❌ Sign-in error: $e");
+    } on FirebaseAuthException catch (e) {
+      print("❌ Sign-in error: ${e.message}");
       return null;
     }
   }
@@ -73,8 +81,8 @@ class AuthRepository {
       }
 
       return user;
-    } catch (e) {
-      print("❌ Google Sign-in error: $e");
+    } on FirebaseAuthException catch (e) {
+      print("❌ Google Sign-in error: ${e.message}");
       return null;
     }
   }
@@ -86,10 +94,11 @@ class AuthRepository {
     required String phone,
   }) async {
     try {
-      DocumentSnapshot userDoc =
-          await _firestore.collection("users").doc(uid).get();
-      if (!userDoc.exists) {
-        await _firestore.collection("users").doc(uid).set({
+      DocumentReference userDoc = _firestore.collection("users").doc(uid);
+      DocumentSnapshot docSnapshot = await userDoc.get();
+
+      if (!docSnapshot.exists) {
+        await userDoc.set({
           "uid": uid,
           "username": username,
           "email": email,

@@ -94,7 +94,7 @@ class UserTypeViewState extends State<UserTypeView> {
                   if (selectedUserType.value == "Patient Relative") {
                     GoRouter.of(context).go(AppRouter.kPatientInfoView);
                   } else if (selectedUserType.value == "Doctor") {
-                    GoRouter.of(context).go(AppRouter.kDoctorInfoView);
+                    // GoRouter.of(context).go(AppRouter.kDoctorInfoView);
                   } else {
                     GoRouter.of(context).go(AppRouter.kHomeView);
                   }
