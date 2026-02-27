@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:neuro_app/Core/utils/app_routes.dart';
-import 'package:neuro_app/Core/utils/custom_appbar_button.dart';
-import 'package:neuro_app/Core/utils/patient_card_info.dart';
-import 'package:neuro_app/Features/Doctor_Info/Presentation/view/Widget/dynamic_line_chart.dart';
+import 'package:nervix_app/Core/utils/app_routes.dart';
+import 'package:nervix_app/Core/utils/custom_appbar_button.dart';
+import 'package:nervix_app/Core/utils/patient_card_info.dart';
+import 'package:nervix_app/Features/Doctor_Info/Presentation/view/Widget/dynamic_line_chart.dart';
 
 class PatientInfoSection extends StatelessWidget {
   const PatientInfoSection({super.key, required this.imageUrl});

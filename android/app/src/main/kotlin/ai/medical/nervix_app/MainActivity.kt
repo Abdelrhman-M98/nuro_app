@@ -1,4 +1,4 @@
-package com.example.neuro_app
+package ai.medical.nervix_app
 
 import io.flutter.embedding.android.FlutterActivity
 

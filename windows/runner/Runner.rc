@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "neuro_app" "\0"
+            VALUE "FileDescription", "nervix_app" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "neuro_app" "\0"
+            VALUE "InternalName", "nervix_app" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "neuro_app.exe" "\0"
-            VALUE "ProductName", "neuro_app" "\0"
+            VALUE "OriginalFilename", "nervix_app.exe" "\0"
+            VALUE "ProductName", "nervix_app" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

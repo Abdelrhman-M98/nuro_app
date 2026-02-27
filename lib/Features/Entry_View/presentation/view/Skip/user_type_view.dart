@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:neuro_app/Core/utils/app_routes.dart';
-import 'package:neuro_app/Core/utils/const.dart';
-import 'package:neuro_app/Core/utils/custom_button.dart';
-import 'package:neuro_app/Core/utils/styles.dart';
-import 'package:neuro_app/Features/Entry_View/presentation/view/widget/custom_user_type.dart';
+import 'package:nervix_app/Core/utils/app_routes.dart';
+import 'package:nervix_app/Core/utils/const.dart';
+import 'package:nervix_app/Core/utils/custom_button.dart';
+import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/view/widget/custom_user_type.dart';
 
 class UserTypeView extends StatefulWidget {
   const UserTypeView({super.key});

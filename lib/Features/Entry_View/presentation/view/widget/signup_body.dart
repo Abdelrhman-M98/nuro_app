@@ -3,15 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:neuro_app/Core/utils/app_routes.dart';
-import 'package:neuro_app/Core/utils/custom_button.dart';
-import 'package:neuro_app/Core/utils/custom_divider.dart';
-import 'package:neuro_app/Core/utils/custom_password_field.dart';
-import 'package:neuro_app/Core/utils/custom_text_field.dart';
-import 'package:neuro_app/Core/utils/google_button.dart';
-import 'package:neuro_app/Core/utils/styles.dart';
-import 'package:neuro_app/Features/Entry_View/presentation/auth/auth_cubit.dart';
-import 'package:neuro_app/Features/Entry_View/presentation/auth/auth_state.dart';
+import 'package:nervix_app/Core/utils/app_routes.dart';
+import 'package:nervix_app/Core/utils/custom_button.dart';
+import 'package:nervix_app/Core/utils/custom_divider.dart';
+import 'package:nervix_app/Core/utils/custom_password_field.dart';
+import 'package:nervix_app/Core/utils/custom_text_field.dart';
+import 'package:nervix_app/Core/utils/google_button.dart';
+import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/auth/auth_cubit.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/auth/auth_state.dart';
 
 class SignupBody extends StatefulWidget {
   const SignupBody({super.key});
@@ -39,10 +39,8 @@ class _SignupBodyState extends State<SignupBody> {
   void validateAndRegister(BuildContext context) {
     if (formKey.currentState!.validate()) {
       FocusScope.of(context).unfocus();
-      context.read<AuthCubit>().signUp(
-        username: nameController.text.trim(),
+      context.read<AuthCubit>().register(
         email: emailController.text.trim(),
-        phone: phoneController.text.trim(),
         password: passwordController.text.trim(),
       );
     }

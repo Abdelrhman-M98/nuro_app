@@ -41,53 +41,53 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAOoOdWoRtjhiVVYh7yXb6w2DRhfPqTLc0',
-    appId: '1:571849249430:web:a244ecac14c1704cb228b7',
-    messagingSenderId: '571849249430',
-    projectId: 'nuro-af526',
-    authDomain: 'nuro-af526.firebaseapp.com',
-    databaseURL: 'https://nuro-af526-default-rtdb.firebaseio.com',
-    storageBucket: 'nuro-af526.firebasestorage.app',
-    measurementId: 'G-LG9W4MM8QP',
+    apiKey: 'AIzaSyD9M8yURCXYsJn_XFqWIqIADUE2yoMBTyU',
+    appId: '1:491101938301:web:e2a925d24f6a65afa2c714',
+    messagingSenderId: '491101938301',
+    projectId: 'nervix-10d98',
+    authDomain: 'nervix-10d98.firebaseapp.com',
+    databaseURL: 'https://nervix-10d98-default-rtdb.firebaseio.com',
+    storageBucket: 'nervix-10d98.firebasestorage.app',
+    measurementId: 'G-GC3KDBYC2E',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBSBf9LBPCZDd94rX6sCkQ50RJOvd0Pl7Y',
-    appId: '1:571849249430:android:c88c10b546ed33b8b228b7',
-    messagingSenderId: '571849249430',
-    projectId: 'nuro-af526',
-    databaseURL: 'https://nuro-af526-default-rtdb.firebaseio.com',
-    storageBucket: 'nuro-af526.firebasestorage.app',
+    apiKey: 'AIzaSyBQcLVbJKzKZ_vQ7kvcJyzw8yUdRBMix7A',
+    appId: '1:491101938301:android:eefdbc6d5715b8c7a2c714',
+    messagingSenderId: '491101938301',
+    projectId: 'nervix-10d98',
+    databaseURL: 'https://nervix-10d98-default-rtdb.firebaseio.com',
+    storageBucket: 'nervix-10d98.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBEsBoBMAJjo0SUhwqNEgLbMiupZEoIk3k',
-    appId: '1:571849249430:ios:c32ead5dbc5472d9b228b7',
-    messagingSenderId: '571849249430',
-    projectId: 'nuro-af526',
-    databaseURL: 'https://nuro-af526-default-rtdb.firebaseio.com',
-    storageBucket: 'nuro-af526.firebasestorage.app',
-    iosBundleId: 'com.example.neuroApp',
+    apiKey: 'AIzaSyAgvzjbt4fmr4HTRzapJOpInL_v0DMlLlU',
+    appId: '1:491101938301:ios:963b51498b0eee5fa2c714',
+    messagingSenderId: '491101938301',
+    projectId: 'nervix-10d98',
+    databaseURL: 'https://nervix-10d98-default-rtdb.firebaseio.com',
+    storageBucket: 'nervix-10d98.firebasestorage.app',
+    iosBundleId: 'ai.medical.nervixApp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBEsBoBMAJjo0SUhwqNEgLbMiupZEoIk3k',
-    appId: '1:571849249430:ios:c32ead5dbc5472d9b228b7',
-    messagingSenderId: '571849249430',
-    projectId: 'nuro-af526',
-    databaseURL: 'https://nuro-af526-default-rtdb.firebaseio.com',
-    storageBucket: 'nuro-af526.firebasestorage.app',
-    iosBundleId: 'com.example.neuroApp',
+    apiKey: 'AIzaSyAgvzjbt4fmr4HTRzapJOpInL_v0DMlLlU',
+    appId: '1:491101938301:ios:2548142b20ecaca7a2c714',
+    messagingSenderId: '491101938301',
+    projectId: 'nervix-10d98',
+    databaseURL: 'https://nervix-10d98-default-rtdb.firebaseio.com',
+    storageBucket: 'nervix-10d98.firebasestorage.app',
+    iosBundleId: 'com.example.nervixApp',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyAOoOdWoRtjhiVVYh7yXb6w2DRhfPqTLc0',
-    appId: '1:571849249430:web:c65135de6cd85fbfb228b7',
-    messagingSenderId: '571849249430',
-    projectId: 'nuro-af526',
-    authDomain: 'nuro-af526.firebaseapp.com',
-    databaseURL: 'https://nuro-af526-default-rtdb.firebaseio.com',
-    storageBucket: 'nuro-af526.firebasestorage.app',
-    measurementId: 'G-001YD0X5X2',
+    apiKey: 'AIzaSyD9M8yURCXYsJn_XFqWIqIADUE2yoMBTyU',
+    appId: '1:491101938301:web:50176cac0ccb9ec9a2c714',
+    messagingSenderId: '491101938301',
+    projectId: 'nervix-10d98',
+    authDomain: 'nervix-10d98.firebaseapp.com',
+    databaseURL: 'https://nervix-10d98-default-rtdb.firebaseio.com',
+    storageBucket: 'nervix-10d98.firebasestorage.app',
+    measurementId: 'G-PY4NEZZVWX',
   );
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:neuro_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/utils/styles.dart';
 
 class EntryButton extends StatelessWidget {
   final String text;

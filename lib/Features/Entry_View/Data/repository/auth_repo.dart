@@ -1,135 +1,69 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthRepository {
+  // 1. تعريف النسخة الوحيدة من FirebaseAuth
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  User? getCurrentUser() {
-    return _auth.currentUser;
-  }
+  // 2. استخدام .instance للوصول لمكتبة جوجل (حل مشكلة الـ Constructor)
+  GoogleSignIn get _googleSignIn => GoogleSignIn.instance;
 
-  String? getUserId() {
-    return _auth.currentUser?.uid;
-  }
+  // الحصول على المستخدم الحالي
+  User? get currentUser => _auth.currentUser;
 
-  Future<User?> signUpWithEmail({
-    required String username,
-    required String email,
-    required String phone,
-    required String password,
-  }) async {
+  // --- دالة تسجيل الدخول بجوجل (التحديث الأخير 2026) ---
+  Future<UserCredential?> signInWithGoogle() async {
     try {
-      UserCredential userCredential = await _auth
-          .createUserWithEmailAndPassword(email: email, password: password);
+      // أ- تهيئة المكتبة (Initialize)
+      await _googleSignIn.initialize();
 
-      User? user = userCredential.user;
-      if (user != null) {
-        await _saveUserData(
-          uid: user.uid,
-          username: username,
-          email: email,
-          phone: phone,
-        );
-      }
-      return user;
-    } on FirebaseAuthException catch (e) {
-      print("❌ Sign-up error: ${e.message}");
-      return null;
-    }
-  }
+      // ب- فتح واجهة جوجل واختيار الحساب (Authenticate بدل signIn)
+      final GoogleSignInAccount? googleUser =
+          await _googleSignIn.authenticate();
 
-  Future<User?> signInWithEmail(String email, String password) async {
-    try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return userCredential.user;
-    } on FirebaseAuthException catch (e) {
-      print("❌ Sign-in error: ${e.message}");
-      return null;
-    }
-  }
+      if (googleUser == null) return null; // لو المستخدم قفل النافذة
 
-  Future<User?> signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) return null;
-
+      // ج- الحصول على بيانات التوكن (Authentication)
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
+
+      // د- إنشاء بيانات الاعتماد لـ Firebase
+      final OAuthCredential credential = GoogleAuthProvider.credential(
         idToken: googleAuth.idToken,
+        accessToken: (googleAuth as dynamic).accessToken,
       );
 
-      UserCredential userCredential = await _auth.signInWithCredential(
-        credential,
-      );
-      User? user = userCredential.user;
-
-      if (user != null) {
-        await _saveUserData(
-          uid: user.uid,
-          username: user.displayName ?? "Unknown",
-          email: user.email ?? "",
-          phone: user.phoneNumber ?? "",
-        );
-      }
-
-      return user;
-    } on FirebaseAuthException catch (e) {
-      print("❌ Google Sign-in error: ${e.message}");
-      return null;
-    }
-  }
-
-  Future<void> _saveUserData({
-    required String uid,
-    required String username,
-    required String email,
-    required String phone,
-  }) async {
-    try {
-      DocumentReference userDoc = _firestore.collection("users").doc(uid);
-      DocumentSnapshot docSnapshot = await userDoc.get();
-
-      if (!docSnapshot.exists) {
-        await userDoc.set({
-          "uid": uid,
-          "username": username,
-          "email": email,
-          "phone": phone,
-          "profileImage": "",
-          "createdAt": FieldValue.serverTimestamp(),
-        });
-        print("✅ User data saved successfully!");
-      }
+      // هـ- تسجيل الدخول النهائي في Firebase
+      return await _auth.signInWithCredential(credential);
     } catch (e) {
-      print("❌ Error saving user data: $e");
+      print("خطأ في تسجيل دخول جوجل: $e");
+      rethrow;
     }
   }
 
-  Future<DocumentSnapshot?> getUserData(String uid) async {
-    try {
-      var userDoc = await _firestore.collection("users").doc(uid).get();
-      return userDoc.exists ? userDoc : null;
-    } catch (e) {
-      print("❌ Error fetching user data: $e");
-      return null;
-    }
+  // --- دالة إنشاء حساب بالبريد الإلكتروني ---
+  Future<UserCredential> signUpWithEmail(String email, String password) async {
+    return await _auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
   }
 
+  // --- دالة تسجيل دخول ببريد موجود ---
+  Future<UserCredential> signInWithEmail(String email, String password) async {
+    return await _auth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+  }
+
+  // --- دالة تسجيل الخروج من كل شيء ---
   Future<void> signOut() async {
     try {
       await _auth.signOut();
       await _googleSignIn.signOut();
-      print("✅ User signed out successfully!");
     } catch (e) {
-      print("❌ Error signing out: $e");
+      print("خطأ أثناء تسجيل الخروج: $e");
     }
   }
 }

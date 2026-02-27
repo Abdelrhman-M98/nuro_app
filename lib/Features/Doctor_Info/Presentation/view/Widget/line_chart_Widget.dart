@@ -3,7 +3,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:neuro_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/utils/styles.dart';
 
 class LineChartWidget extends StatelessWidget {
   final List<FlSpot> dataPoints;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:neuro_app/Features/Doctor_Info/Presentation/view/Widget/data_section.dart';
-import 'package:neuro_app/Features/Doctor_Info/Presentation/view/Widget/patient_info_section.dart';
+import 'package:nervix_app/Features/Doctor_Info/Presentation/view/Widget/data_section.dart';
+import 'package:nervix_app/Features/Doctor_Info/Presentation/view/Widget/patient_info_section.dart';
 
 class HomeViewBody extends StatelessWidget {
   const HomeViewBody({super.key});

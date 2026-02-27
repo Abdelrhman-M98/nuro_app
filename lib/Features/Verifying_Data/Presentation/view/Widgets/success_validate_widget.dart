@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:neuro_app/Core/utils/app_assets.dart';
-import 'package:neuro_app/Core/utils/app_routes.dart';
-import 'package:neuro_app/Core/utils/const.dart';
-import 'package:neuro_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/utils/app_assets.dart';
+import 'package:nervix_app/Core/utils/app_routes.dart';
+import 'package:nervix_app/Core/utils/const.dart';
+import 'package:nervix_app/Core/utils/styles.dart';
 
 class SuccessValidation extends StatelessWidget {
   const SuccessValidation({super.key});

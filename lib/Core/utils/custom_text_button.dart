@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:neuro_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/utils/styles.dart';
 
 class CustomTextButton extends StatelessWidget {
   const CustomTextButton({super.key, required this.text, this.onPressed});

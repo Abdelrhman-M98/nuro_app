@@ -3,16 +3,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:neuro_app/Core/utils/app_routes.dart';
-import 'package:neuro_app/Core/utils/custom_button.dart';
-import 'package:neuro_app/Core/utils/custom_divider.dart';
-import 'package:neuro_app/Core/utils/custom_password_field.dart';
-import 'package:neuro_app/Core/utils/custom_text_field.dart';
-import 'package:neuro_app/Core/utils/google_button.dart';
-import 'package:neuro_app/Core/utils/styles.dart';
-import 'package:neuro_app/Core/utils/custom_text_button.dart';
-import 'package:neuro_app/Features/Entry_View/presentation/auth/auth_cubit.dart';
-import 'package:neuro_app/Features/Entry_View/presentation/auth/auth_state.dart';
+import 'package:nervix_app/Core/utils/app_routes.dart';
+import 'package:nervix_app/Core/utils/custom_button.dart';
+import 'package:nervix_app/Core/utils/custom_divider.dart';
+import 'package:nervix_app/Core/utils/custom_password_field.dart';
+import 'package:nervix_app/Core/utils/custom_text_field.dart';
+import 'package:nervix_app/Core/utils/google_button.dart';
+import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/utils/custom_text_button.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/auth/auth_cubit.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/auth/auth_state.dart';
 
 class SigninBody extends StatefulWidget {
   const SigninBody({super.key});
@@ -30,7 +30,11 @@ class _SigninBodyState extends State<SigninBody> {
   Widget build(BuildContext context) {
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        if (state is! AuthLoading) {
+          if (Navigator.of(context, rootNavigator: true).canPop()) {
+            Navigator.of(context, rootNavigator: true).pop();
+          }
+        }
 
         if (state is AuthLoading) {
           showDialog(
@@ -39,20 +43,12 @@ class _SigninBodyState extends State<SigninBody> {
             builder:
                 (context) => const Center(child: CircularProgressIndicator()),
           );
-        } else {
-          Navigator.of(context, rootNavigator: true).pop();
-        }
-
-        if (state is AuthSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Login Successful!"),
-              backgroundColor: Colors.green,
-            ),
-          );
+        } else if (state is AuthSuccess) {
           GoRouter.of(context).go(AppRouter.kUserInfoView);
         } else if (state is AuthFailure) {
-          SnackBar(content: Text(state.error), backgroundColor: Colors.red);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.error), backgroundColor: Colors.red),
+          );
         }
       },
       child: SizedBox(

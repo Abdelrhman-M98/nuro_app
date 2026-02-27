@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:neuro_app/Core/utils/const.dart';
+import 'package:nervix_app/Core/utils/const.dart';
 
 class CustomOtpWidget extends StatelessWidget {
   const CustomOtpWidget({super.key});

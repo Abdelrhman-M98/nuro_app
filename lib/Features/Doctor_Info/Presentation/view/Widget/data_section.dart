@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:neuro_app/Core/utils/const.dart';
-import 'package:neuro_app/Features/Doctor_Info/Presentation/view/Widget/action_buttons.dart';
-import 'package:neuro_app/Features/Doctor_Info/Presentation/view/Widget/info_row.dart';
+import 'package:nervix_app/Core/utils/const.dart';
+import 'package:nervix_app/Features/Doctor_Info/Presentation/view/Widget/action_buttons.dart';
+import 'package:nervix_app/Features/Doctor_Info/Presentation/view/Widget/info_row.dart';
 
 class DataSection extends StatelessWidget {
   const DataSection({super.key, this.onPressedAudio, this.onPressedDownload});

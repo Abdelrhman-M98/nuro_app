@@ -1,27 +1,52 @@
 {
   "project_info": {
-    "project_number": "571849249430",
-    "firebase_url": "https://nuro-af526-default-rtdb.firebaseio.com",
-    "project_id": "nuro-af526",
-    "storage_bucket": "nuro-af526.firebasestorage.app"
+    "project_number": "491101938301",
+    "firebase_url": "https://nervix-10d98-default-rtdb.firebaseio.com",
+    "project_id": "nervix-10d98",
+    "storage_bucket": "nervix-10d98.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:571849249430:android:c88c10b546ed33b8b228b7",
+        "mobilesdk_app_id": "1:491101938301:android:eefdbc6d5715b8c7a2c714",
         "android_client_info": {
-          "package_name": "com.example.neuro_app"
+          "package_name": "ai.medical.nervix_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "491101938301-k2dtkcrmrf4qqnmgpqohuqs5fqaj0k4a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ai.medical.nervix_app",
+            "certificate_hash": "99f2adf0878831c5b5841122ccb73825a18ac9c5"
+          }
+        },
+        {
+          "client_id": "491101938301-9f5rudmhdojmfrfcpb0u658qqgov6hnl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyBSBf9LBPCZDd94rX6sCkQ50RJOvd0Pl7Y"
+          "current_key": "AIzaSyBQcLVbJKzKZ_vQ7kvcJyzw8yUdRBMix7A"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "491101938301-9f5rudmhdojmfrfcpb0u658qqgov6hnl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "491101938301-ddp27flb8c70srchpcn6mvj2c1kci5f5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.nervixApp"
+              }
+            }
+          ]
         }
       }
     }

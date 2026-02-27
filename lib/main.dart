@@ -2,11 +2,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:neuro_app/Core/utils/app_routes.dart';
-import 'package:neuro_app/Core/utils/const.dart';
-import 'package:neuro_app/Features/Entry_View/Data/repository/auth_repo.dart';
-import 'package:neuro_app/Features/Entry_View/presentation/auth/auth_cubit.dart';
-import 'package:neuro_app/firebase_options.dart';
+import 'package:nervix_app/Core/utils/app_routes.dart';
+import 'package:nervix_app/Core/utils/const.dart';
+import 'package:nervix_app/Features/Entry_View/Data/repository/auth_repo.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/auth/auth_cubit.dart';
+import 'package:nervix_app/firebase_options.dart';
+
+// import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,8 +16,6 @@ Future<void> main() async {
 
   final authRepository = AuthRepository();
   final authCubit = AuthCubit(authRepository);
-
-  authCubit.initializeAuth();
 
   runApp(MyApp(authCubit: authCubit));
 }

@@ -1,4 +1,4 @@
-# neuro_app
+# nervix_app
 
 A new Flutter project.
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:neuro_app/Features/Doctor_Info/Presentation/view/Widget/line_chart_container.dart';
+import 'package:nervix_app/Features/Doctor_Info/Presentation/view/Widget/line_chart_container.dart';
 
 class DynamicLineChart extends StatefulWidget {
   const DynamicLineChart({super.key});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:neuro_app/Features/Entry_View/presentation/view/widget/entry_switch.dart';
-import 'package:neuro_app/Features/Entry_View/presentation/view/widget/signin_body.dart';
-import 'package:neuro_app/Features/Entry_View/presentation/view/widget/signup_body.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/view/widget/entry_switch.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/view/widget/signin_body.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/view/widget/signup_body.dart';
 
 class EntryViewBody extends StatefulWidget {
   const EntryViewBody({super.key});

@@ -1,16 +1,16 @@
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
-import 'package:neuro_app/Features/All_patients/presentation/view/all_patients_view.dart';
-import 'package:neuro_app/Features/Home_view/home_view.dart';
-import 'package:neuro_app/Features/Entry_View/presentation/view/forgot_password_view.dart';
-import 'package:neuro_app/Features/Entry_View/presentation/view/user_info.dart.dart';
-import 'package:neuro_app/Features/Entry_View/presentation/view/entry_view.dart';
-import 'package:neuro_app/Features/Entry_View/presentation/view/Skip/patient_info_view.dart';
-import 'package:neuro_app/Features/Entry_View/presentation/view/reset_password_view.dart';
-import 'package:neuro_app/Features/Entry_View/presentation/view/Skip/user_type_view.dart';
-import 'package:neuro_app/Features/Entry_View/presentation/view/verification_password_view.dart';
-import 'package:neuro_app/Features/Splash_View/presentation/splash_view.dart';
-import 'package:neuro_app/Features/Verifying_Data/Presentation/view/verifying_data_view.dart';
+import 'package:nervix_app/Features/All_patients/presentation/view/all_patients_view.dart';
+import 'package:nervix_app/Features/Home_view/home_view.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/view/forgot_password_view.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/view/user_info.dart.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/view/entry_view.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/view/Skip/patient_info_view.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/view/reset_password_view.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/view/Skip/user_type_view.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/view/verification_password_view.dart';
+import 'package:nervix_app/Features/Splash_View/presentation/splash_view.dart';
+import 'package:nervix_app/Features/Verifying_Data/Presentation/view/verifying_data_view.dart';
 
 abstract class AppRouter {
   static const kLoginView = '/loginView';
