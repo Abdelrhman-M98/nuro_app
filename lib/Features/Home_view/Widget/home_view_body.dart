@@ -8,15 +8,26 @@ class HomeViewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var imageUrl =
+    const imageUrl =
         "https://icons.veryicon.com/png/o/miscellaneous/user-avatar/user-avatar-male-5.png";
 
-    return Column(
-      children: [
-        PatientInfoSection(imageUrl: imageUrl),
-        SizedBox(height: 23.h),
-        DataSection(),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                PatientInfoSection(imageUrl: imageUrl),
+                SizedBox(height: 16.h),
+                DataSection(),
+                SizedBox(height: 24.h),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

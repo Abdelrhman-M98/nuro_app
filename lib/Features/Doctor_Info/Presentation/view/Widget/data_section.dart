@@ -11,46 +11,41 @@ class DataSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Card(
         margin: EdgeInsets.zero,
-        color: Colors.white,
+        color: kSurfaceColor,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(12.r),
-            topRight: Radius.circular(12.r),
-          ),
+          borderRadius: BorderRadius.circular(16.r),
         ),
-        child: SizedBox(
-          width: double.infinity,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 29.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 10.h),
-                Text(
-                  "Patient Info",
-                  style: TextStyle(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: 'Roboto',
-                    color: kPrimaryColor,
-                  ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Patient Info",
+                style: TextStyle(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w700,
+                  color: kAccentColor,
                 ),
-                SizedBox(height: 16.h),
-                InfoRow(title: "info required :", value: "info data"),
-                SizedBox(height: 6.h),
-                InfoRow(title: "info required :", value: "info data"),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: ActionButtons(
-                    onPressedAudio: onPressedAudio,
-                    onPressedDownload: onPressedDownload,
-                  ),
+              ),
+              SizedBox(height: 12.h),
+              InfoRow(title: "Info required:", value: "Info data"),
+              SizedBox(height: 6.h),
+              InfoRow(title: "Info required:", value: "Info data"),
+              SizedBox(height: 12.h),
+              Align(
+                alignment: Alignment.centerRight,
+                child: ActionButtons(
+                  onPressedAudio: onPressedAudio,
+                  onPressedDownload: onPressedDownload,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

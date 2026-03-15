@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 
 class CustomPasswordField extends StatefulWidget {
@@ -18,80 +19,54 @@ class CustomPasswordField extends StatefulWidget {
   final String? Function(String?)? validator;
 
   @override
-  CustomPasswordFieldState createState() => CustomPasswordFieldState();
+  State<CustomPasswordField> createState() => _CustomPasswordFieldState();
 }
 
-class CustomPasswordFieldState extends State<CustomPasswordField> {
-  bool isPasswordVisible = false;
-
-  void _togglePasswordVisibility() {
-    setState(() {
-      isPasswordVisible = !isPasswordVisible;
-    });
-  }
+class _CustomPasswordFieldState extends State<CustomPasswordField> {
+  bool _obscure = true;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: widget.controller,
-      obscureText: !isPasswordVisible,
-      style: FontStyles.roboto12,
+      obscureText: _obscure,
+      style: FontStyles.roboto12.copyWith(color: kOnSurfaceColor),
       validator: widget.validator,
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.white,
+        fillColor: kSurfaceColor,
         labelText: widget.label,
-        labelStyle: FontStyles.roboto12,
-        hintStyle: FontStyles.roboto12,
-        contentPadding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
-
+        labelStyle: FontStyles.roboto12.copyWith(color: kOnSurfaceVariantColor),
+        hintStyle: FontStyles.roboto12.copyWith(color: kOnSurfaceVariantColor),
+        contentPadding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
         prefixIcon: Padding(
-          padding: EdgeInsets.only(
-            right: 27.w,
-            left: 22.w,
-            top: 19.h,
-            bottom: 19.h,
-          ),
-          child: FaIcon(widget.icon, color: Color(0xFF919191), size: 19.sp),
+          padding: EdgeInsets.only(right: 16.w, left: 16.w, top: 14.h, bottom: 14.h),
+          child: FaIcon(widget.icon, color: kAccentColor, size: 18.sp),
         ),
-
         suffixIcon: IconButton(
-          icon: Padding(
-            padding: EdgeInsets.only(right: 21.w),
-            child: Icon(
-              isPasswordVisible
-                  ? FontAwesomeIcons.eye
-                  : FontAwesomeIcons.eyeSlash,
-              size: 16.sp,
-              color: isPasswordVisible ? Colors.blue : Colors.grey,
-            ),
+          icon: FaIcon(
+            _obscure ? FontAwesomeIcons.eyeSlash : FontAwesomeIcons.eye,
+            size: 16.sp,
+            color: kOnSurfaceVariantColor,
           ),
-          onPressed: _togglePasswordVisibility,
+          onPressed: () => setState(() => _obscure = !_obscure),
         ),
-
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(17.r),
-          borderSide: BorderSide.none,
-        ),
-
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14.r)),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(17.r),
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(14.r),
+          borderSide: const BorderSide(color: kSurfaceLightColor),
         ),
-
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(17.r),
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(14.r),
+          borderSide: const BorderSide(color: kAccentColor, width: 1.5),
         ),
-
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(17.r),
-          borderSide: BorderSide(color: Colors.red, width: 2),
+          borderRadius: BorderRadius.circular(14.r),
+          borderSide: const BorderSide(color: kErrorColor),
         ),
-
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(17.r),
-          borderSide: BorderSide(color: Colors.red, width: 2),
+          borderRadius: BorderRadius.circular(14.r),
+          borderSide: const BorderSide(color: kErrorColor, width: 1.5),
         ),
       ),
     );

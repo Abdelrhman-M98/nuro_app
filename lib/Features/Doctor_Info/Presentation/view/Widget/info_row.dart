@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 
 class InfoRow extends StatelessWidget {
@@ -14,16 +15,19 @@ class InfoRow extends StatelessWidget {
         Text(
           title,
           style: FontStyles.roboto16.copyWith(
-            color: Colors.black,
-            fontWeight: FontWeight.w700,
+            color: kOnSurfaceVariantColor,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        SizedBox(width: 37.w),
-        Text(
-          value,
-          style: FontStyles.roboto16.copyWith(
-            color: Colors.black,
-            fontWeight: FontWeight.w400,
+        SizedBox(width: 16.w),
+        Expanded(
+          child: Text(
+            value,
+            style: FontStyles.roboto16.copyWith(
+              color: kOnSurfaceColor,
+              fontWeight: FontWeight.w400,
+            ),
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],

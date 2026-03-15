@@ -3,12 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/app_routes.dart';
-import 'package:nervix_app/Core/utils/const.dart';
+import 'package:nervix_app/Core/utils/app_theme.dart';
 import 'package:nervix_app/Features/Entry_View/Data/repository/auth_repo.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/auth/auth_cubit.dart';
 import 'package:nervix_app/firebase_options.dart';
-
-// import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +33,7 @@ class MyApp extends StatelessWidget {
         splitScreenMode: true,
         builder: (context, child) {
           return MaterialApp.router(
-            theme: ThemeData(scaffoldBackgroundColor: kBackgroundColor),
+            theme: AppTheme.darkTheme,
             debugShowCheckedModeBanner: false,
             routerConfig: AppRouter.router,
           );

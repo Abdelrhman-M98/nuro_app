@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 
 class PatientsCardButton extends StatelessWidget {
@@ -53,7 +54,7 @@ class PatientsCardButton extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: FontStyles.roboto16.copyWith(
-                    color: Colors.white,
+                    color: kOnBackgroundColor,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -61,12 +62,12 @@ class PatientsCardButton extends StatelessWidget {
                   children: [
                     Text(
                       "$age Y.O",
-                      style: FontStyles.roboto12.copyWith(color: Colors.white),
+                      style: FontStyles.roboto12.copyWith(color: kOnBackgroundColor),
                     ),
                     SizedBox(width: 7.w),
                     Text(
                       condition,
-                      style: FontStyles.roboto12.copyWith(color: Colors.white),
+                      style: FontStyles.roboto12.copyWith(color: kOnBackgroundColor),
                     ),
                     SizedBox(width: 7.w),
                   ],
@@ -79,10 +80,9 @@ class PatientsCardButton extends StatelessWidget {
               child: Text(
                 "$percentage%",
                 style: TextStyle(
-                  fontFamily: 'Roboto',
                   fontSize: 32.sp,
                   fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                  color: kOnBackgroundColor,
                 ),
               ),
             ),

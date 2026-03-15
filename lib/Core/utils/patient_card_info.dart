@@ -24,50 +24,69 @@ class PatientsCardInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 279.h,
-      height: 68.h,
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
       decoration: BoxDecoration(
         color: kPrimaryColor,
-        borderRadius: BorderRadius.circular(17.r),
+        borderRadius: BorderRadius.circular(14.r),
+        border: Border.all(
+          color: kAccentColor.withValues(alpha: 0.4),
+        ),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          CircleAvatar(radius: 30.r, backgroundImage: NetworkImage(imageUrl)),
-          SizedBox(width: 18.w),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                patientName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: FontStyles.roboto16.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
+          CircleAvatar(
+            radius: 24.r,
+            backgroundColor: kSurfaceLightColor,
+            backgroundImage: NetworkImage(imageUrl),
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  patientName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: FontStyles.roboto16.copyWith(
+                    color: kOnBackgroundColor,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-              ),
-              Row(
-                children: [
-                  Text(
-                    "$age Y.O",
-                    style: FontStyles.roboto12.copyWith(color: Colors.white),
-                  ),
-                  SizedBox(width: 7.w),
-                  Text(
-                    condition,
-                    style: FontStyles.roboto12.copyWith(color: Colors.white),
-                  ),
-                  SizedBox(width: 7.w),
-                  Text(
-                    "$percentage%",
-                    style: FontStyles.roboto12.copyWith(color: Colors.white),
-                  ),
-                ],
-              ),
-            ],
+                SizedBox(height: 2.h),
+                Row(
+                  children: [
+                    Text(
+                      "$age Y.O",
+                      style: FontStyles.roboto12.copyWith(
+                        color: kOnBackgroundColor.withValues(alpha: 0.9),
+                      ),
+                    ),
+                    SizedBox(width: 6.w),
+                    Flexible(
+                      child: Text(
+                        condition,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: FontStyles.roboto12.copyWith(
+                          color: kOnBackgroundColor.withValues(alpha: 0.9),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 6.w),
+                    Text(
+                      "$percentage%",
+                      style: FontStyles.roboto12.copyWith(
+                        color: kAccentColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),

@@ -12,6 +12,7 @@ import 'package:nervix_app/Core/utils/google_button.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Core/utils/custom_text_button.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/auth/auth_cubit.dart';
+import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/auth/auth_state.dart';
 
 class SigninBody extends StatefulWidget {
@@ -40,24 +41,29 @@ class _SigninBodyState extends State<SigninBody> {
           showDialog(
             context: context,
             barrierDismissible: false,
-            builder:
-                (context) => const Center(child: CircularProgressIndicator()),
+            builder: (context) => Center(
+              child: CircularProgressIndicator(color: kAccentColor),
+            ),
           );
         } else if (state is AuthSuccess) {
           GoRouter.of(context).go(AppRouter.kUserInfoView);
         } else if (state is AuthFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.error), backgroundColor: Colors.red),
+            SnackBar(content: Text(state.error), backgroundColor: kErrorColor),
           );
         }
       },
-      child: SizedBox(
-        width: double.infinity,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 48.w),
-          child: Column(
-            children: [
-              SizedBox(height: 31.h),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(height: 24.h),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text("Welcome Back", style: FontStyles.roboto24),
@@ -124,10 +130,14 @@ class _SigninBodyState extends State<SigninBody> {
               CustomDivider(),
               SizedBox(height: 46.h),
 
-              GoogleButton(onPressed: _signInWithGoogle),
-            ],
-          ),
-        ),
+                    GoogleButton(onPressed: _signInWithGoogle),
+                    SizedBox(height: 32.h),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

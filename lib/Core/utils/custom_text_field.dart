@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 
 class CustomTextField extends StatelessWidget {
@@ -21,49 +22,35 @@ class CustomTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
-      style: FontStyles.roboto12,
+      style: FontStyles.roboto12.copyWith(color: kOnSurfaceColor),
       validator: validator,
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.white,
+        fillColor: kSurfaceColor,
         labelText: label,
-        labelStyle: FontStyles.roboto12,
-        hintStyle: FontStyles.roboto12,
-        contentPadding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
-
+        labelStyle: FontStyles.roboto12.copyWith(color: kOnSurfaceVariantColor),
+        hintStyle: FontStyles.roboto12.copyWith(color: kOnSurfaceVariantColor),
+        contentPadding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
         prefixIcon: Padding(
-          padding: EdgeInsets.only(
-            right: 27.w,
-            left: 22.w,
-            top: 19.h,
-            bottom: 19.h,
-          ),
-          child: FaIcon(icon, color: Color(0xFF919191), size: 19.sp),
+          padding: EdgeInsets.only(right: 16.w, left: 16.w, top: 14.h, bottom: 14.h),
+          child: FaIcon(icon, color: kAccentColor, size: 18.sp),
         ),
-
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(17.r),
-          borderSide: BorderSide.none,
-        ),
-
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14.r)),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(17.r),
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(14.r),
+          borderSide: const BorderSide(color: kSurfaceLightColor),
         ),
-
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(17.r),
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(14.r),
+          borderSide: const BorderSide(color: kAccentColor, width: 1.5),
         ),
-
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(17.r),
-          borderSide: BorderSide(color: Colors.red, width: 2),
+          borderRadius: BorderRadius.circular(14.r),
+          borderSide: const BorderSide(color: kErrorColor),
         ),
-
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(17.r),
-          borderSide: BorderSide(color: Colors.red, width: 2),
+          borderRadius: BorderRadius.circular(14.r),
+          borderSide: const BorderSide(color: kErrorColor, width: 1.5),
         ),
       ),
     );

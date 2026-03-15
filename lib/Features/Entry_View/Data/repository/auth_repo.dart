@@ -11,31 +11,37 @@ class AuthRepository {
   // الحصول على المستخدم الحالي
   User? get currentUser => _auth.currentUser;
 
-  // --- دالة تسجيل الدخول بجوجل (التحديث الأخير 2026) ---
+  // --- دالة تسجيل الدخول بجوجل (التحديث الأخير 2026 متوافق مع الإصدار 7.2.0) ---
   Future<UserCredential?> signInWithGoogle() async {
     try {
       // أ- تهيئة المكتبة (Initialize)
       await _googleSignIn.initialize();
 
-      // ب- فتح واجهة جوجل واختيار الحساب (Authenticate بدل signIn)
-      final GoogleSignInAccount? googleUser =
-          await _googleSignIn.authenticate();
+      // ب- فتح واجهة جوجل واختيار الحساب (authenticate في الإصدارات الجديدة)
+      // ملاحظة: authenticate تطرح استثناء في حال الإلغاء بدلاً من إرجاع null
+      final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
 
-      if (googleUser == null) return null; // لو المستخدم قفل النافذة
+      // ج- الحصول على بيانات التوكن (Authentication للحصول على idToken)
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
-      // ج- الحصول على بيانات التوكن (Authentication)
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      // د- الحصول على accessToken (يتطلب الآن طلباً منفصلاً في الإصدار 7.2.0 عبر authorizationClient)
+      final GoogleSignInClientAuthorization authorization = 
+          await googleUser.authorizationClient.authorizeScopes([]);
 
-      // د- إنشاء بيانات الاعتماد لـ Firebase
+      // هـ- إنشاء بيانات الاعتماد لـ Firebase
       final OAuthCredential credential = GoogleAuthProvider.credential(
         idToken: googleAuth.idToken,
-        accessToken: (googleAuth as dynamic).accessToken,
+        accessToken: authorization.accessToken,
       );
 
-      // هـ- تسجيل الدخول النهائي في Firebase
+      // و- تسجيل الدخول النهائي في Firebase
       return await _auth.signInWithCredential(credential);
     } catch (e) {
+      // معالجة حالة إلغاء المستخدم لتسجيل الدخول
+      if (e is GoogleSignInException && e.code == GoogleSignInExceptionCode.canceled) {
+        print("تم إلغاء عملية تسجيل الدخول من قبل المستخدم");
+        return null; 
+      }
       print("خطأ في تسجيل دخول جوجل: $e");
       rethrow;
     }

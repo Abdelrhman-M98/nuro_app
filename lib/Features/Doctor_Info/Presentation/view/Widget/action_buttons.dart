@@ -25,8 +25,8 @@ class ActionButtons extends StatelessWidget {
         CustomIconButton(
           onPressed: onPressedDownload,
           icon: FontAwesomeIcons.cloudArrowDown,
-          backgroundColor: const Color(0XFFFFBE32),
-          iconColor: Colors.black,
+          backgroundColor: kAccentColor,
+          iconColor: kBackgroundColor,
           size: 60.w,
         ),
       ],

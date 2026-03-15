@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -12,47 +10,44 @@ class CustomSearchField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 307.w,
-      height: 70.h,
+      width: double.infinity,
+      constraints: BoxConstraints(maxWidth: 307.w),
+      height: 56.h,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(17.r),
+        color: kSurfaceColor,
+        borderRadius: BorderRadius.circular(14.r),
         border: Border.all(
-          color: Color(0XFF919191).withOpacity(0.5),
-          width: 1.w,
+          color: kOnSurfaceVariantColor.withValues(alpha: 0.4),
         ),
       ),
       child: Row(
         children: [
           Padding(
-            padding: EdgeInsets.only(left: 22.w, right: 12.w),
+            padding: EdgeInsets.only(left: 16.w, right: 12.w),
             child: FaIcon(
               FontAwesomeIcons.solidUser,
-              color: Color(0XFF919191),
-              size: 19.sp,
+              color: kAccentColor,
+              size: 18.sp,
             ),
           ),
           Expanded(
             child: TextField(
-              style: FontStyles.roboto12,
+              style: FontStyles.roboto12.copyWith(color: kOnSurfaceColor),
               decoration: InputDecoration(
                 hintText: "Patient ID",
                 hintStyle: FontStyles.roboto12.copyWith(
-                  color: Color(0Xff919191),
+                  color: kOnSurfaceVariantColor,
                 ),
                 border: InputBorder.none,
               ),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.only(right: 10.w),
-            child: IconButton(
-              onPressed: () {},
-              icon: FaIcon(
-                FontAwesomeIcons.search,
-                color: kPrimaryColor,
-                size: 25.sp,
-              ),
+          IconButton(
+            onPressed: () {},
+            icon: FaIcon(
+              FontAwesomeIcons.magnifyingGlass,
+              color: kAccentColor,
+              size: 22.sp,
             ),
           ),
         ],

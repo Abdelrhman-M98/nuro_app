@@ -16,13 +16,20 @@ class AllPatientsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: const CustomScrollView(
-        physics: ClampingScrollPhysics(),
-        slivers: [
-          SliverToBoxAdapter(child: _HeaderSection()),
-          SliverToBoxAdapter(child: _SearchAndFilterSection()),
-          _PatientsListSection(),
-        ],
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(gradient: kBackgroundGradient),
+        child: SafeArea(
+          child: const CustomScrollView(
+            physics: ClampingScrollPhysics(),
+            slivers: [
+              SliverToBoxAdapter(child: _HeaderSection()),
+              SliverToBoxAdapter(child: _SearchAndFilterSection()),
+              _PatientsListSection(),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -34,10 +41,9 @@ class _HeaderSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.white,
-      elevation: 8,
-      shadowColor: Colors.black.withOpacity(0.5),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+      margin: EdgeInsets.symmetric(horizontal: 16.w),
+      color: kSurfaceColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
       child: SizedBox(
         width: double.infinity,
         child: SafeArea(
@@ -45,15 +51,16 @@ class _HeaderSection extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 32.w),
             child: Row(
               children: [
-                CustomAppBarButton(onPressed: () {}),
+                CustomAppBarButton(
+                  onPressed: () => GoRouter.of(context).pop(),
+                ),
                 SizedBox(width: 31.w),
                 Text(
                   "All Patients",
                   style: TextStyle(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.w700,
-                    fontFamily: 'Roboto',
-                    color: kPrimaryColor,
+                    color: kAccentColor,
                   ),
                 ),
               ],

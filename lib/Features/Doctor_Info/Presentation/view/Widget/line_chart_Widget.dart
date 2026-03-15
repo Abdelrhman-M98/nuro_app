@@ -1,8 +1,7 @@
-// ignore_for_file: file_names, deprecated_member_use
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 
 class LineChartWidget extends StatelessWidget {
@@ -19,7 +18,7 @@ class LineChartWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return LineChart(
       LineChartData(
-        backgroundColor: Colors.white,
+        backgroundColor: kSurfaceLightColor.withValues(alpha: 0.3),
         minX: (timeCounter - 10).clamp(0, double.infinity),
         maxX: timeCounter,
         minY: 0,
@@ -29,7 +28,7 @@ class LineChartWidget extends StatelessWidget {
             LineChartBarData(
               spots: dataPoints,
               isCurved: false,
-              color: Colors.red,
+              color: kAccentColor,
               barWidth: 2,
               isStrokeCapRound: false,
               belowBarData: BarAreaData(show: false),
@@ -38,9 +37,9 @@ class LineChartWidget extends StatelessWidget {
                 getDotPainter:
                     (spot, percent, barData, index) => FlDotCirclePainter(
                       radius: 2.sp,
-                      color: Colors.white,
-                      strokeWidth: 2,
-                      strokeColor: Colors.red,
+                      color: kAccentColor,
+                      strokeWidth: 1,
+                      strokeColor: kAccentColor,
                     ),
               ),
             ),
@@ -50,22 +49,22 @@ class LineChartWidget extends StatelessWidget {
             sideTitles: SideTitles(
               showTitles: true,
               interval: 25,
-              reservedSize: 19.sp,
-              getTitlesWidget:
-                  (value, meta) => Text(
-                    value.toInt().toString(),
-                    style: FontStyles.roboto12,
-                  ),
+              reservedSize: 28.sp,
+              getTitlesWidget: (value, meta) => Text(
+                value.toInt().toString(),
+                style: FontStyles.roboto12.copyWith(color: kOnSurfaceVariantColor),
+              ),
             ),
           ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 14.sp,
+              reservedSize: 20.sp,
               interval: 1,
-              getTitlesWidget: (value, meta) {
-                return Text("${value.toInt()}", style: FontStyles.roboto12);
-              },
+              getTitlesWidget: (value, meta) => Text(
+                value.toInt().toString(),
+                style: FontStyles.roboto12.copyWith(color: kOnSurfaceVariantColor),
+              ),
             ),
           ),
           topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
@@ -75,27 +74,22 @@ class LineChartWidget extends StatelessWidget {
           show: true,
           drawHorizontalLine: true,
           drawVerticalLine: true,
-          horizontalInterval: 25.w,
+          horizontalInterval: 25,
           verticalInterval: 2,
-          getDrawingHorizontalLine:
-              (value) => FlLine(
-                color: Color(0XFFCCCCCC),
-                strokeWidth: 1.w,
-                dashArray: [5, 5],
-              ),
-          getDrawingVerticalLine:
-              (value) => FlLine(
-                color: Color(0XFFCCCCCC),
-                strokeWidth: 1.w,
-                dashArray: [5, 5],
-              ),
+          getDrawingHorizontalLine: (value) => FlLine(
+            color: kOnSurfaceVariantColor.withValues(alpha: 0.3),
+            strokeWidth: 1,
+          ),
+          getDrawingVerticalLine: (value) => FlLine(
+            color: kOnSurfaceVariantColor.withValues(alpha: 0.3),
+            strokeWidth: 1,
+          ),
         ),
         borderData: FlBorderData(
           show: true,
           border: Border.all(
             width: 1,
-            color: Color(0XFFCCCCCC),
-            style: BorderStyle.solid,
+            color: kOnSurfaceVariantColor.withValues(alpha: 0.3),
           ),
         ),
       ),

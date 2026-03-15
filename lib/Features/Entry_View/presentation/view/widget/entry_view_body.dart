@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/view/widget/entry_switch.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/view/widget/signin_body.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/view/widget/signup_body.dart';
@@ -17,10 +18,14 @@ class _EntryViewBodyState extends State<EntryViewBody> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        EntrySwitch(
-          isSignIn: isSignIn,
-          onToggle: (bool value) => setState(() => isSignIn = value),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
+          child: EntrySwitch(
+            isSignIn: isSignIn,
+            onToggle: (value) => setState(() => isSignIn = value),
+          ),
         ),
+        SizedBox(height: 16.h),
         Expanded(
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),

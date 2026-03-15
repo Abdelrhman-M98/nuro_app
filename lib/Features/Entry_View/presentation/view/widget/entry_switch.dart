@@ -16,39 +16,47 @@ class EntrySwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 321.w,
-      height: 44.h,
-      decoration: BoxDecoration(
-        color: kFloatingButtonColor,
-        borderRadius: BorderRadius.circular(17.r),
-      ),
-      child: Stack(
-        children: [
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 11.w),
-            child: EntryBackground(isSignIn: isSignIn),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final pillWidth = (constraints.maxWidth - 22.w) / 2;
+        return Container(
+          width: double.infinity,
+          height: 44.h,
+          decoration: BoxDecoration(
+            color: kFloatingButtonColor,
+            borderRadius: BorderRadius.circular(17.r),
           ),
-          Row(
+          child: Stack(
             children: [
-              Expanded(
-                child: EntryButton(
-                  text: "Sign In",
-                  isActive: isSignIn,
-                  onTap: () => onToggle(true),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 11.w),
+                child: EntryBackground(
+                  isSignIn: isSignIn,
+                  pillWidth: pillWidth,
                 ),
               ),
-              Expanded(
-                child: EntryButton(
-                  text: "Sign Up",
-                  isActive: !isSignIn,
-                  onTap: () => onToggle(false),
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: EntryButton(
+                      text: "Sign In",
+                      isActive: isSignIn,
+                      onTap: () => onToggle(true),
+                    ),
+                  ),
+                  Expanded(
+                    child: EntryButton(
+                      text: "Sign Up",
+                      isActive: !isSignIn,
+                      onTap: () => onToggle(false),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

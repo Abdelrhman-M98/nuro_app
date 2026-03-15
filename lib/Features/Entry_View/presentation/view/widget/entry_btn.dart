@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 
 class EntryButton extends StatelessWidget {
@@ -24,10 +25,9 @@ class EntryButton extends StatelessWidget {
         alignment: Alignment.center,
         child: Text(
           text,
-          style:
-              isActive
-                  ? FontStyles.roboto12
-                  : FontStyles.roboto12.copyWith(color: Colors.grey),
+          style: FontStyles.roboto12.copyWith(
+            color: isActive ? kOnBackgroundColor : kOnSurfaceVariantColor,
+          ),
         ),
       ),
     );

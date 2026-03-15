@@ -9,6 +9,7 @@ import 'package:nervix_app/Core/utils/custom_divider.dart';
 import 'package:nervix_app/Core/utils/custom_password_field.dart';
 import 'package:nervix_app/Core/utils/custom_text_field.dart';
 import 'package:nervix_app/Core/utils/google_button.dart';
+import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/auth/auth_cubit.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/auth/auth_state.dart';
@@ -56,8 +57,9 @@ class _SignupBodyState extends State<SignupBody> {
           showDialog(
             context: context,
             barrierDismissible: false,
-            builder:
-                (context) => const Center(child: CircularProgressIndicator()),
+            builder: (context) => Center(
+              child: CircularProgressIndicator(color: kAccentColor),
+            ),
           );
         } else {
           Navigator.of(context, rootNavigator: true).pop();
@@ -65,120 +67,125 @@ class _SignupBodyState extends State<SignupBody> {
 
         if (state is AuthFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.error), backgroundColor: Colors.red),
+            SnackBar(content: Text(state.error), backgroundColor: kErrorColor),
           );
         } else if (state is AuthSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Account Created Successfully!"),
-              backgroundColor: Colors.green,
+            SnackBar(
+              content: const Text("Account Created Successfully!"),
+              backgroundColor: kAccentColor,
             ),
           );
           GoRouter.of(context).go(AppRouter.kUserInfoView);
         }
       },
-      child: SizedBox(
-        width: double.infinity,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 48.w),
-          child: Column(
-            children: [
-              SizedBox(height: 31.h),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text("Hello There", style: FontStyles.roboto24),
-              ),
-              SizedBox(height: 14.h),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Nice to see you for the first time!",
-                  style: FontStyles.roboto16,
-                ),
-              ),
-              SizedBox(height: 35.h),
-
-              Form(
-                key: formKey,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    CustomTextField(
-                      controller: nameController,
-                      label: "Full Name",
-                      icon: FontAwesomeIcons.solidUser,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Name is required";
-                        }
-                        return null;
+                    SizedBox(height: 24.h),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("Hello There", style: FontStyles.roboto24),
+                    ),
+                    SizedBox(height: 14.h),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Nice to see you for the first time!",
+                        style: FontStyles.roboto16,
+                      ),
+                    ),
+                    SizedBox(height: 24.h),
+                    Form(
+                      key: formKey,
+                      child: Column(
+                        children: [
+                          CustomTextField(
+                            controller: nameController,
+                            label: "Full Name",
+                            icon: FontAwesomeIcons.solidUser,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Name is required";
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 19.h),
+                          CustomTextField(
+                            controller: emailController,
+                            label: "Email",
+                            icon: FontAwesomeIcons.solidEnvelope,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Email is required";
+                              } else if (!RegExp(
+                                r'^[^@]+@[^@]+\.[^@]+',
+                              ).hasMatch(value)) {
+                                return "Enter a valid email";
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 19.h),
+                          CustomTextField(
+                            controller: phoneController,
+                            label: "Phone",
+                            icon: FontAwesomeIcons.phone,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Phone is required";
+                              } else if (!RegExp(r'^[0-9]{10,}$').hasMatch(value)) {
+                                return "Enter a valid phone number";
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 19.h),
+                          CustomPasswordField(
+                            controller: passwordController,
+                            label: "Password",
+                            icon: FontAwesomeIcons.lock,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Password is required";
+                              } else if (value.length < 6) {
+                                return "Password must be at least 6 characters";
+                              }
+                              return null;
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 24.h),
+                    CustomButton(
+                      onPressed: () => validateAndRegister(context),
+                      text: "Register Now",
+                    ),
+                    SizedBox(height: 32.h),
+                    CustomDivider(),
+                    SizedBox(height: 24.h),
+                    GoogleButton(
+                      onPressed: () {
+                        FocusScope.of(context).unfocus();
+                        context.read<AuthCubit>().loginWithGoogle();
                       },
                     ),
-                    SizedBox(height: 19.h),
-                    CustomTextField(
-                      controller: emailController,
-                      label: "Email",
-                      icon: FontAwesomeIcons.solidEnvelope,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Email is required";
-                        } else if (!RegExp(
-                          r'^[^@]+@[^@]+\.[^@]+',
-                        ).hasMatch(value)) {
-                          return "Enter a valid email";
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 19.h),
-                    CustomTextField(
-                      controller: phoneController,
-                      label: "Phone",
-                      icon: FontAwesomeIcons.phone,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Phone is required";
-                        } else if (!RegExp(r'^[0-9]{10,}$').hasMatch(value)) {
-                          return "Enter a valid phone number";
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: 19.h),
-                    CustomPasswordField(
-                      controller: passwordController,
-                      label: "Password",
-                      icon: FontAwesomeIcons.lock,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Password is required";
-                        } else if (value.length < 6) {
-                          return "Password must be at least 6 characters";
-                        }
-                        return null;
-                      },
-                    ),
+                    SizedBox(height: 32.h),
                   ],
                 ),
               ),
-
-              SizedBox(height: 33.h),
-              CustomButton(
-                onPressed: () => validateAndRegister(context),
-                text: "Register Now",
-              ),
-              SizedBox(height: 67.h),
-              CustomDivider(),
-              SizedBox(height: 29.h),
-
-              GoogleButton(
-                onPressed: () {
-                  FocusScope.of(context).unfocus();
-                  context.read<AuthCubit>().loginWithGoogle();
-                },
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

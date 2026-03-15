@@ -2,24 +2,61 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 
+class AppTextStyles {
+  static TextStyle titleLarge(BuildContext context) => TextStyle(
+        fontSize: 24.sp,
+        fontWeight: FontWeight.w700,
+        color: kOnBackgroundColor,
+      );
+
+  static TextStyle titleMedium(BuildContext context) => TextStyle(
+        fontSize: 20.sp,
+        fontWeight: FontWeight.w600,
+        color: kOnBackgroundColor,
+      );
+
+  static TextStyle bodyLarge(BuildContext context) => TextStyle(
+        fontSize: 16.sp,
+        fontWeight: FontWeight.w500,
+        color: kOnSurfaceColor,
+      );
+
+  static TextStyle bodySmall(BuildContext context) => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w400,
+        color: kOnSurfaceVariantColor,
+      );
+
+  static TextStyle label(BuildContext context) => TextStyle(
+        fontSize: 12.sp,
+        fontWeight: FontWeight.w500,
+        color: kOnSurfaceVariantColor,
+      );
+
+  static TextStyle accent(BuildContext context) => TextStyle(
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w500,
+        color: kAccentColor,
+      );
+}
+
+// للتوافق مع الكود القديم
 class FontStyles {
-  static TextStyle roboto24 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 24.sp,
-    color: kPrimaryColor,
-    fontWeight: FontWeight.w700,
-  );
+  static TextStyle get roboto24 => TextStyle(
+        fontSize: 24.sp,
+        color: kOnBackgroundColor,
+        fontWeight: FontWeight.w700,
+      );
 
-  static TextStyle roboto16 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 16.sp,
-    color: Color(0XFF919191),
-    fontWeight: FontWeight.w700,
-  );
+  static TextStyle get roboto16 => TextStyle(
+        fontSize: 16.sp,
+        color: kOnSurfaceVariantColor,
+        fontWeight: FontWeight.w600,
+      );
 
-  static TextStyle roboto12 = TextStyle(
-    fontFamily: 'Roboto',
-    fontSize: 12.sp,
-    fontWeight: FontWeight.w500,
-  );
+  static TextStyle get roboto12 => TextStyle(
+        fontSize: 12.sp,
+        color: kOnSurfaceColor,
+        fontWeight: FontWeight.w500,
+      );
 }
