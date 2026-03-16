@@ -19,6 +19,13 @@ class MedicalHistoryScreen extends StatelessWidget {
         title: Text("Medical History Log", style: FontStyles.roboto18),
         backgroundColor: kBackgroundColor,
         elevation: 0,
+        actions: [
+          IconButton(
+            onPressed: () => _confirmDeleteAll(context, uid),
+            icon: const Icon(Icons.delete_sweep, color: Colors.redAccent),
+            tooltip: "Clear All Logs",
+          ),
+        ],
       ),
       body: uid == null
           ? const Center(child: Text("Please Login"))
@@ -81,5 +88,44 @@ class MedicalHistoryScreen extends StatelessWidget {
               },
             ),
     );
+  }
+
+  void _confirmDeleteAll(BuildContext context, String? uid) {
+    if (uid == null) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: kSurfaceColor,
+        title: Text("Clear History?", style: FontStyles.roboto18.copyWith(color: Colors.white)),
+        content: Text("Are you sure you want to delete all medical records? This action cannot be undone.",
+            style: FontStyles.roboto14.copyWith(color: Colors.white70)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await _deleteAllHistory(uid);
+            },
+            child: const Text("Delete All", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deleteAllHistory(String uid) async {
+    final collection = FirebaseFirestore.instance.collection('users').doc(uid).collection('history');
+    final snapshots = await collection.get();
+    final batch = FirebaseFirestore.instance.batch();
+
+    for (var doc in snapshots.docs) {
+      batch.delete(doc.reference);
+    }
+
+    await batch.commit();
   }
 }

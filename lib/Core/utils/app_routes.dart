@@ -12,6 +12,7 @@ import 'package:nervix_app/Features/Entry_View/presentation/view/verification_pa
 import 'package:nervix_app/Features/Splash_View/presentation/splash_view.dart';
 import 'package:nervix_app/Features/Verifying_Data/Presentation/view/verifying_data_view.dart';
 import 'package:nervix_app/Features/Home_view/profile_screen.dart';
+import 'package:nervix_app/Features/Home_view/medical_history_screen.dart';
 
 abstract class AppRouter {
   static const kLoginView = '/loginView';
@@ -76,6 +77,7 @@ abstract class AppRouter {
         builder: (context, state) => ResetPasswordView(),
       ),
       GoRoute(path: kProfileView, builder: (context, state) => const ProfileScreen()),
+      GoRoute(path: kMedicalHistoryView, builder: (context, state) => const MedicalHistoryScreen()),
     ],
   );
 }

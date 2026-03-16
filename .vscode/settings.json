@@ -6,5 +6,6 @@
         "nervix",
         "Nuers",
         "Roboto"
-    ]
+    ],
+    "java.configuration.updateBuildConfiguration": "interactive"
 }

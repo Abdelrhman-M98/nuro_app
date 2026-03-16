@@ -5,7 +5,7 @@ class AuthRepository {
   // 1. تعريف النسخة الوحيدة من FirebaseAuth
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // 2. استخدام .instance للوصول لمكتبة جوجل (حل مشكلة الـ Constructor)
+  // 2. استخدام .instance للوصول لمكتبة جوجل
   GoogleSignIn get _googleSignIn => GoogleSignIn.instance;
 
   // الحصول على المستخدم الحالي
@@ -18,15 +18,14 @@ class AuthRepository {
       await _googleSignIn.initialize();
 
       // ب- فتح واجهة جوجل واختيار الحساب (authenticate في الإصدارات الجديدة)
-      // ملاحظة: authenticate تطرح استثناء في حال الإلغاء بدلاً من إرجاع null
       final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
 
       // ج- الحصول على بيانات التوكن (Authentication للحصول على idToken)
       final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
-      // د- الحصول على accessToken (يتطلب الآن طلباً منفصلاً في الإصدار 7.2.0 عبر authorizationClient)
+      // د- الحصول على accessToken (يتطلب الآن طلباً للمجالات في الإصدار 7.2.0 عبر authorizationClient)
       final GoogleSignInClientAuthorization authorization = 
-          await googleUser.authorizationClient.authorizeScopes([]);
+          await googleUser.authorizationClient.authorizeScopes(['email', 'profile']);
 
       // هـ- إنشاء بيانات الاعتماد لـ Firebase
       final OAuthCredential credential = GoogleAuthProvider.credential(
