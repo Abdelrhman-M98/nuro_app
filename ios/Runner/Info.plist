@@ -77,5 +77,22 @@
 			</array>
 		</dict>
 	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs camera access to pick profile picture</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs photo library access to pick profile picture</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs microphone access for future audio alerts</string>
 </dict>
 </plist>

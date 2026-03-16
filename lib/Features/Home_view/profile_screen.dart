@@ -9,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nervix_app/Core/utils/app_routes.dart';
 import 'package:country_picker/country_picker.dart';
+import 'package:nervix_app/Core/utils/pdf_generator.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -152,7 +153,24 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
               ),
               _buildGenderRadioButtons(),
               
-              SizedBox(height: 40.h),
+              SizedBox(height: 30.h),
+              
+              if (state is ProfileLoaded)
+                SizedBox(
+                  width: double.infinity,
+                  height: 50.h,
+                  child: OutlinedButton.icon(
+                    onPressed: () => PdfReportGenerator.generateAndPrintReport(state.user),
+                    icon: const Icon(Icons.picture_as_pdf, color: kAccentColor),
+                    label: Text("Generate PDF Report", style: FontStyles.roboto16.copyWith(color: kAccentColor)),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: kAccentColor),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+                    ),
+                  ),
+                ),
+                
+              SizedBox(height: 16.h),
               
               SizedBox(
                 width: double.infinity,

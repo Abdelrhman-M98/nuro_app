@@ -7,10 +7,12 @@ import 'package:nervix_app/Core/utils/app_theme.dart';
 import 'package:nervix_app/Features/Entry_View/Data/repository/auth_repo.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/auth/auth_cubit.dart';
 import 'package:nervix_app/firebase_options.dart';
+import 'package:nervix_app/Core/utils/notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await NotificationService.init();
 
   final authRepository = AuthRepository();
   final authCubit = AuthCubit(authRepository);

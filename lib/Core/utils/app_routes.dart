@@ -25,6 +25,7 @@ abstract class AppRouter {
   static const kVerificationPasswordView = '/verificationPasswordView';
   static const kResetPasswordView = '/resetPasswordView';
   static const kProfileView = '/profileView';
+  static const kMedicalHistoryView = '/medicalHistoryView';
 
   static final router = GoRouter(
     routes: [
