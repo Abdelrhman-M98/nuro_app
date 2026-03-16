@@ -39,10 +39,11 @@ class AuthRepository {
     } catch (e) {
       // معالجة حالة إلغاء المستخدم لتسجيل الدخول
       if (e is GoogleSignInException && e.code == GoogleSignInExceptionCode.canceled) {
-        print("تم إلغاء عملية تسجيل الدخول من قبل المستخدم");
+        // debugPrint("تم إلغاء عملية تسجيل الدخول من قبل المستخدم");
         return null; 
       }
-      print("خطأ في تسجيل دخول جوجل: $e");
+      // debugPrint("خطأ في تسجيل دخول جوجل: $e");
+
       rethrow;
     }
   }
@@ -69,7 +70,8 @@ class AuthRepository {
       await _auth.signOut();
       await _googleSignIn.signOut();
     } catch (e) {
-      print("خطأ أثناء تسجيل الخروج: $e");
+      // debugPrint("خطأ أثناء تسجيل الخروج: $e");
+
     }
   }
 }

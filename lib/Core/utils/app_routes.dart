@@ -11,6 +11,7 @@ import 'package:nervix_app/Features/Entry_View/presentation/view/Skip/user_type_
 import 'package:nervix_app/Features/Entry_View/presentation/view/verification_password_view.dart';
 import 'package:nervix_app/Features/Splash_View/presentation/splash_view.dart';
 import 'package:nervix_app/Features/Verifying_Data/Presentation/view/verifying_data_view.dart';
+import 'package:nervix_app/Features/Home_view/profile_screen.dart';
 
 abstract class AppRouter {
   static const kLoginView = '/loginView';
@@ -23,6 +24,7 @@ abstract class AppRouter {
   static const kForgotPasswordView = '/forgotPasswordView';
   static const kVerificationPasswordView = '/verificationPasswordView';
   static const kResetPasswordView = '/resetPasswordView';
+  static const kProfileView = '/profileView';
 
   static final router = GoRouter(
     routes: [
@@ -72,6 +74,7 @@ abstract class AppRouter {
         path: kResetPasswordView,
         builder: (context, state) => ResetPasswordView(),
       ),
+      GoRoute(path: kProfileView, builder: (context, state) => const ProfileScreen()),
     ],
   );
 }

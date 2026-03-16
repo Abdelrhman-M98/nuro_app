@@ -48,10 +48,22 @@ class FontStyles {
         fontWeight: FontWeight.w700,
       );
 
+  static TextStyle get roboto18 => TextStyle(
+        fontSize: 18.sp,
+        color: kOnBackgroundColor,
+        fontWeight: FontWeight.w700,
+      );
+
   static TextStyle get roboto16 => TextStyle(
         fontSize: 16.sp,
         color: kOnSurfaceVariantColor,
         fontWeight: FontWeight.w600,
+      );
+
+  static TextStyle get roboto14 => TextStyle(
+        fontSize: 14.sp,
+        color: kOnBackgroundColor,
+        fontWeight: FontWeight.w500,
       );
 
   static TextStyle get roboto12 => TextStyle(

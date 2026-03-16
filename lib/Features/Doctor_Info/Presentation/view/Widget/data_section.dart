@@ -5,7 +5,8 @@ import 'package:nervix_app/Features/Doctor_Info/Presentation/view/Widget/action_
 import 'package:nervix_app/Features/Doctor_Info/Presentation/view/Widget/info_row.dart';
 
 class DataSection extends StatelessWidget {
-  const DataSection({super.key, this.onPressedAudio, this.onPressedDownload});
+  const DataSection({super.key, this.currentState, this.onPressedAudio, this.onPressedDownload});
+  final String? currentState;
   final void Function()? onPressedAudio;
   final void Function()? onPressedDownload;
 
@@ -26,7 +27,7 @@ class DataSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Patient Info",
+                "Patient Analysis",
                 style: TextStyle(
                   fontSize: 18.sp,
                   fontWeight: FontWeight.w700,
@@ -34,9 +35,9 @@ class DataSection extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 12.h),
-              InfoRow(title: "Info required:", value: "Info data"),
+              InfoRow(title: "Status:", value: currentState ?? "Normal"),
               SizedBox(height: 6.h),
-              InfoRow(title: "Info required:", value: "Info data"),
+              const InfoRow(title: "Analysis:", value: "Monitoring Live"),
               SizedBox(height: 12.h),
               Align(
                 alignment: Alignment.centerRight,
