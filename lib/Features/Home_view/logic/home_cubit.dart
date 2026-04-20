@@ -37,10 +37,11 @@ class HomeError extends HomeState {
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(HomeInitial());
 
-  final DatabaseReference _dbRef = FirebaseDatabase.instanceFor(
-    app: FirebaseDatabase.instance.app,
-    databaseURL: "https://nervix-10d98-default-rtdb.firebaseio.com/",
-  ).ref();
+  final DatabaseReference _dbRef =
+      FirebaseDatabase.instanceFor(
+        app: FirebaseDatabase.instance.app,
+        databaseURL: "https://nervix-10d98-default-rtdb.firebaseio.com/",
+      ).ref();
 
   StreamSubscription? _signalsSubscription;
   StreamSubscription? _statusSubscription;
@@ -65,68 +66,83 @@ class HomeCubit extends Cubit<HomeState> {
         .collection('users')
         .doc(user.uid)
         .snapshots()
-        .listen((doc) {
-      if (doc.exists) {
-        _cachedUser = UserModel.fromFirestore(doc);
-        _emitUpdate();
-      } else {
-        _cachedUser = UserModel(
-          name: user.displayName ?? "User",
-          age: 25,
-          condition: "Unknown",
-          gender: "Unknown",
-          email: user.email ?? "",
-          phone: "",
-          country: "",
-          profileImageUrl: "",
+        .listen(
+          (doc) {
+            if (doc.exists) {
+              _cachedUser = UserModel.fromFirestore(doc);
+              _emitUpdate();
+            } else {
+              _cachedUser = UserModel(
+                name: user.displayName ?? "User",
+                age: 25,
+                condition: "Unknown",
+                gender: "Unknown",
+                email: user.email ?? "",
+                phone: "",
+                country: "",
+                profileImageUrl: "",
+              );
+              _emitUpdate();
+            }
+          },
+          onError: (e) {
+            emit(HomeError("Profile Error: $e"));
+          },
         );
-        _emitUpdate();
-      }
-    }, onError: (e) {
-      emit(HomeError("Profile Error: $e"));
-    });
 
     // 2. Subscribe to RTDB Streams
     _startListening();
   }
 
   void _startListening() {
-    _signalsSubscription = _dbRef.child('Signals').onValue.listen((event) {
-      final data = event.snapshot.value;
-      if (data != null) {
-        double newValue = double.tryParse(data.toString()) ?? 0.0;
-        _latestSignal = newValue;
-        _timeCounter += 1;
-        
-        _signalHistory.add(FlSpot(_timeCounter, newValue));
-        if (_signalHistory.length > 50) {
-          _signalHistory.removeAt(0);
-        }
-        _emitUpdate();
-      }
-    }, onError: (e) {
-      emit(HomeError("Signals Error: $e"));
-    });
+    _signalsSubscription = _dbRef
+        .child('Signals')
+        .onValue
+        .listen(
+          (event) {
+            final data = event.snapshot.value;
+            if (data != null) {
+              double newValue = double.tryParse(data.toString()) ?? 0.0;
+              _latestSignal = newValue;
+              _timeCounter += 1;
 
-    _statusSubscription = _dbRef.child('currentState').onValue.listen((event) {
-      final data = event.snapshot.value;
-      if (data != null) {
-        String newStatus = data.toString().toLowerCase();
-        
-        // Trigger alert if status changes to abnormal
-        if (newStatus == 'abnormal' && _currentState != 'abnormal') {
-          NotificationService.showEmergencyNotification();
-          _recordEmergencyEvent();
-        } else if (newStatus == 'normal') {
-          NotificationService.stopAlarm();
-        }
+              _signalHistory.add(FlSpot(_timeCounter, newValue));
+              if (_signalHistory.length > 50) {
+                _signalHistory.removeAt(0);
+              }
+              _emitUpdate();
+            }
+          },
+          onError: (e) {
+            emit(HomeError("Signals Error: $e"));
+          },
+        );
 
-        _currentState = newStatus;
-        _emitUpdate();
-      }
-    }, onError: (e) {
-      emit(HomeError("Status Error: $e"));
-    });
+    _statusSubscription = _dbRef
+        .child('currentState')
+        .onValue
+        .listen(
+          (event) {
+            final data = event.snapshot.value;
+            if (data != null) {
+              String newStatus = data.toString().toLowerCase();
+
+              // Trigger alert if status changes to abnormal
+              if (newStatus == 'abnormal' && _currentState != 'abnormal') {
+                NotificationService.showEmergencyNotification();
+                _recordEmergencyEvent();
+              } else if (newStatus == 'normal') {
+                NotificationService.stopAlarm();
+              }
+
+              _currentState = newStatus;
+              _emitUpdate();
+            }
+          },
+          onError: (e) {
+            emit(HomeError("Status Error: $e"));
+          },
+        );
   }
 
   Future<void> _recordEmergencyEvent() async {
@@ -137,21 +153,23 @@ class HomeCubit extends Cubit<HomeState> {
           .doc(user.uid)
           .collection('history')
           .add({
-        'timestamp': FieldValue.serverTimestamp(),
-        'signalValue': _latestSignal,
-        'status': 'abnormal',
-      });
+            'timestamp': FieldValue.serverTimestamp(),
+            'signalValue': _latestSignal,
+            'status': 'abnormal',
+          });
     }
   }
 
   void _emitUpdate() {
     if (_cachedUser != null) {
-      emit(HomeLoaded(
-        signalHistory: List.from(_signalHistory),
-        currentState: _currentState,
-        latestSignal: _latestSignal,
-        user: _cachedUser!,
-      ));
+      emit(
+        HomeLoaded(
+          signalHistory: List.from(_signalHistory),
+          currentState: _currentState,
+          latestSignal: _latestSignal,
+          user: _cachedUser!,
+        ),
+      );
     }
   }
 

@@ -26,7 +26,10 @@ class UserModel {
 
     return UserModel(
       name: data['name'] ?? 'User Name',
-      age: data['age'] is int ? data['age'] : int.tryParse(data['age']?.toString() ?? '25') ?? 25,
+      age:
+          data['age'] is int
+              ? data['age']
+              : int.tryParse(data['age']?.toString() ?? '25') ?? 25,
       condition: data['diseases'] ?? 'Unknown',
       gender: data['gender'] ?? 'Unknown',
       email: data['email'] ?? '',
