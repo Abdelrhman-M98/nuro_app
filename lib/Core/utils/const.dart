@@ -16,3 +16,6 @@ const kBackgroundGradient = LinearGradient(
   end: Alignment.bottomCenter,
   colors: [Color(0xFF1A0B2E), Color(0xFF16213E), Color(0xFF0F0F23)],
 );
+
+const String kEmergencyTelUri = 'tel:112';
+const String kEmergencyDisplayNumber = '112';

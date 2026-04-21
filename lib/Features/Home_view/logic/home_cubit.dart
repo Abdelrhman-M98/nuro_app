@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:nervix_app/Core/services/telemetry_service.dart';
 import 'package:nervix_app/Features/Home_view/data/models/user_model.dart';
 import 'package:nervix_app/Core/utils/notification_service.dart';
 
@@ -50,9 +51,29 @@ class HomeCubit extends Cubit<HomeState> {
   String _currentState = "normal";
   double _latestSignal = 0;
   UserModel? _cachedUser;
+  Timer? _reconnectTimer;
+  int _reconnectAttempt = 0;
+  static const int _maxReconnectAttempts = 6;
+
+  void _cancelSubscriptions() {
+    _signalsSubscription?.cancel();
+    _statusSubscription?.cancel();
+    _profileSubscription?.cancel();
+    _signalsSubscription = null;
+    _statusSubscription = null;
+    _profileSubscription = null;
+    _reconnectTimer?.cancel();
+    _reconnectTimer = null;
+  }
 
   Future<void> init() async {
     emit(HomeLoading());
+    _cancelSubscriptions();
+    _signalHistory.clear();
+    _timeCounter = 0;
+    _latestSignal = 0;
+    _currentState = 'normal';
+
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       emit(HomeError("No user logged in"));
@@ -84,18 +105,49 @@ class HomeCubit extends Cubit<HomeState> {
             }
           },
           onError: (e) {
-            emit(HomeError("Profile Error: $e"));
+            emit(HomeError("Profile connection issue. Pull to reconnect or tap Retry."));
+            TelemetryService.recordError(
+              e,
+              StackTrace.current,
+              reason: 'profile stream error',
+            );
+            _scheduleReconnect('profile');
           },
         );
 
     _startListening();
   }
 
+  Future<void> reconnect() async {
+    _reconnectAttempt = 0;
+    await TelemetryService.logEvent('manual_reconnect');
+    await init();
+  }
+
+  void _scheduleReconnect(String source) {
+    if (_reconnectAttempt >= _maxReconnectAttempts) {
+      emit(HomeError("Connection unstable. Pull to refresh or tap Retry."));
+      return;
+    }
+    final delaySeconds = [2, 5, 10, 15, 20, 30][_reconnectAttempt];
+    _reconnectAttempt += 1;
+    _reconnectTimer?.cancel();
+    _reconnectTimer = Timer(Duration(seconds: delaySeconds), () async {
+      await TelemetryService.logEvent(
+        'auto_reconnect_attempt',
+        parameters: {
+          'attempt': _reconnectAttempt,
+          'source': source,
+          'delay_seconds': delaySeconds,
+        },
+      );
+      await init();
+    });
+  }
+
   void _startListening() {
-    _signalsSubscription = _dbRef
-        .child('Signals')
-        .onValue
-        .listen(
+    _signalsSubscription =
+        _dbRef.child('Signals').onValue.listen(
           (event) {
             final data = event.snapshot.value;
             if (data != null) {
@@ -108,17 +160,22 @@ class HomeCubit extends Cubit<HomeState> {
                 _signalHistory.removeAt(0);
               }
               _emitUpdate();
+              _reconnectAttempt = 0;
             }
           },
           onError: (e) {
-            emit(HomeError("Signals Error: $e"));
+            emit(HomeError("Live signal stream error. Check network and tap Retry."));
+            TelemetryService.recordError(
+              e,
+              StackTrace.current,
+              reason: 'signals stream error',
+            );
+            _scheduleReconnect('signals');
           },
         );
 
-    _statusSubscription = _dbRef
-        .child('currentState')
-        .onValue
-        .listen(
+    _statusSubscription =
+        _dbRef.child('currentState').onValue.listen(
           (event) {
             final data = event.snapshot.value;
             if (data != null) {
@@ -133,10 +190,17 @@ class HomeCubit extends Cubit<HomeState> {
 
               _currentState = newStatus;
               _emitUpdate();
+              _reconnectAttempt = 0;
             }
           },
           onError: (e) {
-            emit(HomeError("Status Error: $e"));
+            emit(HomeError("Status stream error. Check network and tap Retry."));
+            TelemetryService.recordError(
+              e,
+              StackTrace.current,
+              reason: 'status stream error',
+            );
+            _scheduleReconnect('status');
           },
         );
   }
@@ -171,9 +235,8 @@ class HomeCubit extends Cubit<HomeState> {
 
   @override
   Future<void> close() {
-    _signalsSubscription?.cancel();
-    _statusSubscription?.cancel();
-    _profileSubscription?.cancel();
+    _cancelSubscriptions();
+    _reconnectTimer?.cancel();
     return super.close();
   }
 }

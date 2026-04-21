@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nervix_app/Core/services/app_preferences.dart';
 import 'package:nervix_app/Core/utils/app_assets.dart';
 import 'package:nervix_app/Core/utils/app_routes.dart';
 import 'package:nervix_app/Core/utils/const.dart';
@@ -199,10 +200,21 @@ class _SplashViewBodyState extends State<SplashViewBody>
     });
   }
 
-  void _navigate() {
-    Future.delayed(const Duration(seconds: 2), () {
-      if (!mounted) return;
-      GoRouter.of(context).push(AppRouter.kLoginView);
-    });
+  Future<void> _navigate() async {
+    await Future<void>.delayed(const Duration(seconds: 2));
+    if (!mounted) return;
+    final seenOnboarding = await AppPreferences.hasSeenSafetyOnboarding();
+    if (!mounted) return;
+    if (!seenOnboarding) {
+      GoRouter.of(context).go(AppRouter.kSafetyOnboardingView);
+      return;
+    }
+    final accepted = await AppPreferences.isMedicalDisclaimerAccepted();
+    if (!mounted) return;
+    if (!accepted) {
+      GoRouter.of(context).go(AppRouter.kMedicalDisclaimerView);
+    } else {
+      GoRouter.of(context).go(AppRouter.kLoginView);
+    }
   }
 }

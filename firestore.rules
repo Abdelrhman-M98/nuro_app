@@ -1,0 +1,34 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function validJournalPayload() {
+      return request.resource.data.note is string
+        && request.resource.data.note.size() > 0
+        && request.resource.data.note.size() <= 500
+        && request.resource.data.tag is string
+        && request.resource.data.tag in ['general', 'sleep', 'stress', 'medication', 'symptom']
+        && (
+          !('reminderAt' in request.resource.data)
+          || request.resource.data.reminderAt == null
+          || request.resource.data.reminderAt is timestamp
+        );
+    }
+
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+
+      match /health_journal/{docId} {
+        allow read, delete: if isOwner(userId);
+        allow create, update: if isOwner(userId) && validJournalPayload();
+      }
+
+      match /history/{docId} {
+        allow read, create, update, delete: if isOwner(userId);
+      }
+    }
+  }
+}

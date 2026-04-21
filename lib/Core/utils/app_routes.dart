@@ -16,8 +16,14 @@ import 'package:nervix_app/Features/Splash_View/presentation/splash_view.dart';
 import 'package:nervix_app/Features/Verifying_Data/Presentation/view/verifying_data_view.dart';
 import 'package:nervix_app/Features/Home_view/profile_screen.dart';
 import 'package:nervix_app/Features/Home_view/medical_history_screen.dart';
+import 'package:nervix_app/Features/Home_view/health_journal_screen.dart';
+import 'package:nervix_app/Features/Legal/presentation/medical_disclaimer_screen.dart';
+import 'package:nervix_app/Features/Legal/presentation/legal_document_screen.dart';
+import 'package:nervix_app/Features/Legal/presentation/safety_onboarding_screen.dart';
+import 'package:nervix_app/Core/legal/app_legal_content.dart';
 
 abstract class AppRouter {
+  static final rootNavigatorKey = GlobalKey<NavigatorState>();
   static const kLoginView = '/loginView';
   static const kUserTypeView = '/userTypeView';
   static const kPatientInfoView = '/patientInfoView';
@@ -30,8 +36,14 @@ abstract class AppRouter {
   static const kResetPasswordView = '/resetPasswordView';
   static const kProfileView = '/profileView';
   static const kMedicalHistoryView = '/medicalHistoryView';
+  static const kMedicalDisclaimerView = '/medicalDisclaimer';
+  static const kPrivacyPolicyView = '/privacy';
+  static const kTermsOfServiceView = '/terms';
+  static const kHealthJournalView = '/healthJournal';
+  static const kSafetyOnboardingView = '/safetyOnboarding';
 
   static final router = GoRouter(
+    navigatorKey: rootNavigatorKey,
     routes: [
       GoRoute(path: '/', builder: (context, state) => SplashView()),
       GoRoute(
@@ -101,6 +113,35 @@ abstract class AppRouter {
         },
       ),
       GoRoute(path: kMedicalHistoryView, builder: (context, state) => const MedicalHistoryScreen()),
+      GoRoute(
+        path: kMedicalDisclaimerView,
+        builder: (context, state) {
+          final reviewOnly = state.extra == true;
+          return MedicalDisclaimerScreen(reviewOnly: reviewOnly);
+        },
+      ),
+      GoRoute(
+        path: kPrivacyPolicyView,
+        builder: (context, state) => const LegalDocumentScreen(
+          title: 'Privacy Policy',
+          paragraphs: AppLegalContent.privacySections,
+        ),
+      ),
+      GoRoute(
+        path: kTermsOfServiceView,
+        builder: (context, state) => const LegalDocumentScreen(
+          title: 'Terms of Service',
+          paragraphs: AppLegalContent.termsSections,
+        ),
+      ),
+      GoRoute(
+        path: kHealthJournalView,
+        builder: (context, state) => const HealthJournalScreen(),
+      ),
+      GoRoute(
+        path: kSafetyOnboardingView,
+        builder: (context, state) => const SafetyOnboardingScreen(),
+      ),
     ],
   );
 }

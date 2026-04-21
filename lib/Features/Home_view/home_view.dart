@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Core/utils/notification_service.dart';
+import 'package:nervix_app/Features/Home_view/Widget/monitoring_guide_sheet.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -22,6 +23,10 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      await showMonitoringGuideIfNeeded(context);
+    });
   }
 
   @override
@@ -59,7 +64,28 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
-              onPressed: () => GoRouter.of(context).push(AppRouter.kMedicalHistoryView),
+              tooltip: 'Monitoring help',
+              onPressed: () => showMonitoringGuideManual(context),
+              icon: const Icon(
+                Icons.help_outline_rounded,
+                color: Colors.white,
+                size: 28,
+              ),
+            ),
+            IconButton(
+              tooltip: 'Health notes',
+              onPressed: () =>
+                  GoRouter.of(context).push(AppRouter.kHealthJournalView),
+              icon: const Icon(
+                Icons.edit_note_rounded,
+                color: Colors.white,
+                size: 28,
+              ),
+            ),
+            IconButton(
+              tooltip: 'Abnormal activity log',
+              onPressed: () =>
+                  GoRouter.of(context).push(AppRouter.kMedicalHistoryView),
               icon: const Icon(
                 Icons.history,
                 color: Colors.white,
@@ -67,6 +93,7 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
               ),
             ),
             IconButton(
+              tooltip: 'Profile',
               onPressed: () => GoRouter.of(context).push(AppRouter.kProfileView),
               icon: const Icon(
                 Icons.account_circle_outlined,
@@ -147,7 +174,13 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
                   decoration: const BoxDecoration(gradient: kBackgroundGradient),
                   child: const SafeArea(child: HomeViewBody()),
                 ),
-                if (isAbnormal) const FlashingOverlay(),
+                if (isAbnormal)
+                  Semantics(
+                    label:
+                        'Alert. Abnormal neural activity may be indicated. Visual warning active.',
+                    liveRegion: true,
+                    child: const FlashingOverlay(),
+                  ),
               ],
             );
           },

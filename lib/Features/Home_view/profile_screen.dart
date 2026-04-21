@@ -12,6 +12,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:nervix_app/Core/utils/app_routes.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:nervix_app/Core/utils/pdf_generator.dart';
+import 'package:nervix_app/Features/Home_view/Widget/monitoring_guide_sheet.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key, this.onboarding = false});
@@ -237,6 +238,10 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
                     ),
                   ),
                 ),
+              if (!widget.onboarding && !_editing && state is ProfileLoaded) ...[
+                SizedBox(height: 20.h),
+                _buildLegalInfoSection(context),
+              ],
               SizedBox(height: 32.h),
               
               _buildField("Full Name", nameController, Icons.person, readOnly: !_fieldsEditable),
@@ -688,6 +693,75 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildLegalInfoSection(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: kSurfaceColor.withValues(alpha: 0.65),
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(color: kAccentColor.withValues(alpha: 0.28)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: EdgeInsets.fromLTRB(16.w, 14.h, 16.w, 4.h),
+            child: Text(
+              'Legal & information',
+              style: FontStyles.roboto16.copyWith(
+                color: kAccentColor,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          ListTile(
+            dense: true,
+            leading: Icon(Icons.privacy_tip_outlined, color: kAccentColor, size: 22.sp),
+            title: Text(
+              'Privacy Policy',
+              style: FontStyles.roboto14.copyWith(color: Colors.white),
+            ),
+            trailing: Icon(Icons.chevron_right_rounded, color: Colors.white54, size: 22.sp),
+            onTap: () => context.push(AppRouter.kPrivacyPolicyView),
+          ),
+          ListTile(
+            dense: true,
+            leading: Icon(Icons.article_outlined, color: kAccentColor, size: 22.sp),
+            title: Text(
+              'Terms of Service',
+              style: FontStyles.roboto14.copyWith(color: Colors.white),
+            ),
+            trailing: Icon(Icons.chevron_right_rounded, color: Colors.white54, size: 22.sp),
+            onTap: () => context.push(AppRouter.kTermsOfServiceView),
+          ),
+          ListTile(
+            dense: true,
+            leading: Icon(Icons.monitor_heart_outlined, color: kAccentColor, size: 22.sp),
+            title: Text(
+              'Monitoring guide',
+              style: FontStyles.roboto14.copyWith(color: Colors.white),
+            ),
+            trailing: Icon(Icons.menu_book_outlined, color: Colors.white54, size: 20.sp),
+            onTap: () => showMonitoringGuideManual(context),
+          ),
+          ListTile(
+            dense: true,
+            leading: Icon(Icons.medical_information_outlined, color: kAccentColor, size: 22.sp),
+            title: Text(
+              'Medical disclaimer',
+              style: FontStyles.roboto14.copyWith(color: Colors.white),
+            ),
+            trailing: Icon(Icons.chevron_right_rounded, color: Colors.white54, size: 22.sp),
+            onTap: () => context.push(
+              AppRouter.kMedicalDisclaimerView,
+              extra: true,
+            ),
+          ),
+        ],
       ),
     );
   }

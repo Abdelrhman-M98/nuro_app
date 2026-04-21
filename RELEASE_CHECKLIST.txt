@@ -1,0 +1,26 @@
+Nervix Release Readiness Checklist
+
+1) Legal and store content
+- Privacy Policy URL is valid and publicly reachable.
+- Terms of Service text is up to date with app behavior.
+- Medical disclaimer copy matches in-app wording and store listing.
+
+2) Permissions and emergency wording
+- Notification permission rationale is clear in onboarding/store listing.
+- Emergency shortcut wording states it is not a replacement for emergency services.
+- Region-specific emergency number behavior is verified.
+
+3) Reliability and safety
+- Crashlytics receiving non-fatal and fatal reports in release mode.
+- Analytics events visible for reconnect attempts and emergency alerts.
+- Reconnect/backoff flow verified under real network loss.
+
+4) Data security and compliance
+- Firestore rules deployed from `firestore.rules`.
+- Health journal input length and allowed tags validated in UI and rules.
+- Data retention/deletion process documented.
+
+5) QA and regression
+- Splash -> onboarding -> disclaimer -> login flow tested.
+- Home abnormal alert -> history write -> emergency strip tested.
+- Health notes create/edit/delete/tag + ordering tested.

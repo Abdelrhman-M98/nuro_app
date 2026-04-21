@@ -1,8 +1,12 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:nervix_app/Core/services/telemetry_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
@@ -12,9 +16,15 @@ class NotificationService {
   static const _prefEmergencySound = 'emergency_alarm_sound_enabled';
 
   static bool _emergencyActive = false;
+  static DateTime? _lastEmergencyAt;
+  static const Duration _emergencyCooldown = Duration(seconds: 30);
 
   static final ValueNotifier<bool> emergencySoundEnabled =
       ValueNotifier<bool>(true);
+
+  static int _journalReminderId(String docId) {
+    return 200000 + (docId.hashCode.abs() % 900000);
+  }
 
   static Future<void> init() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
@@ -35,6 +45,13 @@ class NotificationService {
     await _notificationsPlugin.initialize(
       settings: initializationSettings,
     );
+    tz.initializeTimeZones();
+    try {
+      final String localTimeZone = await FlutterTimezone.getLocalTimezone();
+      tz.setLocalLocation(tz.getLocation(localTimeZone));
+    } catch (_) {
+      tz.setLocalLocation(tz.UTC);
+    }
 
     final prefs = await SharedPreferences.getInstance();
     emergencySoundEnabled.value =
@@ -105,6 +122,16 @@ class NotificationService {
   }
 
   static Future<void> showEmergencyNotification() async {
+    final now = DateTime.now();
+    if (_lastEmergencyAt != null &&
+        now.difference(_lastEmergencyAt!) < _emergencyCooldown) {
+      await TelemetryService.logEvent(
+        'emergency_alert_throttled',
+        parameters: {'cooldown_seconds': _emergencyCooldown.inSeconds},
+      );
+      return;
+    }
+    _lastEmergencyAt = now;
     _emergencyActive = true;
     final soundOn = emergencySoundEnabled.value;
 
@@ -138,12 +165,21 @@ class NotificationService {
       body: 'Abnormal Neural Activity Detected!',
       notificationDetails: platformChannelSpecifics,
     );
+    await TelemetryService.logEvent(
+      'emergency_alert_triggered',
+      parameters: {'sound_enabled': soundOn ? 1 : 0},
+    );
 
     if (soundOn) {
       try {
         await _audioPlayer.play(AssetSource('sounds/alarm.mp3'));
       } catch (e) {
         debugPrint('Audio Playback Error: $e');
+        await TelemetryService.recordError(
+          e,
+          StackTrace.current,
+          reason: 'Emergency audio playback failed',
+        );
       }
     } else {
       for (var i = 0; i < 4; i++) {
@@ -156,5 +192,48 @@ class NotificationService {
   static void stopAlarm() {
     _emergencyActive = false;
     _audioPlayer.stop();
+  }
+
+  static Future<void> scheduleJournalReminder({
+    required String docId,
+    required DateTime reminderAt,
+    required String note,
+    required String tag,
+  }) async {
+    final now = DateTime.now();
+    if (!reminderAt.isAfter(now)) return;
+    final details = NotificationDetails(
+      android: AndroidNotificationDetails(
+        'journal_reminder_channel',
+        'Health Journal Reminders',
+        channelDescription: 'Scheduled reminders for health journal notes',
+        importance: Importance.max,
+        priority: Priority.high,
+      ),
+      iOS: const DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      ),
+    );
+    await _notificationsPlugin.zonedSchedule(
+      id: _journalReminderId(docId),
+      title: 'Health note reminder',
+      body: '$tag: ${note.trim()}',
+      scheduledDate: tz.TZDateTime.from(reminderAt, tz.local),
+      notificationDetails: details,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      payload: 'journal:$docId',
+    );
+    await TelemetryService.logEvent(
+      'journal_reminder_scheduled',
+      parameters: {
+        'minutes_from_now': reminderAt.difference(now).inMinutes,
+      },
+    );
+  }
+
+  static Future<void> cancelJournalReminder(String docId) async {
+    await _notificationsPlugin.cancel(id: _journalReminderId(docId));
   }
 }
