@@ -5,7 +5,6 @@ import 'package:nervix_app/Core/localization/app_localizations.dart';
 import 'package:nervix_app/Core/widgets/connectivity_banner.dart';
 import 'package:nervix_app/Features/Doctor_Info/Presentation/view/Widget/data_section.dart';
 import 'package:nervix_app/Features/Doctor_Info/Presentation/view/Widget/patient_info_section.dart';
-import 'package:nervix_app/Features/Home_view/Widget/emergency_strip.dart';
 import 'package:nervix_app/Features/Home_view/logic/home_cubit.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
@@ -78,17 +77,20 @@ class HomeViewBody extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         SizedBox(height: 12.h),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16.w),
-                          child: const EmergencyStrip(),
+                        _SectionHeader(
+                          title: 'Patient overview',
+                          subtitle: 'Identity and latest live signal',
                         ),
                         PatientInfoSection(state: state),
-                        SizedBox(height: 24.h),
+                        _SectionHeader(
+                          title: 'Clinical actions',
+                          subtitle: 'Quick tools for reports and monitoring',
+                        ),
                         DataSection(
                           currentState: state.currentState,
                           user: state.user,
                         ),
-                        SizedBox(height: 40.h),
+                        SizedBox(height: 130.h),
                       ],
                     ),
                   ),
@@ -99,6 +101,39 @@ class HomeViewBody extends StatelessWidget {
         }
         return const SizedBox.shrink();
       },
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({required this.title, required this.subtitle});
+
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(18.w, 16.h, 18.w, 10.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: FontStyles.roboto16.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          SizedBox(height: 4.h),
+          Text(
+            subtitle,
+            style: FontStyles.roboto12.copyWith(
+              color: Colors.white54,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

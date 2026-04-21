@@ -9,7 +9,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Core/utils/notification_service.dart';
-import 'package:nervix_app/Features/Home_view/Widget/monitoring_guide_sheet.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -19,14 +18,12 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
+  bool _actionsExpanded = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted) return;
-      await showMonitoringGuideIfNeeded(context);
-    });
   }
 
   @override
@@ -47,10 +44,23 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
 
   void _launchWhatsApp() async {
     const phone = "+20123456789";
-    final url = Uri.parse("https://wa.me/$phone?text=Emergency alert from Nervix!");
+    final url = Uri.parse(
+      "https://wa.me/$phone?text=Emergency alert from Nervix!",
+    );
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
     }
+  }
+
+  void _launchEmergencyCall() async {
+    final uri = Uri.parse(kEmergencyTelUri);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    }
+  }
+
+  void _toggleActions() {
+    setState(() => _actionsExpanded = !_actionsExpanded);
   }
 
   @override
@@ -64,18 +74,9 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
-              tooltip: 'Monitoring help',
-              onPressed: () => showMonitoringGuideManual(context),
-              icon: const Icon(
-                Icons.help_outline_rounded,
-                color: Colors.white,
-                size: 28,
-              ),
-            ),
-            IconButton(
               tooltip: 'Health notes',
-              onPressed: () =>
-                  GoRouter.of(context).push(AppRouter.kHealthJournalView),
+              onPressed:
+                  () => GoRouter.of(context).push(AppRouter.kHealthJournalView),
               icon: const Icon(
                 Icons.edit_note_rounded,
                 color: Colors.white,
@@ -84,17 +85,15 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
             ),
             IconButton(
               tooltip: 'Abnormal activity log',
-              onPressed: () =>
-                  GoRouter.of(context).push(AppRouter.kMedicalHistoryView),
-              icon: const Icon(
-                Icons.history,
-                color: Colors.white,
-                size: 28,
-              ),
+              onPressed:
+                  () =>
+                      GoRouter.of(context).push(AppRouter.kMedicalHistoryView),
+              icon: const Icon(Icons.history, color: Colors.white, size: 28),
             ),
             IconButton(
               tooltip: 'Profile',
-              onPressed: () => GoRouter.of(context).push(AppRouter.kProfileView),
+              onPressed:
+                  () => GoRouter.of(context).push(AppRouter.kProfileView),
               icon: const Icon(
                 Icons.account_circle_outlined,
                 color: Colors.white,
@@ -105,57 +104,60 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
           ],
         ),
         floatingActionButton: Padding(
-          padding: EdgeInsets.only(bottom: 6.h, right: 2.w),
-          child: Material(
-            elevation: 10,
-            shadowColor: const Color(0xFF25D366).withValues(alpha: 0.45),
-            borderRadius: BorderRadius.circular(20.r),
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: _launchWhatsApp,
-              borderRadius: BorderRadius.circular(20.r),
-              child: Ink(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20.r),
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFF2FE576),
-                      Color(0xFF25D366),
-                      Color(0xFF128C7E),
-                    ],
-                  ),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.22),
-                    width: 1,
-                  ),
+          padding: EdgeInsets.only(bottom: 6.h, right: 10.w),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              AnimatedCrossFade(
+                duration: const Duration(milliseconds: 220),
+                crossFadeState:
+                    _actionsExpanded
+                        ? CrossFadeState.showFirst
+                        : CrossFadeState.showSecond,
+                firstChild: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    _FloatingActionPill(
+                      label: 'Emergency',
+                      icon: Icons.phone_in_talk_rounded,
+                      gradientColors: const [
+                        Color(0xFFFF6B6B),
+                        Color(0xFFEF5350),
+                        Color(0xFFD32F2F),
+                      ],
+                      shadowColor: Colors.redAccent.withValues(alpha: 0.4),
+                      onTap: _launchEmergencyCall,
+                    ),
+                    SizedBox(height: 10.h),
+                    _FloatingActionPill(
+                      label: 'Contact',
+                      icon: Icons.forum_rounded,
+                      gradientColors: const [
+                        Color(0xFF2FE576),
+                        Color(0xFF25D366),
+                        Color(0xFF128C7E),
+                      ],
+                      shadowColor: const Color(
+                        0xFF25D366,
+                      ).withValues(alpha: 0.45),
+                      onTap: _launchWhatsApp,
+                    ),
+                    SizedBox(height: 10.h),
+                  ],
                 ),
-                child: Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 18.w, vertical: 13.h),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.forum_rounded,
-                        color: Colors.white,
-                        size: 22.sp,
-                      ),
-                      SizedBox(width: 10.w),
-                      Text(
-                        'Contact',
-                        style: FontStyles.roboto16.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.2,
-                        ),
-                      ),
-                    ],
-                  ),
+                secondChild: const SizedBox.shrink(),
+              ),
+              FloatingActionButton(
+                heroTag: 'quick_actions_fab',
+                onPressed: _toggleActions,
+                backgroundColor: kAccentColor,
+                foregroundColor: Colors.black87,
+                child: Icon(
+                  _actionsExpanded ? Icons.close_rounded : Icons.add_rounded,
                 ),
               ),
-            ),
+            ],
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -171,7 +173,9 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
                 Container(
                   width: double.infinity,
                   height: double.infinity,
-                  decoration: const BoxDecoration(gradient: kBackgroundGradient),
+                  decoration: const BoxDecoration(
+                    gradient: kBackgroundGradient,
+                  ),
                   child: const SafeArea(child: HomeViewBody()),
                 ),
                 if (isAbnormal)
@@ -184,6 +188,68 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
               ],
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+class _FloatingActionPill extends StatelessWidget {
+  const _FloatingActionPill({
+    required this.label,
+    required this.icon,
+    required this.gradientColors,
+    required this.shadowColor,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
+  final List<Color> gradientColors;
+  final Color shadowColor;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      elevation: 10,
+      shadowColor: shadowColor,
+      borderRadius: BorderRadius.circular(20.r),
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20.r),
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20.r),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: gradientColors,
+            ),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.22),
+              width: 1,
+            ),
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 13.h),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, color: Colors.white, size: 22.sp),
+                SizedBox(width: 10.w),
+                Text(
+                  label,
+                  style: FontStyles.roboto16.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
