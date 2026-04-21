@@ -18,8 +18,9 @@ class VerifyingDataView extends StatelessWidget {
             child: Image.asset(AppAssets.kHospitalIcon, fit: BoxFit.cover),
           ),
           Positioned.fill(
-            // ignore: deprecated_member_use
-            child: Container(color: kPrimaryColor.withOpacity(0.62)),
+            child: Container(
+              color: kPrimaryColor.withValues(alpha: 0.62),
+            ),
           ),
           SafeArea(
             child: Column(

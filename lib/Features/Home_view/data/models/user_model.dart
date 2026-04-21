@@ -10,7 +10,6 @@ class UserModel {
   final String phone;
   final String country;
   final String profileImageUrl;
-  /// صورة مرفوعة من المعرض، مخزنة في Firestore (بدون Firebase Storage).
   final String profileImageBase64;
 
   UserModel({
@@ -46,7 +45,6 @@ class UserModel {
     );
   }
 
-  /// بيانات أولية قبل وجود مستند Firestore (تسجيل بـ Google أو إيميل جديد).
   factory UserModel.fromFirebaseAuthUser(User? user) {
     if (user == null) {
       return UserModel(

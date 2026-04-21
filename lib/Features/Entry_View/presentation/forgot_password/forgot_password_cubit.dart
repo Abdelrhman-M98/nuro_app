@@ -2,8 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nervix_app/Features/Entry_View/Data/repository/auth_repo.dart';
 
-// --- States ---
-
 abstract class ForgotPasswordState {}
 
 class ForgotPasswordInitial extends ForgotPasswordState {}
@@ -19,8 +17,6 @@ class ForgotPasswordFailure extends ForgotPasswordState {
   ForgotPasswordFailure(this.message);
   final String message;
 }
-
-// --- Cubit ---
 
 class ForgotPasswordCubit extends Cubit<ForgotPasswordState> {
   ForgotPasswordCubit(this._repository) : super(ForgotPasswordInitial());

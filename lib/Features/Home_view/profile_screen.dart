@@ -16,7 +16,6 @@ import 'package:nervix_app/Core/utils/pdf_generator.dart';
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key, this.onboarding = false});
 
-  /// `true` عند فتح الشاشة بعد التسجيل لإكمال البيانات (من تسجيل الدخول وليس من الهوم).
   final bool onboarding;
 
   @override
@@ -63,7 +62,6 @@ class ProfileViewBody extends StatefulWidget {
 }
 
 class _ProfileViewBodyState extends State<ProfileViewBody> {
-  /// يبقى ظاهراً أثناء [ProfileUpdating] لأن الحالة دي ما فيهاش [UserModel].
   UserModel? _lastUserForAvatar;
 
   final nameController = TextEditingController();
@@ -107,7 +105,6 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
   Widget build(BuildContext context) {
     return BlocConsumer<ProfileCubit, ProfileState>(
       listener: (context, state) {
-        // [ProfileUpdateSuccess] يرث [ProfileLoaded] — نتعامل معه أولاً حتى يظهر الـ SnackBar.
         if (state is ProfileUpdateSuccess) {
           _lastUserForAvatar = state.user;
           ScaffoldMessenger.of(context).showSnackBar(
@@ -137,7 +134,6 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
             : _lastUserForAvatar;
 
         final authUser = FirebaseAuth.instance.currentUser;
-        // ربط كلمة المرور مع Google يُعرض فقط عند أول إكمال للبروفايل، وليس من إعدادات الهوم.
         final showPasswordLink =
             widget.onboarding && _needsPasswordLink(authUser);
 
@@ -146,7 +142,6 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
           padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
           child: Column(
             children: [
-              // Profile Picture
               GestureDetector(
                 onTap: () => context.read<ProfileCubit>().uploadProfileImage(),
                 child: Stack(
@@ -182,13 +177,11 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
               _buildField("Full Name", nameController, Icons.person),
               _buildField("Age", ageController, Icons.calendar_today, isNumber: true),
               
-              // Country Picker Field
               _buildCountryField(),
               
               _buildField("Medical Condition (Neural History)", diseasesController, Icons.medical_services, isMultiline: true),
               _buildField("Phone Number", phoneController, Icons.phone),
               
-              // Gender Selection
               Align(
                 alignment: Alignment.centerLeft,
                 child: Padding(
@@ -514,7 +507,8 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
   }
 
   Widget _buildDefaultAvatar(String gender) {
-    bool isFemale = gender.trim().toLowerCase() == 'female' || gender.trim() == 'أنثى';
+    final g = gender.trim().toLowerCase();
+    final isFemale = g == 'female' || g == 'f' || g == 'woman';
     String avatarUrl = isFemale
         ? "https://cdn-icons-png.flaticon.com/512/3135/3135823.png"
         : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";

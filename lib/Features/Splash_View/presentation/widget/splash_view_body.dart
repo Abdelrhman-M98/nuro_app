@@ -25,7 +25,7 @@ class _SplashViewBodyState extends State<SplashViewBody>
   void initState() {
     super.initState();
     _initAnimations();
-    _navigate();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _navigate());
   }
 
   @override
@@ -46,7 +46,6 @@ class _SplashViewBodyState extends State<SplashViewBody>
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // موجات الإشارة في الأعلى
           Positioned(
             left: 0,
             right: 0,
@@ -91,7 +90,6 @@ class _SplashViewBodyState extends State<SplashViewBody>
               },
             ),
           ),
-          // اللوجو مع توهج خفيف
           Center(
             child: AnimatedBuilder(
               animation: _logoController,
@@ -129,7 +127,7 @@ class _SplashViewBodyState extends State<SplashViewBody>
               },
             ),
           ),
-          // النص التحتي
+
           Positioned(
             left: 24,
             right: 24,
@@ -175,27 +173,23 @@ class _SplashViewBodyState extends State<SplashViewBody>
   }
 
   void _initAnimations() {
-    // موجات الإشارة تتحرك باستمرار
     _waveController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 3),
     )..repeat();
 
-    // ظهور اللوجو مع scale و fade
     _logoController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 900),
     );
     _logoController.forward();
 
-    // حلقة النبض (مرة واحدة ثم تتلاشى)
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     );
     _pulseController.forward();
 
-    // النص يظهر بعد اللوجو
     _textController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
@@ -208,7 +202,6 @@ class _SplashViewBodyState extends State<SplashViewBody>
   void _navigate() {
     Future.delayed(const Duration(seconds: 2), () {
       if (!mounted) return;
-      // ignore: use_build_context_synchronously
       GoRouter.of(context).push(AppRouter.kLoginView);
     });
   }

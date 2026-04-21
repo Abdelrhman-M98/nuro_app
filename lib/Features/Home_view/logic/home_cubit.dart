@@ -7,7 +7,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:nervix_app/Features/Home_view/data/models/user_model.dart';
 import 'package:nervix_app/Core/utils/notification_service.dart';
 
-// State
 abstract class HomeState {}
 
 class HomeInitial extends HomeState {}
@@ -33,7 +32,6 @@ class HomeError extends HomeState {
   HomeError(this.message);
 }
 
-// Cubit
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(HomeInitial());
 
@@ -61,7 +59,6 @@ class HomeCubit extends Cubit<HomeState> {
       return;
     }
 
-    // 1. Listen to Profile changes
     _profileSubscription = FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
@@ -91,7 +88,6 @@ class HomeCubit extends Cubit<HomeState> {
           },
         );
 
-    // 2. Subscribe to RTDB Streams
     _startListening();
   }
 
@@ -128,7 +124,6 @@ class HomeCubit extends Cubit<HomeState> {
             if (data != null) {
               String newStatus = data.toString().toLowerCase();
 
-              // Trigger alert if status changes to abnormal
               if (newStatus == 'abnormal' && _currentState != 'abnormal') {
                 NotificationService.showEmergencyNotification();
                 _recordEmergencyEvent();

@@ -40,7 +40,6 @@ class AppTextStyles {
       );
 }
 
-// للتوافق مع الكود القديم
 class FontStyles {
   static TextStyle get roboto24 => TextStyle(
         fontSize: 24.sp,

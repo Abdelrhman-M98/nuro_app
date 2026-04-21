@@ -20,7 +20,6 @@ class ProfileLoaded extends ProfileState {
 
 class ProfileUpdating extends ProfileState {}
 
-/// نفس [ProfileLoaded] للعرض، مع إشعار نجاح في الـ listener (لا يستبدل بيانات الواجهة).
 class ProfileUpdateSuccess extends ProfileLoaded {
   ProfileUpdateSuccess(super.user);
 }
@@ -38,7 +37,6 @@ class ProfileCubit extends Cubit<ProfileState> {
   final _firestore = FirebaseFirestore.instance;
   final _picker = ImagePicker();
 
-  /// حد طول سلسلة Base64 في المستند (Firestore ~1MiB للمستند كله؛ نترك هامش لباقي الحقول).
   static const int _maxProfileImageBase64Length = 520000;
 
   Future<void> fetchUserData() async {
@@ -63,7 +61,6 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
-  /// إن كان المستخدم من Google وليس لديه صورة في Firestore، نخزّن `photoURL` في `profileImageUrl`.
   Future<void> _ensureGoogleProfilePhotoInFirestore(String uid) async {
     final u = _auth.currentUser;
     if (u == null) return;
@@ -160,7 +157,6 @@ class ProfileCubit extends Cubit<ProfileState> {
     await user.linkWithCredential(credential);
   }
 
-  /// رفع من المعرض وتخزين الصورة في Firestore كـ Base64 (لا يستخدم Storage).
   Future<void> uploadProfileImage() async {
     try {
       final XFile? pickedFile = await _picker.pickImage(

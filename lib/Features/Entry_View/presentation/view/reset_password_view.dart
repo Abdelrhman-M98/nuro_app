@@ -7,8 +7,6 @@ import 'package:nervix_app/Core/utils/custom_appbar_button.dart';
 import 'package:nervix_app/Core/utils/custom_button.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 
-/// إعادة التعيين تتم عبر الرابط في البريد (Firebase). هذه الشاشة للمستخدمين
-/// الذين يفتحون الرابط القديم أو مسارًا قديماً في التطبيق.
 class ResetPasswordView extends StatelessWidget {
   const ResetPasswordView({super.key});
 

@@ -25,7 +25,10 @@ class HomeViewBody extends StatelessWidget {
                 SizedBox(height: 20.h),
                 PatientInfoSection(state: state),
                 SizedBox(height: 24.h),
-                DataSection(currentState: state.currentState),
+                DataSection(
+                  currentState: state.currentState,
+                  user: state.user,
+                ),
                 SizedBox(height: 40.h),
               ],
             ),

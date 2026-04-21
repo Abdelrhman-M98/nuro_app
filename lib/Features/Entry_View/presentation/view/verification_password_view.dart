@@ -11,7 +11,6 @@ import 'package:nervix_app/Core/utils/custom_button.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/forgot_password/forgot_password_cubit.dart';
 
-/// بعد إرسال [sendPasswordResetEmail]: إرشاد المستخدم وفقًا لبريده + إعادة الإرسال.
 class VerificationPasswordView extends StatefulWidget {
   const VerificationPasswordView({super.key, required this.email});
 

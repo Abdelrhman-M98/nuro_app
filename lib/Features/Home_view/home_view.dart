@@ -7,6 +7,7 @@ import 'package:nervix_app/Features/Home_view/Widget/home_view_body.dart';
 import 'package:nervix_app/Features/Home_view/logic/home_cubit.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Core/utils/notification_service.dart';
 
 class HomeView extends StatefulWidget {
@@ -32,7 +33,6 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
-      // Trigger a persistence notification when app goes to background
       NotificationService.showStatusNotification(
         title: "Nervix Background Guard",
         body: "Neural monitoring is actively running in the background.",
@@ -41,7 +41,7 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
   }
 
   void _launchWhatsApp() async {
-    const phone = "+20123456789"; // Example doctor number
+    const phone = "+20123456789";
     final url = Uri.parse("https://wa.me/$phone?text=Emergency alert from Nervix!");
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
@@ -77,12 +77,61 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
             const SizedBox(width: 8),
           ],
         ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => _launchWhatsApp(),
-          backgroundColor: Colors.green,
-          label: const Text("Contact Doctor"),
-          icon: const Icon(Icons.chat),
+        floatingActionButton: Padding(
+          padding: EdgeInsets.only(bottom: 6.h, right: 2.w),
+          child: Material(
+            elevation: 10,
+            shadowColor: const Color(0xFF25D366).withValues(alpha: 0.45),
+            borderRadius: BorderRadius.circular(20.r),
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: _launchWhatsApp,
+              borderRadius: BorderRadius.circular(20.r),
+              child: Ink(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.r),
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Color(0xFF2FE576),
+                      Color(0xFF25D366),
+                      Color(0xFF128C7E),
+                    ],
+                  ),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.22),
+                    width: 1,
+                  ),
+                ),
+                child: Padding(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 18.w, vertical: 13.h),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.forum_rounded,
+                        color: Colors.white,
+                        size: 22.sp,
+                      ),
+                      SizedBox(width: 10.w),
+                      Text(
+                        'Contact',
+                        style: FontStyles.roboto16.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         extendBodyBehindAppBar: true,
         body: BlocBuilder<HomeCubit, HomeState>(
           builder: (context, state) {
@@ -142,7 +191,7 @@ class _FlashingOverlayState extends State<FlashingOverlay>
         return IgnorePointer(
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(40.0.r), // Dynamic rounded corners for modern devices
+              borderRadius: BorderRadius.circular(40.0.r),
               border: Border.all(
                 color: Colors.red.withValues(alpha: 0.5 * _controller.value),
                 width: 8 + (4 * _controller.value),

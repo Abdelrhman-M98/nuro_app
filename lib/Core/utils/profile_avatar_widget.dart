@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:nervix_app/Features/Home_view/data/models/user_model.dart';
 
-/// صورة المستخدم من [UserModel] (Base64 أو رابط أو افتراضي).
 class ProfileAvatarImage extends StatelessWidget {
   const ProfileAvatarImage({
     super.key,
@@ -28,7 +27,6 @@ class ProfileAvatarImage extends StatelessWidget {
   }
 }
 
-/// نفس منطق العرض بدون بناء [UserModel] كامل (مثل بطاقة الهوم).
 class ProfileAvatarFromFields extends StatelessWidget {
   const ProfileAvatarFromFields({
     super.key,
@@ -52,8 +50,9 @@ class ProfileAvatarFromFields extends StatelessWidget {
           bytes,
           fit: fit,
           gaplessPlayback: true,
-          errorBuilder: (context, error, stackTrace) =>
-              _DefaultGenderAvatar(gender: genderFallback),
+          errorBuilder:
+              (context, error, stackTrace) =>
+                  _DefaultGenderAvatar(gender: genderFallback),
         );
       } catch (_) {
         return _DefaultGenderAvatar(gender: genderFallback);
@@ -63,11 +62,12 @@ class ProfileAvatarFromFields extends StatelessWidget {
       return CachedNetworkImage(
         imageUrl: profileImageUrl,
         fit: fit,
-        placeholder: (context, url) => const Center(
-          child: CircularProgressIndicator(strokeWidth: 2),
-        ),
-        errorWidget: (context, url, error) =>
-            _DefaultGenderAvatar(gender: genderFallback),
+        placeholder:
+            (context, url) =>
+                const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+        errorWidget:
+            (context, url, error) =>
+                _DefaultGenderAvatar(gender: genderFallback),
       );
     }
     return _DefaultGenderAvatar(gender: genderFallback);
@@ -81,16 +81,18 @@ class _DefaultGenderAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isFemale =
-        gender.trim().toLowerCase() == 'female' || gender.trim() == 'أنثى';
-    final url = isFemale
-        ? 'https://cdn-icons-png.flaticon.com/512/3135/3135823.png'
-        : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
+    final g = gender.trim().toLowerCase();
+    final isFemale = g == 'female' || g == 'f' || g == 'woman';
+    final url =
+        isFemale
+            ? 'https://cdn-icons-png.flaticon.com/512/3135/3135823.png'
+            : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
     return Image.network(
       url,
       fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) =>
-          const Icon(Icons.person, color: Colors.white, size: 40),
+      errorBuilder:
+          (context, error, stackTrace) =>
+              const Icon(Icons.person, color: Colors.white, size: 40),
     );
   }
 }

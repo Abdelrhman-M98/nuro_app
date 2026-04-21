@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
-/// رسم موجات إشارة تشبه EEG تعبر الشاشة
 class SignalWavePainter extends CustomPainter {
   SignalWavePainter({
     required this.phase,

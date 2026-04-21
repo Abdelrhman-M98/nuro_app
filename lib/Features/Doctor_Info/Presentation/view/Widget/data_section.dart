@@ -3,12 +3,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Features/Doctor_Info/Presentation/view/Widget/action_buttons.dart';
 import 'package:nervix_app/Features/Doctor_Info/Presentation/view/Widget/info_row.dart';
+import 'package:nervix_app/Features/Home_view/data/models/user_model.dart';
 
 class DataSection extends StatelessWidget {
-  const DataSection({super.key, this.currentState, this.onPressedAudio, this.onPressedDownload});
-  final String? currentState;
-  final void Function()? onPressedAudio;
-  final void Function()? onPressedDownload;
+  const DataSection({
+    super.key,
+    required this.currentState,
+    required this.user,
+  });
+
+  final String currentState;
+  final UserModel user;
 
   @override
   Widget build(BuildContext context) {
@@ -35,17 +40,11 @@ class DataSection extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 12.h),
-              InfoRow(title: "Status:", value: currentState ?? "Normal"),
+              InfoRow(title: "Status:", value: currentState),
               SizedBox(height: 6.h),
               const InfoRow(title: "Analysis:", value: "Monitoring Live"),
               SizedBox(height: 12.h),
-              Align(
-                alignment: Alignment.centerRight,
-                child: ActionButtons(
-                  onPressedAudio: onPressedAudio,
-                  onPressedDownload: onPressedDownload,
-                ),
-              ),
+              ActionButtons(user: user),
             ],
           ),
         ),
