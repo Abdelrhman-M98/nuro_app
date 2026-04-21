@@ -26,10 +26,28 @@ class AuthCubit extends Cubit<AuthState> {
   Future<void> register({
     required String email,
     required String password,
+    String? fullName,
+    String? phone,
   }) async {
     emit(AuthLoading());
     try {
-      await authRepository.signUpWithEmail(email, password);
+      final cred = await authRepository.signUpWithEmail(email, password);
+      final user = cred.user;
+      if (user == null) {
+        emit(AuthFailure('Could not create account.'));
+        return;
+      }
+      final trimmedName = fullName?.trim();
+      if (trimmedName != null && trimmedName.isNotEmpty) {
+        await user.updateDisplayName(trimmedName);
+        await user.reload();
+      }
+      await authRepository.seedInitialProfileFromSignup(
+        uid: user.uid,
+        email: email,
+        fullName: trimmedName,
+        phone: phone?.trim(),
+      );
       final complete = await authRepository.hasCompletedUserProfile();
       emit(AuthSuccess(hasCompletedProfile: complete));
     } on FirebaseAuthException catch (e) {

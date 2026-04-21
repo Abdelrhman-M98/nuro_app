@@ -89,13 +89,47 @@ class AuthRepository {
     );
   }
 
+  Future<void> seedInitialProfileFromSignup({
+    required String uid,
+    required String email,
+    String? fullName,
+    String? phone,
+  }) async {
+    final map = <String, dynamic>{'email': email.trim()};
+    if (fullName != null && fullName.trim().isNotEmpty) {
+      map['name'] = fullName.trim();
+    }
+    if (phone != null && phone.trim().isNotEmpty) {
+      map['phone'] = phone.trim();
+    }
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .set(map, SetOptions(merge: true));
+  }
+
   Future<bool> hasCompletedUserProfile() async {
     final uid = _auth.currentUser?.uid;
     if (uid == null) return false;
     final snap =
         await FirebaseFirestore.instance.collection('users').doc(uid).get();
     if (!snap.exists) return false;
-    final name = snap.data()?['name'];
-    return name is String && name.trim().isNotEmpty;
+    final data = snap.data() ?? {};
+    final name = data['name'];
+    if (name is! String || name.trim().isEmpty) return false;
+
+    final ageRaw = data['age'];
+    int? age;
+    if (ageRaw is int) {
+      age = ageRaw;
+    } else if (ageRaw != null) {
+      age = int.tryParse(ageRaw.toString());
+    }
+    if (age == null || age <= 0) return false;
+
+    final country = data['country'];
+    if (country is! String || country.trim().isEmpty) return false;
+
+    return true;
   }
 }

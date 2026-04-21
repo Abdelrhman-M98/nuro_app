@@ -63,6 +63,7 @@ class ProfileViewBody extends StatefulWidget {
 
 class _ProfileViewBodyState extends State<ProfileViewBody> {
   UserModel? _lastUserForAvatar;
+  late bool _editing;
 
   final nameController = TextEditingController();
   final ageController = TextEditingController();
@@ -72,6 +73,14 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   String genderSelection = 'Male';
+
+  @override
+  void initState() {
+    super.initState();
+    _editing = widget.onboarding;
+  }
+
+  bool get _fieldsEditable => widget.onboarding || _editing;
 
   bool _needsPasswordLink(User? user) {
     if (user == null || user.email == null || user.email!.isEmpty) {
@@ -92,13 +101,13 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
     super.dispose();
   }
 
-  void _populateData(ProfileLoaded state) {
-    nameController.text = state.user.name;
-    ageController.text = state.user.age.toString();
-    countryController.text = state.user.country;
-    diseasesController.text = state.user.condition;
-    phoneController.text = state.user.phone;
-    genderSelection = state.user.gender;
+  void _populateFromUser(UserModel user) {
+    nameController.text = user.name;
+    ageController.text = user.age.toString();
+    countryController.text = user.country;
+    diseasesController.text = user.condition;
+    phoneController.text = user.phone;
+    genderSelection = user.gender;
   }
 
   @override
@@ -113,12 +122,15 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
               backgroundColor: Colors.green,
             ),
           );
+          if (!widget.onboarding) {
+            setState(() => _editing = false);
+          }
           if (widget.onboarding && context.mounted) {
             GoRouter.of(context).go(AppRouter.kHomeView);
           }
         } else if (state is ProfileLoaded) {
           _lastUserForAvatar = state.user;
-          if (nameController.text.isEmpty) _populateData(state);
+          if (nameController.text.isEmpty) _populateFromUser(state.user);
         } else if (state is ProfileError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.message), backgroundColor: Colors.red),
@@ -142,45 +154,98 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
           padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
           child: Column(
             children: [
-              GestureDetector(
-                onTap: () => context.read<ProfileCubit>().uploadProfileImage(),
-                child: Stack(
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    Container(
-                      width: 120.r,
-                      height: 120.r,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: kAccentColor, width: 2),
-                        color: kSurfaceColor,
+              Builder(
+                builder: (context) {
+                  final avatarStack = Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      Container(
+                        width: 120.r,
+                        height: 120.r,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: kAccentColor.withValues(
+                              alpha: _fieldsEditable ? 1 : 0.45,
+                            ),
+                            width: 2,
+                          ),
+                          color: kSurfaceColor,
+                        ),
+                        child: ClipOval(
+                          child: Opacity(
+                            opacity: _fieldsEditable ? 1 : 0.92,
+                            child: loadedUser != null
+                                ? ProfileAvatarImage(
+                                    user: loadedUser,
+                                    genderFallback: currentGender,
+                                  )
+                                : _buildDefaultAvatar(currentGender),
+                          ),
+                        ),
                       ),
-                      child: ClipOval(
-                        child: loadedUser != null
-                            ? ProfileAvatarImage(
-                                user: loadedUser,
-                                genderFallback: currentGender,
-                              )
-                            : _buildDefaultAvatar(currentGender),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.all(6.r),
-                      decoration: const BoxDecoration(color: kAccentColor, shape: BoxShape.circle),
-                      child: Icon(Icons.camera_alt, size: 18.sp, color: Colors.white),
-                    ),
-                  ],
-                ),
+                      if (_fieldsEditable)
+                        Container(
+                          padding: EdgeInsets.all(6.r),
+                          decoration: const BoxDecoration(
+                            color: kAccentColor,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.camera_alt,
+                            size: 18.sp,
+                            color: Colors.white,
+                          ),
+                        ),
+                    ],
+                  );
+                  if (!_fieldsEditable) {
+                    return avatarStack;
+                  }
+                  return GestureDetector(
+                    onTap: () =>
+                        context.read<ProfileCubit>().uploadProfileImage(),
+                    child: avatarStack,
+                  );
+                },
               ),
+              if (!widget.onboarding && !_editing && state is ProfileLoaded)
+                Padding(
+                  padding: EdgeInsets.only(top: 20.h),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 52.h,
+                    child: OutlinedButton.icon(
+                      onPressed: state is ProfileUpdating
+                          ? null
+                          : () => setState(() => _editing = true),
+                      icon: Icon(Icons.edit_outlined, color: kAccentColor, size: 22.sp),
+                      label: Text(
+                        'Edit profile',
+                        style: FontStyles.roboto16.copyWith(
+                          color: kAccentColor,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: kAccentColor, width: 1.5),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.r),
+                        ),
+                        backgroundColor: kAccentColor.withValues(alpha: 0.08),
+                      ),
+                    ),
+                  ),
+                ),
               SizedBox(height: 32.h),
               
-              _buildField("Full Name", nameController, Icons.person),
-              _buildField("Age", ageController, Icons.calendar_today, isNumber: true),
+              _buildField("Full Name", nameController, Icons.person, readOnly: !_fieldsEditable),
+              _buildField("Age", ageController, Icons.calendar_today, isNumber: true, readOnly: !_fieldsEditable),
               
-              _buildCountryField(),
+              _buildCountryField(readOnly: !_fieldsEditable),
               
-              _buildField("Medical Condition (Neural History)", diseasesController, Icons.medical_services, isMultiline: true),
-              _buildField("Phone Number", phoneController, Icons.phone),
+              _buildField("Medical Condition (Neural History)", diseasesController, Icons.medical_services, isMultiline: true, readOnly: !_fieldsEditable),
+              _buildField("Phone Number", phoneController, Icons.phone, readOnly: !_fieldsEditable),
               
               Align(
                 alignment: Alignment.centerLeft,
@@ -189,7 +254,7 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
                   child: Text("Gender", style: FontStyles.roboto14.copyWith(color: Colors.white70)),
                 ),
               ),
-              _buildGenderRadioButtons(),
+              _buildGenderRadioButtons(readOnly: !_fieldsEditable),
 
               if (showPasswordLink) ...[
                 SizedBox(height: 8.h),
@@ -210,87 +275,96 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
                 ),
               ],
 
-              SizedBox(height: 30.h),
-
-              if (state is ProfileLoaded && !widget.onboarding)
+              if (state is ProfileLoaded && !widget.onboarding && !_editing) ...[
+                SizedBox(height: 30.h),
                 SizedBox(
                   width: double.infinity,
                   height: 50.h,
                   child: OutlinedButton.icon(
-                    onPressed: () => PdfReportGenerator.generateAndPrintReport(state.user),
+                    onPressed: () =>
+                        PdfReportGenerator.generateAndPrintReport(state.user),
                     icon: const Icon(Icons.picture_as_pdf, color: kAccentColor),
-                    label: Text("Generate PDF Report", style: FontStyles.roboto16.copyWith(color: kAccentColor)),
+                    label: Text(
+                      "Generate PDF Report",
+                      style: FontStyles.roboto16.copyWith(color: kAccentColor),
+                    ),
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: kAccentColor),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.r),
+                      ),
                     ),
                   ),
                 ),
-                
-              SizedBox(height: 16.h),
+                SizedBox(height: 16.h),
+              ],
+
+              if (widget.onboarding || _editing) SizedBox(height: 16.h),
               
-              SizedBox(
-                width: double.infinity,
-                height: 56.h,
-                child: ElevatedButton(
-                  onPressed: state is ProfileUpdating
-                      ? null
-                      : () {
-                          final user = FirebaseAuth.instance.currentUser;
-                          final needLink = _needsPasswordLink(user);
-                          final p = passwordController.text.trim();
-                          final c = confirmPasswordController.text.trim();
+              if (widget.onboarding || _editing) ...[
+                SizedBox(
+                  width: double.infinity,
+                  height: 56.h,
+                  child: ElevatedButton(
+                    onPressed: state is ProfileUpdating
+                        ? null
+                        : () {
+                            final user = FirebaseAuth.instance.currentUser;
+                            final needLink = _needsPasswordLink(user);
+                            final p = passwordController.text.trim();
+                            final c = confirmPasswordController.text.trim();
 
-                          if (widget.onboarding && needLink) {
-                            if (p.length < 6) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Enter a password of at least 6 characters to use email login later.',
+                            if (widget.onboarding && needLink) {
+                              if (p.length < 6) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Enter a password of at least 6 characters to use email login later.',
+                                    ),
+                                    backgroundColor: Colors.orange,
                                   ),
-                                  backgroundColor: Colors.orange,
-                                ),
-                              );
-                              return;
+                                );
+                                return;
+                              }
+                              if (p != c) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Passwords do not match.'),
+                                    backgroundColor: Colors.orange,
+                                  ),
+                                );
+                                return;
+                              }
                             }
-                            if (p != c) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Passwords do not match.'),
-                                  backgroundColor: Colors.orange,
-                                ),
-                              );
-                              return;
-                            }
-                          }
 
-                          final String? linkPw =
-                              (widget.onboarding && needLink) ? p : null;
+                            final String? linkPw =
+                                (widget.onboarding && needLink) ? p : null;
 
-                          context.read<ProfileCubit>().updateProfile(
-                                name: nameController.text.trim(),
-                                age: int.tryParse(ageController.text) ?? 25,
-                                country: countryController.text.trim(),
-                                diseases: diseasesController.text.trim(),
-                                phone: phoneController.text.trim(),
-                                gender: genderSelection,
-                                linkLoginPassword: linkPw,
-                              );
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: kAccentColor,
-                    disabledBackgroundColor: kAccentColor.withValues(alpha: 0.5),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-                    elevation: 4,
+                            context.read<ProfileCubit>().updateProfile(
+                                  name: nameController.text.trim(),
+                                  age: int.tryParse(ageController.text) ?? 25,
+                                  country: countryController.text.trim(),
+                                  diseases: diseasesController.text.trim(),
+                                  phone: phoneController.text.trim(),
+                                  gender: genderSelection,
+                                  linkLoginPassword: linkPw,
+                                );
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: kAccentColor,
+                      disabledBackgroundColor: kAccentColor.withValues(alpha: 0.5),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+                      elevation: 4,
+                    ),
+                    child: state is ProfileUpdating
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : Text("Save Changes", style: FontStyles.roboto18.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
                   ),
-                  child: state is ProfileUpdating
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : Text("Save Changes", style: FontStyles.roboto18.copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
-              ),
+              ],
 
               SizedBox(height: 16.h),
-              if (!widget.onboarding)
+              if (!widget.onboarding && !_editing)
                 SizedBox(
                   width: double.infinity,
                   height: 56.h,
@@ -366,7 +440,17 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
     );
   }
 
-  Widget _buildField(String label, TextEditingController controller, IconData icon, {bool isNumber = false, bool isMultiline = false}) {
+  Widget _buildField(
+    String label,
+    TextEditingController controller,
+    IconData icon, {
+    bool isNumber = false,
+    bool isMultiline = false,
+    bool readOnly = false,
+  }) {
+    final fill = readOnly
+        ? kSurfaceColor.withValues(alpha: 0.55)
+        : kSurfaceColor;
     return Padding(
       padding: EdgeInsets.only(bottom: 20.h),
       child: Column(
@@ -376,14 +460,16 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
           SizedBox(height: 8.h),
           TextField(
             controller: controller,
+            readOnly: readOnly,
+            enableInteractiveSelection: !readOnly,
             keyboardType: isMultiline ? TextInputType.multiline : (isNumber ? TextInputType.number : TextInputType.text),
             maxLines: isMultiline ? null : 1,
             minLines: isMultiline ? 3 : 1,
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.white.withValues(alpha: readOnly ? 0.85 : 1)),
             decoration: InputDecoration(
               prefixIcon: Icon(icon, color: kAccentColor, size: 20.sp),
               filled: true,
-              fillColor: kSurfaceColor,
+              fillColor: fill,
               contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16.r),
@@ -391,7 +477,10 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16.r),
-                borderSide: const BorderSide(color: kAccentColor, width: 1),
+                borderSide: BorderSide(
+                  color: readOnly ? Colors.transparent : kAccentColor,
+                  width: 1,
+                ),
               ),
             ),
           ),
@@ -400,7 +489,40 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
     );
   }
 
-  Widget _buildCountryField() {
+  Widget _buildCountryField({bool readOnly = false}) {
+    final fill = readOnly
+        ? kSurfaceColor.withValues(alpha: 0.55)
+        : kSurfaceColor;
+    final field = AbsorbPointer(
+      absorbing: readOnly,
+      child: TextField(
+        controller: countryController,
+        readOnly: true,
+        style: TextStyle(color: Colors.white.withValues(alpha: readOnly ? 0.85 : 1)),
+        decoration: InputDecoration(
+          prefixIcon: Icon(Icons.public, color: kAccentColor, size: 20.sp),
+          suffixIcon: Icon(
+            Icons.arrow_drop_down,
+            color: readOnly ? Colors.white38 : Colors.white70,
+          ),
+          filled: true,
+          fillColor: fill,
+          contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16.r),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16.r),
+            borderSide: BorderSide(
+              color: readOnly ? Colors.transparent : kAccentColor,
+              width: 1,
+            ),
+          ),
+        ),
+      ),
+    );
+
     return Padding(
       padding: EdgeInsets.only(bottom: 20.h),
       child: Column(
@@ -408,63 +530,73 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
         children: [
           Text("Country", style: FontStyles.roboto14.copyWith(color: Colors.white70)),
           SizedBox(height: 8.h),
-          GestureDetector(
-            onTap: () {
-              showCountryPicker(
-                context: context,
-                showPhoneCode: false,
-                onSelect: (Country country) {
-                  setState(() {
-                    countryController.text = "${country.flagEmoji} ${country.name}";
-                  });
-                },
-                countryListTheme: CountryListThemeData(
-                  borderRadius: BorderRadius.circular(20.r),
-                  backgroundColor: kSurfaceColor,
-                  textStyle: const TextStyle(color: Colors.white),
-                  searchTextStyle: const TextStyle(color: Colors.white),
-                  inputDecoration: InputDecoration(
-                    hintText: "Search Country",
-                    hintStyle: const TextStyle(color: Colors.white54),
-                    prefixIcon: const Icon(Icons.search, color: kAccentColor),
-                    filled: true,
-                    fillColor: kSurfaceLightColor,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.r),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
+          readOnly
+              ? field
+              : GestureDetector(
+                  onTap: () {
+                    showCountryPicker(
+                      context: context,
+                      showPhoneCode: false,
+                      onSelect: (Country country) {
+                        setState(() {
+                          countryController.text =
+                              "${country.flagEmoji} ${country.name}";
+                        });
+                      },
+                      countryListTheme: CountryListThemeData(
+                        borderRadius: BorderRadius.circular(20.r),
+                        backgroundColor: kSurfaceColor,
+                        textStyle: const TextStyle(color: Colors.white),
+                        searchTextStyle: const TextStyle(color: Colors.white),
+                        inputDecoration: InputDecoration(
+                          hintText: "Search Country",
+                          hintStyle: const TextStyle(color: Colors.white54),
+                          prefixIcon: const Icon(Icons.search, color: kAccentColor),
+                          filled: true,
+                          fillColor: kSurfaceLightColor,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12.r),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  child: field,
                 ),
-              );
-            },
-            child: AbsorbPointer(
-              child: TextField(
-                controller: countryController,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.public, color: kAccentColor, size: 20.sp),
-                  suffixIcon: const Icon(Icons.arrow_drop_down, color: Colors.white70),
-                  filled: true,
-                  fillColor: kSurfaceColor,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.r),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.r),
-                    borderSide: const BorderSide(color: kAccentColor, width: 1),
-                  ),
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildGenderRadioButtons() {
+  Widget _buildGenderRadioButtons({bool readOnly = false}) {
+    if (readOnly) {
+      return Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+        decoration: BoxDecoration(
+          color: kSurfaceColor.withValues(alpha: 0.55),
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              genderSelection == "Female" ? Icons.female : Icons.male,
+              color: kAccentColor,
+              size: 22.sp,
+            ),
+            SizedBox(width: 10.w),
+            Text(
+              genderSelection,
+              style: FontStyles.roboto16.copyWith(
+                color: Colors.white.withValues(alpha: 0.9),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
     return Row(
       children: [
         _buildGenderOption("Male"),

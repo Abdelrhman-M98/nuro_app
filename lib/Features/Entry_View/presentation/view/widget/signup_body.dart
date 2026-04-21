@@ -43,6 +43,8 @@ class _SignupBodyState extends State<SignupBody> {
       context.read<AuthCubit>().register(
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
+        fullName: nameController.text.trim(),
+        phone: phoneController.text.trim(),
       );
     }
   }
