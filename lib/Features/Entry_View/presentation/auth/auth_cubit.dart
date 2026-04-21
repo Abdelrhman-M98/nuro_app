@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'auth_state.dart';
 import '../../Data/repository/auth_repo.dart';
@@ -7,18 +8,21 @@ class AuthCubit extends Cubit<AuthState> {
 
   AuthCubit(this.authRepository) : super(AuthInitial());
 
-  // تسجيل الدخول
+  bool _googleSignInInProgress = false;
+
   Future<void> login(String email, String password) async {
     emit(AuthLoading());
     try {
       await authRepository.signInWithEmail(email, password);
-      emit(AuthSuccess());
+      final complete = await authRepository.hasCompletedUserProfile();
+      emit(AuthSuccess(hasCompletedProfile: complete));
+    } on FirebaseAuthException catch (e) {
+      emit(AuthFailure(_mapFirebaseAuthError(e)));
     } catch (e) {
       emit(AuthFailure(_handleError(e)));
     }
   }
 
-  // إنشاء حساب جديد
   Future<void> register({
     required String email,
     required String password,
@@ -26,24 +30,31 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthLoading());
     try {
       await authRepository.signUpWithEmail(email, password);
-      emit(AuthSuccess());
+      final complete = await authRepository.hasCompletedUserProfile();
+      emit(AuthSuccess(hasCompletedProfile: complete));
+    } on FirebaseAuthException catch (e) {
+      emit(AuthFailure(_mapFirebaseAuthError(e)));
     } catch (e) {
       emit(AuthFailure(_handleError(e)));
     }
   }
 
-  // جوجل
   Future<void> loginWithGoogle() async {
+    if (_googleSignInInProgress) return;
+    _googleSignInInProgress = true;
     emit(AuthLoading());
     try {
       final user = await authRepository.signInWithGoogle();
       if (user != null) {
-        emit(AuthSuccess());
+        final complete = await authRepository.hasCompletedUserProfile();
+        emit(AuthSuccess(hasCompletedProfile: complete));
       } else {
         emit(AuthInitial());
       }
     } catch (e) {
       emit(AuthFailure(e.toString()));
+    } finally {
+      _googleSignInInProgress = false;
     }
   }
 
@@ -52,12 +63,54 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthInitial());
   }
 
+  String _mapFirebaseAuthError(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'invalid-credential':
+      case 'wrong-password':
+        return 'Wrong email or password. Try again or use Google sign-in.';
+      case 'user-not-found':
+        return 'No user found with this email.';
+      case 'invalid-email':
+        return 'The email address is invalid.';
+      case 'user-disabled':
+        return 'This user account has been disabled.';
+      case 'too-many-requests':
+        return 'Too many attempts. Try again later.';
+      case 'network-request-failed':
+        return 'Network error. Check your connection.';
+      case 'operation-not-allowed':
+        return 'This operation is not allowed.';
+      default:
+        return _handleError(e);
+    }
+  }
+
   String _handleError(dynamic e) {
-    String msg = e.toString();
-    if (msg.contains('user-not-found')) return 'الايميل غير مسجل لدينا';
-    if (msg.contains('wrong-password')) return 'كلمة المرور غير صحيحة';
-    if (msg.contains('email-already-in-use')) return 'هذا البريد مستخدم بالفعل';
-    if (msg.contains('weak-password')) return 'كلمة المرور ضعيفة جداً';
-    return 'حدث خطأ غير متوقع، حاول مرة أخرى';
+    String msg = e.toString().toLowerCase();
+
+    if (msg.contains('user-not-found')) return 'No user found with this email.';
+    if (msg.contains('wrong-password')) {
+      return 'Incorrect password. Please try again.';
+    }
+    if (msg.contains('email-already-in-use')) {
+      return 'This email is already registered.';
+    }
+    if (msg.contains('weak-password')) return 'The password is too weak.';
+    if (msg.contains('invalid-email')) return 'The email address is invalid.';
+    if (msg.contains('user-disabled')) {
+      return 'This user account has been disabled.';
+    }
+    if (msg.contains('too-many-requests')) {
+      return 'Too many attempts. Try again later.';
+    }
+    if (msg.contains('network-request-failed')) {
+      return 'Network error. Check your connection.';
+    }
+    if (msg.contains('operation-not-allowed')) {
+      return 'This operation is not allowed.';
+    }
+    if (msg.contains('channel-error')) return 'Please fill in all fields.';
+
+    return 'An unexpected error occurred. Please try again.';
   }
 }

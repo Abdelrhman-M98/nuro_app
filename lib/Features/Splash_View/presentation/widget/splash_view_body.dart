@@ -70,7 +70,7 @@ class _SplashViewBodyState extends State<SplashViewBody>
               },
             ),
           ),
-          // حلقة النبض حول اللوجو
+
           Center(
             child: AnimatedBuilder(
               animation: _pulseController,

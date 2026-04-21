@@ -1,5 +1,8 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nervix_app/Features/Entry_View/Data/repository/auth_repo.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/forgot_password/forgot_password_cubit.dart';
 import 'package:nervix_app/Features/All_patients/presentation/view/all_patients_view.dart';
 import 'package:nervix_app/Features/Home_view/home_view.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/view/forgot_password_view.dart';
@@ -66,17 +69,37 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kForgotPasswordView,
-        builder: (context, state) => ForgotPasswordView(),
+        builder: (context, state) {
+          return BlocProvider(
+            create: (_) =>
+                ForgotPasswordCubit(context.read<AuthRepository>()),
+            child: const ForgotPasswordView(),
+          );
+        },
       ),
       GoRoute(
         path: kVerificationPasswordView,
-        builder: (context, state) => VerificationPasswordView(),
+        builder: (context, state) {
+          final email = state.extra as String? ?? '';
+          return BlocProvider(
+            create: (_) =>
+                ForgotPasswordCubit(context.read<AuthRepository>()),
+            child: VerificationPasswordView(email: email),
+          );
+        },
       ),
       GoRoute(
         path: kResetPasswordView,
         builder: (context, state) => ResetPasswordView(),
       ),
-      GoRoute(path: kProfileView, builder: (context, state) => const ProfileScreen()),
+      GoRoute(
+        path: kProfileView,
+        builder: (context, state) {
+          final onboarding =
+              state.uri.queryParameters['onboarding'] == '1';
+          return ProfileScreen(onboarding: onboarding);
+        },
+      ),
       GoRoute(path: kMedicalHistoryView, builder: (context, state) => const MedicalHistoryScreen()),
     ],
   );

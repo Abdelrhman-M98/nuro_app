@@ -46,7 +46,11 @@ class _SigninBodyState extends State<SigninBody> {
             ),
           );
         } else if (state is AuthSuccess) {
-          GoRouter.of(context).go(AppRouter.kHomeView);
+          if (state.hasCompletedProfile) {
+            GoRouter.of(context).go(AppRouter.kHomeView);
+          } else {
+            GoRouter.of(context).go('${AppRouter.kProfileView}?onboarding=1');
+          }
         } else if (state is AuthFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.error), backgroundColor: kErrorColor),

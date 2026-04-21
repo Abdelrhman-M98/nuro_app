@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:nervix_app/Core/utils/profile_avatar_widget.dart';
 
 class PatientsCardInfo extends StatelessWidget {
   const PatientsCardInfo({
@@ -11,6 +11,7 @@ class PatientsCardInfo extends StatelessWidget {
     required this.age,
     required this.condition,
     required this.imageUrl,
+    this.profileImageBase64 = '',
     required this.signalValue,
     required this.gender,
     required this.currentState,
@@ -21,6 +22,7 @@ class PatientsCardInfo extends StatelessWidget {
   final int age;
   final String condition;
   final String imageUrl;
+  final String profileImageBase64;
   final double signalValue;
   final String gender;
   final String currentState;
@@ -30,18 +32,11 @@ class PatientsCardInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isAbnormal = currentState == 'abnormal';
     
-    // Avatar Logic
-    Widget avatarWidget;
-    if (imageUrl.isNotEmpty) {
-      avatarWidget = CachedNetworkImage(
-        imageUrl: imageUrl,
-        fit: BoxFit.cover,
-        placeholder: (context, url) => const CircularProgressIndicator(strokeWidth: 2),
-        errorWidget: (context, url, error) => _buildDefaultAvatar(),
-      );
-    } else {
-      avatarWidget = _buildDefaultAvatar();
-    }
+    final avatarWidget = ProfileAvatarFromFields(
+      profileImageUrl: imageUrl,
+      profileImageBase64: profileImageBase64,
+      genderFallback: gender,
+    );
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
@@ -124,16 +119,4 @@ class PatientsCardInfo extends StatelessWidget {
     );
   }
 
-  Widget _buildDefaultAvatar() {
-    bool isFemale = gender.trim().toLowerCase() == 'female' || gender.trim() == 'أنثى';
-    String avatarUrl = isFemale
-        ? "https://cdn-icons-png.flaticon.com/512/3135/3135823.png"
-        : "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-    
-    return Image.network(
-      avatarUrl, 
-      fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) => const Icon(Icons.person, color: Colors.white, size: 40),
-    );
-  }
 }

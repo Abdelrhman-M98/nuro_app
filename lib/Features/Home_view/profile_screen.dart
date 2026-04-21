@@ -3,16 +3,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Features/Home_view/data/models/user_model.dart';
 import 'package:nervix_app/Features/Home_view/logic/profile_cubit.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:nervix_app/Core/utils/profile_avatar_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:nervix_app/Core/utils/app_routes.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:nervix_app/Core/utils/pdf_generator.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({super.key, this.onboarding = false});
+
+  /// `true` عند فتح الشاشة بعد التسجيل لإكمال البيانات (من تسجيل الدخول وليس من الهوم).
+  final bool onboarding;
 
   @override
   Widget build(BuildContext context) {
@@ -20,35 +25,62 @@ class ProfileScreen extends StatelessWidget {
       create: (context) => ProfileCubit()..fetchUserData(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Profile Settings", style: FontStyles.roboto18),
+          title: Text(
+            onboarding ? 'Complete your profile' : 'Profile Settings',
+            style: FontStyles.roboto18,
+          ),
           backgroundColor: kBackgroundColor,
           elevation: 0,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () async {
+              if (onboarding) {
+                await FirebaseAuth.instance.signOut();
+                await GoogleSignIn.instance.signOut();
+                if (context.mounted) {
+                  GoRouter.of(context).go(AppRouter.kLoginView);
+                }
+              } else {
+                Navigator.of(context).pop();
+              }
+            },
           ),
         ),
         backgroundColor: kBackgroundColor,
-        body: const ProfileViewBody(),
+        body: ProfileViewBody(onboarding: onboarding),
       ),
     );
   }
 }
 
 class ProfileViewBody extends StatefulWidget {
-  const ProfileViewBody({super.key});
+  const ProfileViewBody({super.key, this.onboarding = false});
+
+  final bool onboarding;
 
   @override
   State<ProfileViewBody> createState() => _ProfileViewBodyState();
 }
 
 class _ProfileViewBodyState extends State<ProfileViewBody> {
+  /// يبقى ظاهراً أثناء [ProfileUpdating] لأن الحالة دي ما فيهاش [UserModel].
+  UserModel? _lastUserForAvatar;
+
   final nameController = TextEditingController();
   final ageController = TextEditingController();
   final countryController = TextEditingController();
   final diseasesController = TextEditingController();
   final phoneController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
   String genderSelection = 'Male';
+
+  bool _needsPasswordLink(User? user) {
+    if (user == null || user.email == null || user.email!.isEmpty) {
+      return false;
+    }
+    return !user.providerData.any((p) => p.providerId == 'password');
+  }
 
   @override
   void dispose() {
@@ -57,6 +89,8 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
     countryController.dispose();
     diseasesController.dispose();
     phoneController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -73,12 +107,21 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
   Widget build(BuildContext context) {
     return BlocConsumer<ProfileCubit, ProfileState>(
       listener: (context, state) {
-        if (state is ProfileLoaded) {
-          if (nameController.text.isEmpty) _populateData(state);
-        } else if (state is ProfileUpdateSuccess) {
+        // [ProfileUpdateSuccess] يرث [ProfileLoaded] — نتعامل معه أولاً حتى يظهر الـ SnackBar.
+        if (state is ProfileUpdateSuccess) {
+          _lastUserForAvatar = state.user;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Profile Updated Successfully!"), backgroundColor: Colors.green),
+            const SnackBar(
+              content: Text('Profile updated successfully!'),
+              backgroundColor: Colors.green,
+            ),
           );
+          if (widget.onboarding && context.mounted) {
+            GoRouter.of(context).go(AppRouter.kHomeView);
+          }
+        } else if (state is ProfileLoaded) {
+          _lastUserForAvatar = state.user;
+          if (nameController.text.isEmpty) _populateData(state);
         } else if (state is ProfileError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.message), backgroundColor: Colors.red),
@@ -88,11 +131,15 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
       builder: (context, state) {
         if (state is ProfileLoading) return const Center(child: CircularProgressIndicator());
 
-        String profileUrl = "";
         String currentGender = genderSelection;
-        if (state is ProfileLoaded) {
-          profileUrl = state.user.profileImageUrl;
-        }
+        final UserModel? loadedUser = state is ProfileLoaded
+            ? state.user
+            : _lastUserForAvatar;
+
+        final authUser = FirebaseAuth.instance.currentUser;
+        // ربط كلمة المرور مع Google يُعرض فقط عند أول إكمال للبروفايل، وليس من إعدادات الهوم.
+        final showPasswordLink =
+            widget.onboarding && _needsPasswordLink(authUser);
 
         return SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -114,12 +161,10 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
                         color: kSurfaceColor,
                       ),
                       child: ClipOval(
-                        child: profileUrl.isNotEmpty
-                            ? CachedNetworkImage(
-                                imageUrl: profileUrl,
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) => const CircularProgressIndicator(),
-                                errorWidget: (context, url, error) => _buildDefaultAvatar(currentGender),
+                        child: loadedUser != null
+                            ? ProfileAvatarImage(
+                                user: loadedUser,
+                                genderFallback: currentGender,
                               )
                             : _buildDefaultAvatar(currentGender),
                       ),
@@ -152,10 +197,29 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
                 ),
               ),
               _buildGenderRadioButtons(),
-              
+
+              if (showPasswordLink) ...[
+                SizedBox(height: 8.h),
+                Text(
+                  'Set a password to sign in with this email later (same as your Google email).',
+                  style: FontStyles.roboto12.copyWith(color: Colors.white70),
+                ),
+                SizedBox(height: 12.h),
+                _buildPasswordField(
+                  'Login password',
+                  passwordController,
+                  obscure: true,
+                ),
+                _buildPasswordField(
+                  'Confirm password',
+                  confirmPasswordController,
+                  obscure: true,
+                ),
+              ],
+
               SizedBox(height: 30.h),
-              
-              if (state is ProfileLoaded)
+
+              if (state is ProfileLoaded && !widget.onboarding)
                 SizedBox(
                   width: double.infinity,
                   height: 50.h,
@@ -176,18 +240,50 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
                 width: double.infinity,
                 height: 56.h,
                 child: ElevatedButton(
-                  onPressed: state is ProfileUpdating 
-                    ? null 
-                    : () {
-                        context.read<ProfileCubit>().updateProfile(
-                          name: nameController.text,
-                          age: int.tryParse(ageController.text) ?? 25,
-                          country: countryController.text,
-                          diseases: diseasesController.text,
-                          phone: phoneController.text,
-                          gender: genderSelection,
-                        );
-                      },
+                  onPressed: state is ProfileUpdating
+                      ? null
+                      : () {
+                          final user = FirebaseAuth.instance.currentUser;
+                          final needLink = _needsPasswordLink(user);
+                          final p = passwordController.text.trim();
+                          final c = confirmPasswordController.text.trim();
+
+                          if (widget.onboarding && needLink) {
+                            if (p.length < 6) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Enter a password of at least 6 characters to use email login later.',
+                                  ),
+                                  backgroundColor: Colors.orange,
+                                ),
+                              );
+                              return;
+                            }
+                            if (p != c) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Passwords do not match.'),
+                                  backgroundColor: Colors.orange,
+                                ),
+                              );
+                              return;
+                            }
+                          }
+
+                          final String? linkPw =
+                              (widget.onboarding && needLink) ? p : null;
+
+                          context.read<ProfileCubit>().updateProfile(
+                                name: nameController.text.trim(),
+                                age: int.tryParse(ageController.text) ?? 25,
+                                country: countryController.text.trim(),
+                                diseases: diseasesController.text.trim(),
+                                phone: phoneController.text.trim(),
+                                gender: genderSelection,
+                                linkLoginPassword: linkPw,
+                              );
+                        },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: kAccentColor,
                     disabledBackgroundColor: kAccentColor.withValues(alpha: 0.5),
@@ -201,38 +297,79 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
               ),
 
               SizedBox(height: 16.h),
-              SizedBox(
-                width: double.infinity,
-                height: 56.h,
-                child: OutlinedButton(
-                  onPressed: () async {
-                    await FirebaseAuth.instance.signOut();
-                    if (context.mounted) {
-                      GoRouter.of(context).go(AppRouter.kLoginView);
-                    }
-                  },
+              if (!widget.onboarding)
+                SizedBox(
+                  width: double.infinity,
+                  height: 56.h,
+                  child: OutlinedButton(
+                    onPressed: () async {
+                      await FirebaseAuth.instance.signOut();
+                      await GoogleSignIn.instance.signOut();
+                      if (context.mounted) {
+                        GoRouter.of(context).go(AppRouter.kLoginView);
+                      }
+                    },
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Colors.redAccent, width: 1.5),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.logout, color: Colors.redAccent),
-                      SizedBox(width: 8.w),
-                      Text(
-                        "Log Out",
-                        style: FontStyles.roboto18.copyWith(color: Colors.redAccent, fontWeight: FontWeight.bold),
-                      ),
-                    ],
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.logout, color: Colors.redAccent),
+                        SizedBox(width: 8.w),
+                        Text(
+                          'Log Out',
+                          style: FontStyles.roboto18.copyWith(
+                            color: Colors.redAccent,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
               SizedBox(height: 40.h),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildPasswordField(
+    String label,
+    TextEditingController controller, {
+    required bool obscure,
+  }) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 16.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: FontStyles.roboto14.copyWith(color: Colors.white70)),
+          SizedBox(height: 8.h),
+          TextField(
+            controller: controller,
+            obscureText: obscure,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              prefixIcon: Icon(Icons.lock_outline, color: kAccentColor, size: 20.sp),
+              filled: true,
+              fillColor: kSurfaceColor,
+              contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16.r),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16.r),
+                borderSide: const BorderSide(color: kAccentColor, width: 1),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

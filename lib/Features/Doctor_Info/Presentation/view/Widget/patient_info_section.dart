@@ -20,6 +20,7 @@ class PatientInfoSection extends StatelessWidget {
             age: state.user.age,
             condition: state.user.condition,
             imageUrl: state.user.profileImageUrl,
+            profileImageBase64: state.user.profileImageBase64,
             signalValue: state.latestSignal,
             gender: state.user.gender,
             currentState: state.currentState,

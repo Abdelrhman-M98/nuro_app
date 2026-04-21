@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class UserModel {
   final String name;
@@ -9,6 +10,8 @@ class UserModel {
   final String phone;
   final String country;
   final String profileImageUrl;
+  /// صورة مرفوعة من المعرض، مخزنة في Firestore (بدون Firebase Storage).
+  final String profileImageBase64;
 
   UserModel({
     required this.name,
@@ -19,6 +22,7 @@ class UserModel {
     required this.phone,
     required this.country,
     required this.profileImageUrl,
+    this.profileImageBase64 = '',
   });
 
   factory UserModel.fromFirestore(DocumentSnapshot doc) {
@@ -36,6 +40,37 @@ class UserModel {
       phone: data['phone'] ?? '',
       country: data['country'] ?? '',
       profileImageUrl: data['profileImageUrl'] ?? '',
+      profileImageBase64: data['profileImageBase64'] is String
+          ? data['profileImageBase64'] as String
+          : '',
+    );
+  }
+
+  /// بيانات أولية قبل وجود مستند Firestore (تسجيل بـ Google أو إيميل جديد).
+  factory UserModel.fromFirebaseAuthUser(User? user) {
+    if (user == null) {
+      return UserModel(
+        name: '',
+        age: 25,
+        condition: '',
+        gender: 'Male',
+        email: '',
+        phone: '',
+        country: '',
+        profileImageUrl: '',
+        profileImageBase64: '',
+      );
+    }
+    return UserModel(
+      name: user.displayName ?? '',
+      age: 25,
+      condition: '',
+      gender: 'Male',
+      email: user.email ?? '',
+      phone: user.phoneNumber ?? '',
+      country: '',
+      profileImageUrl: user.photoURL ?? '',
+      profileImageBase64: '',
     );
   }
 }

@@ -72,11 +72,15 @@ class _SignupBodyState extends State<SignupBody> {
         } else if (state is AuthSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text("Account Created Successfully!"),
+              content: const Text("Account created successfully!"),
               backgroundColor: kAccentColor,
             ),
           );
-          GoRouter.of(context).go(AppRouter.kUserInfoView);
+          if (state.hasCompletedProfile) {
+            GoRouter.of(context).go(AppRouter.kHomeView);
+          } else {
+            GoRouter.of(context).go('${AppRouter.kProfileView}?onboarding=1');
+          }
         }
       },
       child: LayoutBuilder(

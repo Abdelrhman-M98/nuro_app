@@ -80,7 +80,8 @@ class HomeCubit extends Cubit<HomeState> {
                 email: user.email ?? "",
                 phone: "",
                 country: "",
-                profileImageUrl: "",
+                profileImageUrl: user.photoURL ?? "",
+                profileImageBase64: '',
               );
               _emitUpdate();
             }

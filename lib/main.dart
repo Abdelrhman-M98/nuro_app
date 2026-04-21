@@ -17,18 +17,26 @@ Future<void> main() async {
   final authRepository = AuthRepository();
   final authCubit = AuthCubit(authRepository);
 
-  runApp(MyApp(authCubit: authCubit));
+  runApp(MyApp(authRepository: authRepository, authCubit: authCubit));
 }
 
 class MyApp extends StatelessWidget {
+  final AuthRepository authRepository;
   final AuthCubit authCubit;
 
-  const MyApp({super.key, required this.authCubit});
+  const MyApp({
+    super.key,
+    required this.authRepository,
+    required this.authCubit,
+  });
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [BlocProvider<AuthCubit>.value(value: authCubit)],
+      providers: [
+        RepositoryProvider<AuthRepository>.value(value: authRepository),
+        BlocProvider<AuthCubit>.value(value: authCubit),
+      ],
       child: ScreenUtilInit(
         designSize: const Size(412, 917),
         minTextAdapt: true,
