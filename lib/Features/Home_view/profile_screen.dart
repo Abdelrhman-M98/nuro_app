@@ -251,7 +251,14 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
                 alignment: Alignment.centerLeft,
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.h),
-                  child: Text("Gender", style: FontStyles.roboto14.copyWith(color: Colors.white70)),
+                  child: Text(
+                    "Gender",
+                    style: FontStyles.roboto14.copyWith(
+                      color: _fieldsEditable
+                          ? Colors.white70
+                          : Colors.white.withValues(alpha: 0.42),
+                    ),
+                  ),
                 ),
               ),
               _buildGenderRadioButtons(readOnly: !_fieldsEditable),
@@ -449,14 +456,21 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
     bool readOnly = false,
   }) {
     final fill = readOnly
-        ? kSurfaceColor.withValues(alpha: 0.55)
+        ? kSurfaceColor.withValues(alpha: 0.35)
         : kSurfaceColor;
     return Padding(
       padding: EdgeInsets.only(bottom: 20.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: FontStyles.roboto14.copyWith(color: Colors.white70)),
+          Text(
+            label,
+            style: FontStyles.roboto14.copyWith(
+              color: readOnly
+                  ? Colors.white.withValues(alpha: 0.42)
+                  : Colors.white70,
+            ),
+          ),
           SizedBox(height: 8.h),
           TextField(
             controller: controller,
@@ -465,15 +479,29 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
             keyboardType: isMultiline ? TextInputType.multiline : (isNumber ? TextInputType.number : TextInputType.text),
             maxLines: isMultiline ? null : 1,
             minLines: isMultiline ? 3 : 1,
-            style: TextStyle(color: Colors.white.withValues(alpha: readOnly ? 0.85 : 1)),
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: readOnly ? 0.58 : 1),
+            ),
             decoration: InputDecoration(
-              prefixIcon: Icon(icon, color: kAccentColor, size: 20.sp),
+              prefixIcon: Icon(
+                icon,
+                color: kAccentColor.withValues(alpha: readOnly ? 0.4 : 1),
+                size: 20.sp,
+              ),
               filled: true,
               fillColor: fill,
               contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16.r),
-                borderSide: BorderSide.none,
+                borderSide: readOnly
+                    ? BorderSide(color: Colors.white.withValues(alpha: 0.08))
+                    : BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16.r),
+                borderSide: readOnly
+                    ? BorderSide(color: Colors.white.withValues(alpha: 0.08))
+                    : BorderSide.none,
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16.r),
@@ -491,26 +519,42 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
 
   Widget _buildCountryField({bool readOnly = false}) {
     final fill = readOnly
-        ? kSurfaceColor.withValues(alpha: 0.55)
+        ? kSurfaceColor.withValues(alpha: 0.35)
         : kSurfaceColor;
     final field = AbsorbPointer(
       absorbing: readOnly,
       child: TextField(
         controller: countryController,
         readOnly: true,
-        style: TextStyle(color: Colors.white.withValues(alpha: readOnly ? 0.85 : 1)),
+        style: TextStyle(
+          color: Colors.white.withValues(alpha: readOnly ? 0.58 : 1),
+        ),
         decoration: InputDecoration(
-          prefixIcon: Icon(Icons.public, color: kAccentColor, size: 20.sp),
+          prefixIcon: Icon(
+            Icons.public,
+            color: kAccentColor.withValues(alpha: readOnly ? 0.4 : 1),
+            size: 20.sp,
+          ),
           suffixIcon: Icon(
             Icons.arrow_drop_down,
-            color: readOnly ? Colors.white38 : Colors.white70,
+            color: readOnly
+                ? Colors.white.withValues(alpha: 0.22)
+                : Colors.white70,
           ),
           filled: true,
           fillColor: fill,
           contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16.r),
-            borderSide: BorderSide.none,
+            borderSide: readOnly
+                ? BorderSide(color: Colors.white.withValues(alpha: 0.08))
+                : BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16.r),
+            borderSide: readOnly
+                ? BorderSide(color: Colors.white.withValues(alpha: 0.08))
+                : BorderSide.none,
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16.r),
@@ -528,7 +572,14 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Country", style: FontStyles.roboto14.copyWith(color: Colors.white70)),
+          Text(
+            "Country",
+            style: FontStyles.roboto14.copyWith(
+              color: readOnly
+                  ? Colors.white.withValues(alpha: 0.42)
+                  : Colors.white70,
+            ),
+          ),
           SizedBox(height: 8.h),
           readOnly
               ? field
@@ -575,21 +626,24 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
         width: double.infinity,
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
         decoration: BoxDecoration(
-          color: kSurfaceColor.withValues(alpha: 0.55),
+          color: kSurfaceColor.withValues(alpha: 0.35),
           borderRadius: BorderRadius.circular(12.r),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.06),
+          ),
         ),
         child: Row(
           children: [
             Icon(
               genderSelection == "Female" ? Icons.female : Icons.male,
-              color: kAccentColor,
+              color: kAccentColor.withValues(alpha: 0.42),
               size: 22.sp,
             ),
             SizedBox(width: 10.w),
             Text(
               genderSelection,
               style: FontStyles.roboto16.copyWith(
-                color: Colors.white.withValues(alpha: 0.9),
+                color: Colors.white.withValues(alpha: 0.58),
                 fontWeight: FontWeight.w600,
               ),
             ),
