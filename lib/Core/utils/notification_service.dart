@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:flutter/foundation.dart';
@@ -7,6 +9,15 @@ import 'package:nervix_app/Core/services/telemetry_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+
+@pragma('vm:entry-point')
+void onDidReceiveBackgroundNotificationResponse(
+  NotificationResponse response,
+) {
+  unawaited(
+    NotificationService.registerAcknowledgedReminderPayload(response.payload),
+  );
+}
 
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
@@ -21,6 +32,12 @@ class NotificationService {
 
   static final ValueNotifier<bool> emergencySoundEnabled =
       ValueNotifier<bool>(true);
+  static final StreamController<String> _journalAckController =
+      StreamController<String>.broadcast();
+  static const String _pendingAckPrefKey = 'pending_journal_ack_doc_ids_v1';
+
+  static Stream<String> get journalReminderAcknowledgedStream =>
+      _journalAckController.stream;
 
   static int _journalReminderId(String docId) {
     return 200000 + (docId.hashCode.abs() % 900000);
@@ -44,7 +61,16 @@ class NotificationService {
 
     await _notificationsPlugin.initialize(
       settings: initializationSettings,
+      onDidReceiveNotificationResponse: (response) {
+        unawaited(registerAcknowledgedReminderPayload(response.payload));
+      },
+      onDidReceiveBackgroundNotificationResponse:
+          onDidReceiveBackgroundNotificationResponse,
     );
+    final launchDetails =
+        await _notificationsPlugin.getNotificationAppLaunchDetails();
+    final launchPayload = launchDetails?.notificationResponse?.payload;
+    await registerAcknowledgedReminderPayload(launchPayload);
     tz.initializeTimeZones();
     try {
       final String localTimeZone = await FlutterTimezone.getLocalTimezone();
@@ -235,5 +261,36 @@ class NotificationService {
 
   static Future<void> cancelJournalReminder(String docId) async {
     await _notificationsPlugin.cancel(id: _journalReminderId(docId));
+  }
+
+  static Future<void> registerAcknowledgedReminderPayload(String? payload) async {
+    if (payload == null || !payload.startsWith('journal:')) return;
+    final docId = payload.replaceFirst('journal:', '').trim();
+    if (docId.isEmpty) return;
+    final prefs = await SharedPreferences.getInstance();
+    final current = prefs.getStringList(_pendingAckPrefKey) ?? <String>[];
+    if (!current.contains(docId)) {
+      current.add(docId);
+      await prefs.setStringList(_pendingAckPrefKey, current);
+    }
+    _journalAckController.add(docId);
+  }
+
+  static Future<List<String>> getPendingAcknowledgedReminderDocIds() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getStringList(_pendingAckPrefKey) ?? <String>[];
+  }
+
+  static Future<void> markAcknowledgedReminderProcessed(String docId) async {
+    if (docId.trim().isEmpty) return;
+    final prefs = await SharedPreferences.getInstance();
+    final pending = prefs.getStringList(_pendingAckPrefKey) ?? <String>[];
+    if (!pending.contains(docId)) return;
+    pending.removeWhere((id) => id == docId);
+    if (pending.isEmpty) {
+      await prefs.remove(_pendingAckPrefKey);
+    } else {
+      await prefs.setStringList(_pendingAckPrefKey, pending);
+    }
   }
 }
