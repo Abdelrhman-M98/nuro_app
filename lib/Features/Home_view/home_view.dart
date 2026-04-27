@@ -19,16 +19,19 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
   bool _actionsExpanded = false;
+  late final HomeCubit _homeCubit;
 
   @override
   void initState() {
     super.initState();
+    _homeCubit = HomeCubit()..init();
     WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _homeCubit.close();
     super.dispose();
   }
 
@@ -39,6 +42,14 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
         title: "Nervix Background Guard",
         body: "Neural monitoring is actively running in the background.",
       );
+      return;
+    }
+    if (state == AppLifecycleState.resumed && mounted) {
+      final homeState = _homeCubit.state;
+      if (homeState is HomeLoaded &&
+          homeState.currentState.toLowerCase() == 'abnormal') {
+        NotificationService.ensureEmergencyAlarmActive();
+      }
     }
   }
 
@@ -65,8 +76,8 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => HomeCubit()..init(),
+    return BlocProvider.value(
+      value: _homeCubit,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,

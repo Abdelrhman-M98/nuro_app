@@ -45,7 +45,7 @@ class NotificationService {
 
   static Future<void> init() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@mipmap/nervix');
 
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings(
@@ -67,6 +67,37 @@ class NotificationService {
       onDidReceiveBackgroundNotificationResponse:
           onDidReceiveBackgroundNotificationResponse,
     );
+
+    // Request permissions for Android
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      final androidPlugin = _notificationsPlugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+      
+      // Request notification permission (Android 13+)
+      await androidPlugin?.requestNotificationsPermission();
+      // Request exact alarm permission (Android 12+)
+      await androidPlugin?.requestExactAlarmsPermission();
+
+      await androidPlugin?.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'journal_reminder_channel',
+          'Health Journal Reminders',
+          description: 'Scheduled reminders for health journal notes',
+          importance: Importance.max,
+        ),
+      );
+      await androidPlugin?.createNotificationChannel(
+        const AndroidNotificationChannel(
+          'emergency_channel_v2',
+          'Emergency Alerts',
+          description: 'Alarm for abnormal neural activity',
+          importance: Importance.max,
+          playSound: true,
+          enableVibration: true,
+        ),
+      );
+    }
+
     final launchDetails =
         await _notificationsPlugin.getNotificationAppLaunchDetails();
     final launchPayload = launchDetails?.notificationResponse?.payload;
@@ -120,6 +151,11 @@ class NotificationService {
     }
   }
 
+  static Future<void> ensureEmergencyAlarmActive() async {
+    _emergencyActive = true;
+    await _resumeEmergencyAlarmAudioIfNeeded();
+  }
+
   static Future<void> showStatusNotification({
     required String title,
     required String body,
@@ -168,6 +204,10 @@ class NotificationService {
       channelDescription: 'Alarm for abnormal neural activity (sound optional)',
       importance: Importance.max,
       priority: Priority.high,
+      category: AndroidNotificationCategory.alarm,
+      visibility: NotificationVisibility.public,
+      fullScreenIntent: true,
+      audioAttributesUsage: AudioAttributesUsage.alarm,
       playSound: soundOn,
       enableVibration: true,
       vibrationPattern: soundOn
@@ -182,6 +222,7 @@ class NotificationService {
         presentAlert: true,
         presentBadge: true,
         presentSound: soundOn,
+        interruptionLevel: InterruptionLevel.timeSensitive,
       ),
     );
 
@@ -235,6 +276,8 @@ class NotificationService {
         channelDescription: 'Scheduled reminders for health journal notes',
         importance: Importance.max,
         priority: Priority.high,
+        category: AndroidNotificationCategory.reminder,
+        ticker: 'Health note reminder',
       ),
       iOS: const DarwinNotificationDetails(
         presentAlert: true,
@@ -242,15 +285,34 @@ class NotificationService {
         presentSound: true,
       ),
     );
-    await _notificationsPlugin.zonedSchedule(
-      id: _journalReminderId(docId),
-      title: 'Health note reminder',
-      body: '$tag: ${note.trim()}',
-      scheduledDate: tz.TZDateTime.from(reminderAt, tz.local),
-      notificationDetails: details,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      payload: 'journal:$docId',
-    );
+    try {
+      await _notificationsPlugin.zonedSchedule(
+        id: _journalReminderId(docId),
+        title: 'Health note reminder',
+        body: '$tag: ${note.trim()}',
+        scheduledDate: tz.TZDateTime.from(reminderAt, tz.local),
+        notificationDetails: details,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        payload: 'journal:$docId',
+      );
+    } on PlatformException catch (e) {
+      if (e.code == 'exact_alarms_not_permitted') {
+        await TelemetryService.logEvent(
+          'journal_reminder_exact_alarm_not_permitted',
+        );
+        await _notificationsPlugin.zonedSchedule(
+          id: _journalReminderId(docId),
+          title: 'Health note reminder',
+          body: '$tag: ${note.trim()}',
+          scheduledDate: tz.TZDateTime.from(reminderAt, tz.local),
+          notificationDetails: details,
+          androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+          payload: 'journal:$docId',
+        );
+      } else {
+        rethrow;
+      }
+    }
     await TelemetryService.logEvent(
       'journal_reminder_scheduled',
       parameters: {
