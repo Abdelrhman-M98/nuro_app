@@ -1,197 +1,166 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nervix_app/Core/utils/app_routes.dart';
-import 'package:nervix_app/Core/utils/custom_button.dart';
-import 'package:nervix_app/Core/utils/custom_divider.dart';
-import 'package:nervix_app/Core/utils/custom_password_field.dart';
-import 'package:nervix_app/Core/utils/custom_text_field.dart';
-import 'package:nervix_app/Core/utils/google_button.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/auth/auth_cubit.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/auth/auth_state.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/view/widget/custom_button.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/view/widget/custom_divider.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/view/widget/custom_password_field.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/view/widget/custom_text_field.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/view/widget/google_button.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class SignupBody extends StatefulWidget {
-  const SignupBody({super.key});
+  const SignupBody({super.key, required this.onToggleMode});
+  final VoidCallback onToggleMode;
 
   @override
   State<SignupBody> createState() => _SignupBodyState();
 }
 
 class _SignupBodyState extends State<SignupBody> {
-  final formKey = GlobalKey<FormState>();
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
-    nameController.dispose();
-    emailController.dispose();
-    phoneController.dispose();
-    passwordController.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  void validateAndRegister(BuildContext context) {
-    if (formKey.currentState!.validate()) {
-      FocusScope.of(context).unfocus();
-      context.read<AuthCubit>().register(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-        fullName: nameController.text.trim(),
-        phone: phoneController.text.trim(),
+  void _onSignupPressed() {
+    if (_formKey.currentState!.validate()) {
+      context.read<AuthCubit>().signUpWithEmail(
+        _nameController.text.trim(),
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
       );
     }
+  }
+
+  String? _validatePassword(String? value, BuildContext context) {
+    if (value == null || value.isEmpty) return context.t("Password is required", "كلمة المرور مطلوبة");
+    if (value.length < 8) return context.t("Min 8 characters required", "يجب أن تكون 8 أحرف على الأقل");
+    if (!RegExp(r'[0-9]').hasMatch(value)) return context.t("At least one number required", "يجب أن تحتوي على رقم واحد على الأقل");
+    if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) return context.t("At least one symbol required", "يجب أن تحتوي على رمز واحد على الأقل");
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-        if (state is AuthLoading) {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) => Center(
-              child: CircularProgressIndicator(color: kAccentColor),
-            ),
-          );
-        } else {
-          Navigator.of(context, rootNavigator: true).pop();
-        }
-
-        if (state is AuthFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.error), backgroundColor: kErrorColor),
-          );
-        } else if (state is AuthSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text("Account created successfully!"),
-              backgroundColor: kAccentColor,
-            ),
-          );
+        if (state is AuthSuccess) {
           if (state.hasCompletedProfile) {
             GoRouter.of(context).go(AppRouter.kHomeView);
           } else {
-            GoRouter.of(context).go('${AppRouter.kProfileView}?onboarding=1');
+            GoRouter.of(context).go(AppRouter.kProfileCompletionView);
           }
+        } else if (state is AuthFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+          );
         }
       },
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 24.w),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: constraints.maxHeight),
-              child: IntrinsicHeight(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(height: 24.h),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text("Hello There", style: FontStyles.roboto24),
-                    ),
-                    SizedBox(height: 14.h),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Nice to see you for the first time!",
-                        style: FontStyles.roboto16,
-                      ),
-                    ),
-                    SizedBox(height: 24.h),
-                    Form(
-                      key: formKey,
-                      child: Column(
-                        children: [
-                          CustomTextField(
-                            controller: nameController,
-                            label: "Full Name",
-                            icon: FontAwesomeIcons.solidUser,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Name is required";
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 19.h),
-                          CustomTextField(
-                            controller: emailController,
-                            label: "Email",
-                            icon: FontAwesomeIcons.solidEnvelope,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Email is required";
-                              } else if (!RegExp(
-                                r'^[^@]+@[^@]+\.[^@]+',
-                              ).hasMatch(value)) {
-                                return "Enter a valid email";
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 19.h),
-                          CustomTextField(
-                            controller: phoneController,
-                            label: "Phone",
-                            icon: FontAwesomeIcons.phone,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Phone is required";
-                              } else if (!RegExp(r'^[0-9]{10,}$').hasMatch(value)) {
-                                return "Enter a valid phone number";
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 19.h),
-                          CustomPasswordField(
-                            controller: passwordController,
-                            label: "Password",
-                            icon: FontAwesomeIcons.lock,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Password is required";
-                              } else if (value.length < 6) {
-                                return "Password must be at least 6 characters";
-                              }
-                              return null;
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 24.h),
-                    CustomButton(
-                      onPressed: () => validateAndRegister(context),
-                      text: "Register Now",
-                    ),
-                    SizedBox(height: 32.h),
-                    CustomDivider(),
-                    SizedBox(height: 24.h),
-                    GoogleButton(
-                      onPressed: () {
-                        FocusScope.of(context).unfocus();
-                        context.read<AuthCubit>().loginWithGoogle();
-                      },
-                    ),
-                    SizedBox(height: 32.h),
-                  ],
-                ),
+      child: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 32.w),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: 40.h),
+              Text(
+                context.t("Create Account", "إنشاء حساب"),
+                style: FontStyles.roboto24.copyWith(color: Colors.white),
+                textAlign: TextAlign.center,
               ),
-            ),
-          );
-        },
+              SizedBox(height: 8.h),
+              Text(
+                context.t("Start your journey with us now", "ابدأ رحلتك معنا الآن"),
+                style: FontStyles.roboto14.copyWith(color: Colors.white70),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 40.h),
+              
+              CustomTextField(
+                controller: _nameController,
+                hintText: context.t("Full Name", "الاسم بالكامل"),
+                validator: (v) => (v == null || v.isEmpty) ? context.t("Name is required", "الاسم مطلوب") : null,
+              ),
+              SizedBox(height: 20.h),
+              
+              CustomTextField(
+                controller: _emailController,
+                hintText: context.t("Email Address", "البريد الإلكتروني"),
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value == null || value.isEmpty) return context.t("Email is required", "البريد الإلكتروني مطلوب");
+                  if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                    return context.t("Enter a valid email address", "أدخل بريداً إلكترونياً صحيحاً");
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 20.h),
+              
+              CustomPasswordField(
+                controller: _passwordController,
+                hintText: context.t("Password", "كلمة المرور"),
+                validator: (v) => _validatePassword(v, context),
+              ),
+              SizedBox(height: 20.h),
+              
+              CustomPasswordField(
+                controller: _confirmPasswordController,
+                hintText: context.t("Confirm Password", "تأكيد كلمة المرور"),
+                validator: (v) => v != _passwordController.text ? context.t("Passwords do not match", "كلمات المرور غير متطابقة") : null,
+              ),
+              
+              SizedBox(height: 32.h),
+              
+              BlocBuilder<AuthCubit, AuthState>(
+                builder: (context, state) {
+                  return CustomButton(
+                    onPressed: state is AuthLoading ? null : _onSignupPressed,
+                    text: state is AuthLoading 
+                        ? context.t("Creating account...", "جاري إنشاء الحساب...") 
+                        : context.t("Sign Up", "إنشاء حساب"),
+                  );
+                },
+              ),
+              
+              SizedBox(height: 40.h),
+              const CustomDivider(),
+              SizedBox(height: 32.h),
+              
+              GoogleButton(onPressed: () => context.read<AuthCubit>().signInWithGoogle()),
+              
+              SizedBox(height: 40.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(context.t("Already have an account?", "لديك حساب بالفعل؟"), style: TextStyle(color: Colors.white70, fontSize: 13.sp)),
+                  TextButton(
+                    onPressed: widget.onToggleMode,
+                    child: Text(context.t("Sign In", "تسجيل الدخول"), style: TextStyle(color: kAccentColor, fontWeight: FontWeight.bold)),
+                  ),
+                ],
+              ),
+              SizedBox(height: 40.h),
+            ],
+          ),
+        ),
       ),
     );
   }

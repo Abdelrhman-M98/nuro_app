@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class JournalReminderDialog extends StatelessWidget {
   final String tag;
@@ -124,7 +125,7 @@ class JournalReminderDialog extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Reminder Due',
+                            context.t('Reminder Due', 'حان وقت التذكير'),
                             style: FontStyles.roboto18.copyWith(
                               color: Colors.white,
                               letterSpacing: 0.5,
@@ -172,7 +173,7 @@ class JournalReminderDialog extends StatelessWidget {
                         shadowColor: color.withValues(alpha: 0.5),
                       ),
                       child: Text(
-                        'Acknowledged',
+                        context.t('Acknowledged', 'تمت القراءة'),
                         style: FontStyles.roboto16.copyWith(
                           fontWeight: FontWeight.w700,
                         ),

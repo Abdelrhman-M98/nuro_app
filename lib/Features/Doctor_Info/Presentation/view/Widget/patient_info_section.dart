@@ -4,6 +4,7 @@ import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/patient_card_info.dart';
 import 'package:nervix_app/Features/Doctor_Info/Presentation/view/Widget/dynamic_line_chart.dart';
 import 'package:nervix_app/Features/Home_view/logic/home_cubit.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class PatientInfoSection extends StatelessWidget {
   const PatientInfoSection({super.key, required this.state});
@@ -16,13 +17,13 @@ class PatientInfoSection extends StatelessWidget {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: PatientsCardInfo(
-            patientName: state.user.name,
-            age: state.user.age,
+            patientName: state.user.name ?? context.t('Guest', 'ضيف'),
+            age: state.user.age ?? 25,
             condition: state.user.condition,
-            imageUrl: state.user.profileImageUrl,
-            profileImageBase64: state.user.profileImageBase64,
+            imageUrl: state.user.profileImageUrl ?? '',
+            profileImageBase64: state.user.profileImageBase64 ?? '',
             signalValue: state.latestSignal,
-            gender: state.user.gender,
+            gender: state.user.gender ?? context.t('Male', 'ذكر'),
             currentState: state.currentState,
           ),
         ),

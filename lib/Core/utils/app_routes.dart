@@ -11,6 +11,7 @@ import 'package:nervix_app/Features/Entry_View/presentation/view/entry_view.dart
 import 'package:nervix_app/Features/Entry_View/presentation/view/Skip/patient_info_view.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/view/reset_password_view.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/view/Skip/user_type_view.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/view/profile_completion_page.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/view/verification_password_view.dart';
 import 'package:nervix_app/Features/Splash_View/presentation/splash_view.dart';
 import 'package:nervix_app/Features/Verifying_Data/Presentation/view/verifying_data_view.dart';
@@ -21,6 +22,7 @@ import 'package:nervix_app/Features/Legal/presentation/medical_disclaimer_screen
 import 'package:nervix_app/Features/Legal/presentation/legal_document_screen.dart';
 import 'package:nervix_app/Features/Legal/presentation/safety_onboarding_screen.dart';
 import 'package:nervix_app/Core/legal/app_legal_content.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 abstract class AppRouter {
   static final rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -35,6 +37,7 @@ abstract class AppRouter {
   static const kVerificationPasswordView = '/verificationPasswordView';
   static const kResetPasswordView = '/resetPasswordView';
   static const kProfileView = '/profileView';
+  static const kProfileCompletionView = '/profileCompletionView';
   static const kMedicalHistoryView = '/medicalHistoryView';
   static const kMedicalDisclaimerView = '/medicalDisclaimer';
   static const kPrivacyPolicyView = '/privacy';
@@ -81,13 +84,7 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kForgotPasswordView,
-        builder: (context, state) {
-          return BlocProvider(
-            create: (_) =>
-                ForgotPasswordCubit(context.read<AuthRepository>()),
-            child: const ForgotPasswordView(),
-          );
-        },
+        builder: (context, state) => const ForgotPasswordView(),
       ),
       GoRoute(
         path: kVerificationPasswordView,
@@ -122,21 +119,25 @@ abstract class AppRouter {
       ),
       GoRoute(
         path: kPrivacyPolicyView,
-        builder: (context, state) => const LegalDocumentScreen(
-          title: 'Privacy Policy',
-          paragraphs: AppLegalContent.privacySections,
+        builder: (context, state) => LegalDocumentScreen(
+          title: context.t('Privacy Policy', 'سياسة الخصوصية'),
+          paragraphs: AppLegalContent.getPrivacySections(context),
         ),
       ),
       GoRoute(
         path: kTermsOfServiceView,
-        builder: (context, state) => const LegalDocumentScreen(
-          title: 'Terms of Service',
-          paragraphs: AppLegalContent.termsSections,
+        builder: (context, state) => LegalDocumentScreen(
+          title: context.t('Terms of Service', 'شروط الخدمة'),
+          paragraphs: AppLegalContent.getTermsSections(context),
         ),
       ),
       GoRoute(
         path: kHealthJournalView,
         builder: (context, state) => const HealthJournalScreen(),
+      ),
+      GoRoute(
+        path: kProfileCompletionView,
+        builder: (context, state) => const ProfileCompletionPage(),
       ),
       GoRoute(
         path: kSafetyOnboardingView,

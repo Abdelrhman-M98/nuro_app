@@ -8,6 +8,7 @@ import 'package:nervix_app/Core/services/journal_due_reminder_service.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/notification_service.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class HealthJournalScreen extends StatefulWidget {
   const HealthJournalScreen({super.key});
@@ -33,6 +34,17 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
   void initState() {
     super.initState();
     _searchController.addListener(() => setState(() => _searchQuery = _searchController.text.toLowerCase()));
+  }
+
+  String _tagLabel(String tag) {
+    switch (tag.trim().toLowerCase()) {
+      case 'general': return context.t('general', 'عام');
+      case 'sleep': return context.t('sleep', 'النوم');
+      case 'stress': return context.t('stress', 'الضغط العصبي');
+      case 'medication': return context.t('medication', 'العلاج');
+      case 'symptom': return context.t('symptom', 'الأعراض');
+      default: return tag;
+    }
   }
 
   @override
@@ -78,7 +90,7 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
   Future<void> _saveNote() async {
     final text = _noteController.text.trim();
     if (text.isEmpty) {
-      _showStatusSnackBar('Please enter a note', Colors.orange);
+      _showStatusSnackBar(context.t('Please enter a note', 'يرجى إدخال ملاحظة'), Colors.orange);
       return;
     }
     
@@ -114,12 +126,12 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
       }
       if (mounted) Navigator.pop(context); // Close sheet
       _showStatusSnackBar(
-        wasEditing ? 'Changes saved successfully' : 'Journal entry added', 
+        wasEditing ? context.t('Changes saved successfully', 'تم حفظ التعديلات بنجاح') : context.t('Journal entry added', 'تمت إضافة تدوينة جديدة'), 
         Colors.green.shade600
       );
       _resetInput();
     } catch (e) {
-      _showStatusSnackBar('Failed to save: $e', Colors.orange);
+      _showStatusSnackBar(context.t('Failed to save', 'فشل في الحفظ') + ': $e', Colors.orange);
     }
   }
 
@@ -169,7 +181,7 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
                 SizedBox(height: 20.h),
                 Row(
                   children: [
-                    Text(_editingDocId == null ? 'New Entry' : 'Edit Entry', style: FontStyles.roboto18),
+                    Text(_editingDocId == null ? context.t('New Entry', 'تدوينة جديدة') : context.t('Edit Entry', 'تعديل التدوينة'), style: FontStyles.roboto18),
                     const Spacer(),
                     IconButton(
                       onPressed: () => Navigator.pop(context),
@@ -184,10 +196,10 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
                   autofocus: true,
                   maxLength: _maxNoteLength,
                   style: const TextStyle(color: Colors.white, height: 1.5, fontSize: 16),
-                  decoration: const InputDecoration(
-                    hintText: 'Share your thoughts...', 
+                  decoration: InputDecoration(
+                    hintText: context.t('Share your thoughts...', 'شارك أفكارك...'), 
                     border: InputBorder.none,
-                    counterStyle: TextStyle(color: Colors.white24),
+                    counterStyle: const TextStyle(color: Colors.white24),
                   ),
                   onChanged: (_) => setSheetState(() {}),
                 ),
@@ -202,7 +214,7 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
                         padding: EdgeInsets.only(right: 8.w),
                         child: ChoiceChip(
                           avatar: Icon(_tagIcon(tag), size: 14, color: selected ? Colors.black : color),
-                          label: Text(tag),
+                          label: Text(_tagLabel(tag)),
                           selected: selected,
                           onSelected: (_) => setSheetState(() => _selectedTag = tag),
                           selectedColor: color,
@@ -232,7 +244,7 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
                             Icon(Icons.alarm_rounded, size: 18, color: _reminderAt != null ? kAccentColor : Colors.white38),
                             SizedBox(width: 8.w),
                             Text(
-                              _reminderAt == null ? 'Set Reminder' : DateFormat('hh:mm a').format(_reminderAt!),
+                              _reminderAt == null ? context.t('Set Reminder', 'ضبط تذكير') : DateFormat('hh:mm a').format(_reminderAt!),
                               style: TextStyle(color: _reminderAt != null ? kAccentColor : Colors.white38, fontSize: 13),
                             ),
                           ],
@@ -247,7 +259,7 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
                         padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 14.h),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
                       ),
-                      child: Text(_editingDocId == null ? 'Add' : 'Update', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                      child: Text(_editingDocId == null ? context.t('Add', 'إضافة') : context.t('Update', 'تحديث'), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),
@@ -276,7 +288,7 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
     final picked = DateTime(date.year, date.month, date.day, time.hour, time.minute);
     if (picked.isBefore(DateTime.now())) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please choose a future time.')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.t('Please choose a future time.', 'يرجى اختيار وقت في المستقبل.'))));
       return;
     }
     setState(() => _reminderAt = picked);
@@ -287,25 +299,25 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: kSurfaceColor,
-        title: const Text('Delete Entry?', style: TextStyle(color: Colors.white)),
+        title: Text(context.t('Delete Entry?', 'حذف التدوينة؟'), style: const TextStyle(color: Colors.white)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete', style: TextStyle(color: Colors.redAccent))),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(context.t('Cancel', 'إلغاء'))),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: Text(context.t('Delete', 'حذف'), style: const TextStyle(color: Colors.redAccent))),
         ],
       ),
     );
     if (confirmed == true) {
       await NotificationService.cancelJournalReminder(docId);
       await FirebaseFirestore.instance.collection('users').doc(uid).collection('health_journal').doc(docId).delete();
-      _showStatusSnackBar('Entry deleted', Colors.redAccent);
+      _showStatusSnackBar(context.t('Entry deleted', 'تم حذف التدوينة'), Colors.redAccent);
     }
   }
 
   // --- Date Grouping Helper ---
   String _dateHeader(DateTime date) {
     final now = DateTime.now();
-    if (date.year == now.year && date.month == now.month && date.day == now.day) return 'Today';
-    if (date.year == now.year && date.month == now.month && date.day == now.day - 1) return 'Yesterday';
+    if (date.year == now.year && date.month == now.month && date.day == now.day) return context.t('Today', 'اليوم');
+    if (date.year == now.year && date.month == now.month && date.day == now.day - 1) return context.t('Yesterday', 'أمس');
     return DateFormat('EEEE, dd MMM').format(date);
   }
 
@@ -318,18 +330,12 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
         onPressed: () => _showComposer(),
         backgroundColor: kAccentColor,
         icon: const Icon(Icons.add_rounded, color: Colors.black),
-        label: const Text('Add Entry', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        label: Text(context.t('Add Entry', 'إضافة تدوينة'), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
       ),
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).journalTitle, style: FontStyles.roboto18),
         backgroundColor: kBackgroundColor,
         elevation: 0,
-        actions: [
-          IconButton(
-            onPressed: () => JournalDueReminderService.instance.scanDueRemindersNow(), 
-            icon: const Icon(Icons.sync_rounded, color: Colors.white24),
-          ),
-        ],
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(105.h),
           child: Column(
@@ -339,7 +345,7 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    hintText: 'Search your journal...',
+                    hintText: context.t('Search your journal...', 'ابحث في مذكراتك...'),
                     prefixIcon: const Icon(Icons.search_rounded, color: kAccentColor),
                     filled: true,
                     fillColor: kSurfaceColor.withValues(alpha: 0.5),
@@ -356,8 +362,9 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
                     final tag = _filterTags[i];
                     final selected = tag == _filterTag;
                     final color = tag == 'All' ? kAccentColor : _tagColor(tag);
+                    final label = tag == 'All' ? context.t('All', 'الكل') : _tagLabel(tag);
                     return ChoiceChip(
-                      label: Text(tag, style: TextStyle(fontSize: 11.sp)),
+                      label: Text(label, style: TextStyle(fontSize: 11.sp)),
                       selected: selected,
                       onSelected: (_) => setState(() => _filterTag = tag),
                       selectedColor: color,
@@ -404,23 +411,31 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
             groups.putIfAbsent(header, () => []).add(doc);
           }
 
-          return ListView.builder(
-            padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 100.h),
-            itemCount: groups.keys.length,
-            itemBuilder: (context, index) {
-              final header = groups.keys.elementAt(index);
-              final items = groups[header]!;
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 4.w),
-                    child: Text(header, style: FontStyles.roboto12.copyWith(color: kAccentColor, fontWeight: FontWeight.bold, letterSpacing: 1.1)),
-                  ),
-                  ...items.map((doc) => _buildNoteCard(doc)),
-                ],
-              );
+          return RefreshIndicator(
+            onRefresh: () async {
+              await JournalDueReminderService.instance.scanDueRemindersNow();
             },
+            color: kAccentColor,
+            backgroundColor: kSurfaceColor,
+            child: ListView.builder(
+              padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 100.h),
+              physics: const AlwaysScrollableScrollPhysics(),
+              itemCount: groups.keys.length,
+              itemBuilder: (context, index) {
+                final header = groups.keys.elementAt(index);
+                final items = groups[header]!;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 4.w),
+                      child: Text(header, style: FontStyles.roboto12.copyWith(color: kAccentColor, fontWeight: FontWeight.bold, letterSpacing: 1.1)),
+                    ),
+                    ...items.map((doc) => _buildNoteCard(doc)),
+                  ],
+                );
+              },
+            ),
           );
         },
       ),
@@ -445,7 +460,7 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
           children: [
             Icon(_tagIcon(data['tag'] ?? 'general'), size: 16, color: color),
             SizedBox(width: 8.w),
-            Text(data['tag']?.toUpperCase() ?? 'GENERAL', style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+            Text(_tagLabel(data['tag'] ?? 'general').toUpperCase(), style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
             const Spacer(),
             Text(
               data['createdAt'] != null ? DateFormat('hh:mm a').format((data['createdAt'] as Timestamp).toDate()) : '',
@@ -459,8 +474,8 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
                 if (val == 'edit') _showComposer(editId: doc.id, initialData: data);
               },
               itemBuilder: (context) => [
-                const PopupMenuItem(value: 'edit', child: Text('Edit')),
-                const PopupMenuItem(value: 'delete', child: Text('Delete', style: TextStyle(color: Colors.redAccent))),
+                PopupMenuItem(value: 'edit', child: Text(context.t('Edit', 'تعديل'))),
+                PopupMenuItem(value: 'delete', child: Text(context.t('Delete', 'حذف'), style: const TextStyle(color: Colors.redAccent))),
               ],
             ),
           ],
@@ -497,8 +512,8 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
         children: [
           Icon(Icons.auto_awesome_motion_rounded, size: 80, color: Colors.white10),
           SizedBox(height: 20.h),
-          Text('Your space for thoughts is empty.', style: TextStyle(color: Colors.white38, fontSize: 16)),
-          Text('Tap the "+" to start journaling.', style: TextStyle(color: Colors.white24, fontSize: 12)),
+          Text(context.t('Your space for thoughts is empty.', 'مساحة أفكارك فارغة.'), style: const TextStyle(color: Colors.white38, fontSize: 16)),
+          Text(context.t('Tap the "+" to start journaling.', 'اضغط على "+" لبدء التدوين.'), style: const TextStyle(color: Colors.white24, fontSize: 12)),
         ],
       ),
     );

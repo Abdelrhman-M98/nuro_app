@@ -1,134 +1,123 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'auth_state.dart';
-import '../../Data/repository/auth_repo.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:nervix_app/Features/Entry_View/Data/repository/auth_repo.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/auth/auth_state.dart';
+import 'package:nervix_app/Features/Home_view/data/models/user_model.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   final AuthRepository authRepository;
 
   AuthCubit(this.authRepository) : super(AuthInitial());
 
-  bool _googleSignInInProgress = false;
-
-  Future<void> login(String email, String password) async {
+  Future<void> signInWithEmail(String email, String password) async {
     emit(AuthLoading());
     try {
-      await authRepository.signInWithEmail(email, password);
-      final complete = await authRepository.hasCompletedUserProfile();
-      emit(AuthSuccess(hasCompletedProfile: complete));
-    } on FirebaseAuthException catch (e) {
-      emit(AuthFailure(_mapFirebaseAuthError(e)));
-    } catch (e) {
-      emit(AuthFailure(_handleError(e)));
-    }
-  }
-
-  Future<void> register({
-    required String email,
-    required String password,
-    String? fullName,
-    String? phone,
-  }) async {
-    emit(AuthLoading());
-    try {
-      final cred = await authRepository.signUpWithEmail(email, password);
-      final user = cred.user;
-      if (user == null) {
-        emit(AuthFailure('Could not create account.'));
+      // 1. Check if email is registered with Google only
+      final isGoogleOnly = await authRepository.isEmailRegisteredWithGoogle(email);
+      if (isGoogleOnly) {
+        emit(AuthFailure('هذا البريد مسجل عن طريق Google، استخدم زر "تسجيل الدخول بجوجل"'));
         return;
       }
-      final trimmedName = fullName?.trim();
-      if (trimmedName != null && trimmedName.isNotEmpty) {
-        await user.updateDisplayName(trimmedName);
-        await user.reload();
+
+      // 2. Proceed with sign in
+      final user = await authRepository.signInWithEmail(email, password);
+      if (user != null) {
+        emit(AuthSuccess(
+          user: user, 
+          hasCompletedProfile: user.hasCompletedProfile,
+        ));
+      } else {
+        emit(AuthFailure('فشل تسجيل الدخول. تأكد من البيانات.'));
       }
-      await authRepository.seedInitialProfileFromSignup(
-        uid: user.uid,
-        email: email,
-        fullName: trimmedName,
-        phone: phone?.trim(),
-      );
-      final complete = await authRepository.hasCompletedUserProfile();
-      emit(AuthSuccess(hasCompletedProfile: complete));
     } on FirebaseAuthException catch (e) {
-      emit(AuthFailure(_mapFirebaseAuthError(e)));
+      emit(AuthFailure(_mapAuthError(e)));
     } catch (e) {
-      emit(AuthFailure(_handleError(e)));
+      emit(AuthFailure(e.toString()));
     }
   }
 
-  Future<void> loginWithGoogle() async {
-    if (_googleSignInInProgress) return;
-    _googleSignInInProgress = true;
+  Future<void> signUpWithEmail(String name, String email, String password) async {
+    emit(AuthLoading());
+    try {
+      final user = await authRepository.signUpWithEmail(name, email, password);
+      if (user != null) {
+        emit(AuthSuccess(user: user, hasCompletedProfile: false));
+      }
+    } on FirebaseAuthException catch (e) {
+      emit(AuthFailure(_mapAuthError(e)));
+    } catch (e) {
+      emit(AuthFailure(e.toString()));
+    }
+  }
+
+  Future<void> signInWithGoogle() async {
     emit(AuthLoading());
     try {
       final user = await authRepository.signInWithGoogle();
       if (user != null) {
-        final complete = await authRepository.hasCompletedUserProfile();
-        emit(AuthSuccess(hasCompletedProfile: complete));
+        emit(AuthSuccess(
+          user: user, 
+          hasCompletedProfile: user.hasCompletedProfile,
+        ));
       } else {
         emit(AuthInitial());
       }
+    } on FirebaseAuthException catch (e) {
+      emit(AuthFailure(_mapAuthError(e)));
     } catch (e) {
       emit(AuthFailure(e.toString()));
-    } finally {
-      _googleSignInInProgress = false;
+    }
+  }
+
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await authRepository.sendPasswordResetEmail(email);
+      emit(PasswordResetSent());
+    } on FirebaseAuthException catch (e) {
+      emit(PasswordResetFailure(_mapAuthError(e)));
+    } catch (e) {
+      emit(PasswordResetFailure(e.toString()));
+    }
+  }
+
+  Future<void> updateUserProfile(UserModel updatedUser) async {
+    emit(AuthLoading());
+    try {
+      await authRepository.updateUserProfile(updatedUser);
+      emit(ProfileUpdated(updatedUser));
+      emit(AuthSuccess(
+        user: updatedUser, 
+        hasCompletedProfile: updatedUser.hasCompletedProfile,
+      ));
+    } catch (e) {
+      emit(AuthFailure('فشل تحديث البيانات: $e'));
     }
   }
 
   Future<void> logout() async {
-    await authRepository.signOut();
+    await authRepository.logout();
     emit(AuthInitial());
   }
 
-  String _mapFirebaseAuthError(FirebaseAuthException e) {
+  String _mapAuthError(FirebaseAuthException e) {
     switch (e.code) {
-      case 'invalid-credential':
-      case 'wrong-password':
-        return 'Wrong email or password. Try again or use Google sign-in.';
       case 'user-not-found':
-        return 'No user found with this email.';
+        return 'البريد الإلكتروني غير مسجل.';
+      case 'wrong-password':
+      case 'invalid-credential':
+        return 'كلمة المرور غير صحيحة.';
+      case 'email-already-in-use':
+        return 'هذا البريد الإلكتروني مستخدم بالفعل.';
+      case 'weak-password':
+        return 'كلمة المرور ضعيفة جداً.';
       case 'invalid-email':
-        return 'The email address is invalid.';
-      case 'user-disabled':
-        return 'This user account has been disabled.';
+        return 'البريد الإلكتروني غير صحيح.';
       case 'too-many-requests':
-        return 'Too many attempts. Try again later.';
+        return 'محاولات كثيرة جداً، يرجى المحاولة لاحقاً.';
       case 'network-request-failed':
-        return 'Network error. Check your connection.';
-      case 'operation-not-allowed':
-        return 'This operation is not allowed.';
+        return 'لا يوجد اتصال بالإنترنت.';
       default:
-        return _handleError(e);
+        return e.message ?? 'حدث خطأ غير متوقع.';
     }
-  }
-
-  String _handleError(dynamic e) {
-    String msg = e.toString().toLowerCase();
-
-    if (msg.contains('user-not-found')) return 'No user found with this email.';
-    if (msg.contains('wrong-password')) {
-      return 'Incorrect password. Please try again.';
-    }
-    if (msg.contains('email-already-in-use')) {
-      return 'This email is already registered.';
-    }
-    if (msg.contains('weak-password')) return 'The password is too weak.';
-    if (msg.contains('invalid-email')) return 'The email address is invalid.';
-    if (msg.contains('user-disabled')) {
-      return 'This user account has been disabled.';
-    }
-    if (msg.contains('too-many-requests')) {
-      return 'Too many attempts. Try again later.';
-    }
-    if (msg.contains('network-request-failed')) {
-      return 'Network error. Check your connection.';
-    }
-    if (msg.contains('operation-not-allowed')) {
-      return 'This operation is not allowed.';
-    }
-    if (msg.contains('channel-error')) return 'Please fill in all fields.';
-
-    return 'An unexpected error occurred. Please try again.';
   }
 }

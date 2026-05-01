@@ -4,6 +4,7 @@ import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/notification_service.dart';
 import 'package:nervix_app/Core/utils/pdf_generator.dart';
 import 'package:nervix_app/Features/Home_view/data/models/user_model.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class ActionButtons extends StatelessWidget {
   const ActionButtons({super.key, required this.user});
@@ -20,12 +21,12 @@ class ActionButtons extends StatelessWidget {
             Expanded(
               child: _ChartControlButton(
                 tooltip: soundOn
-                    ? 'Sound on — tap for vibrate-only alerts'
-                    : 'Vibrate only — tap to turn alarm sound back on',
+                    ? context.t('Sound on — tap for vibrate-only alerts', 'الصوت مفعّل - اضغط للتبديل للهزاز فقط')
+                    : context.t('Vibrate only — tap to turn alarm sound back on', 'الهزاز فقط - اضغط لتفعيل صوت التنبيه'),
                 icon: soundOn
                     ? Icons.volume_up_rounded
                     : Icons.vibration_rounded,
-                subtitle: soundOn ? 'Sound' : 'Silent',
+                subtitle: soundOn ? context.t('Sound', 'صوت') : context.t('Silent', 'صامت'),
                 isHighlighted: !soundOn,
                 onPressed: () {
                   NotificationService.toggleEmergencySoundEnabled();
@@ -35,9 +36,9 @@ class ActionButtons extends StatelessWidget {
             SizedBox(width: 14.w),
             Expanded(
               child: _ChartControlButton(
-                tooltip: 'Download or share PDF report',
+                tooltip: context.t('Download or share PDF report', 'تحميل أو مشاركة تقرير PDF'),
                 icon: Icons.cloud_download_rounded,
-                subtitle: 'Report',
+                subtitle: context.t('Report', 'تقرير'),
                 isPrimary: true,
                 onPressed: () async {
                   await PdfReportGenerator.shareReport(user);

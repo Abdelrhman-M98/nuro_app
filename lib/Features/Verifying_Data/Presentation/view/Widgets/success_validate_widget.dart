@@ -5,6 +5,7 @@ import 'package:nervix_app/Core/utils/app_assets.dart';
 import 'package:nervix_app/Core/utils/app_routes.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class SuccessValidation extends StatelessWidget {
   const SuccessValidation({super.key});
@@ -21,7 +22,7 @@ class SuccessValidation extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 61.w),
               child: Text(
-                "PleaseYour account have been verified",
+                context.t("Your account has been verified", "تم التحقق من حسابك بنجاح"),
                 maxLines: 2,
                 textAlign: TextAlign.center,
                 style: FontStyles.roboto24.copyWith(color: Colors.white),
@@ -41,7 +42,7 @@ class SuccessValidation extends StatelessWidget {
                 ),
               ),
               child: Text(
-                "Login Now",
+                context.t("Login Now", "تسجيل الدخول الآن"),
                 style: FontStyles.roboto16.copyWith(
                   color: kPrimaryColor,
                   fontWeight: FontWeight.w800,

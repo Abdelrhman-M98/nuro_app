@@ -16,7 +16,7 @@ class EntryBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedAlign(
       duration: const Duration(milliseconds: 300),
-      alignment: isSignIn ? Alignment.centerLeft : Alignment.centerRight,
+      alignment: isSignIn ? AlignmentDirectional.centerStart : AlignmentDirectional.centerEnd,
       child: Container(
         width: pillWidth,
         height: 32.h,

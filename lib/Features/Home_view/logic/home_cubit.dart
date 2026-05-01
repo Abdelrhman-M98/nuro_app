@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:nervix_app/Core/services/telemetry_service.dart';
@@ -74,46 +75,55 @@ class HomeCubit extends Cubit<HomeState> {
     _latestSignal = 0;
     _currentState = 'normal';
 
+    _reconnectAttempt++;
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
       emit(HomeError("No user logged in"));
       return;
     }
-
-    _profileSubscription = FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .snapshots()
-        .listen(
-          (doc) {
-            if (doc.exists) {
-              _cachedUser = UserModel.fromFirestore(doc);
-              _emitUpdate();
-            } else {
-              _cachedUser = UserModel(
-                name: user.displayName ?? "User",
-                age: 25,
-                condition: "Unknown",
-                gender: "Unknown",
-                email: user.email ?? "",
-                phone: "",
-                country: "",
-                profileImageUrl: user.photoURL ?? "",
-                profileImageBase64: '',
-              );
-              _emitUpdate();
-            }
-          },
-          onError: (e) {
-            emit(HomeError("Profile connection issue. Pull to reconnect or tap Retry."));
-            TelemetryService.recordError(
-              e,
-              StackTrace.current,
-              reason: 'profile stream error',
-            );
-            _scheduleReconnect('profile');
-          },
+    
+    // Add a small delay for session stabilization
+    await Future.delayed(const Duration(seconds: 1));
+    
+    debugPrint('HomeCubit: Attempting one-time get for ${user.uid}');
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+          
+      if (doc.exists) {
+        debugPrint('HomeCubit: Profile fetched successfully via get()');
+        _cachedUser = UserModel.fromFirestore(doc);
+        _emitUpdate();
+      } else {
+        debugPrint('HomeCubit: Document not found via get(), creating default');
+        _cachedUser = UserModel(
+          id: user.uid,
+          email: user.email ?? "",
+          name: user.displayName ?? "User",
+          age: 25,
+          country: "Unknown",
+          phoneNumber: user.phoneNumber,
+          gender: "male",
+          chronicDiseases: const ["None"],
+          profileImageUrl: user.photoURL,
+          authProvider: 'google',
+          hasCompletedProfile: false,
+          createdAt: DateTime.now(),
+          lastLoginAt: DateTime.now(),
         );
+        _emitUpdate();
+      }
+    } catch (e) {
+      debugPrint('HomeCubit One-time Get Error: $e');
+      emit(HomeError("Profile connection issue: $e"));
+      TelemetryService.recordError(
+        e,
+        StackTrace.current,
+        reason: 'profile fetch error',
+      );
+    }
 
     _startListening();
   }

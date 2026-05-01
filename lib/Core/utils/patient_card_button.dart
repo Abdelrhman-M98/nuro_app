@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class PatientsCardButton extends StatelessWidget {
   const PatientsCardButton({
@@ -61,7 +62,7 @@ class PatientsCardButton extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      "$age Y.O",
+                      "$age ${context.t('Y.O', 'سنة')}",
                       style: FontStyles.roboto12.copyWith(color: kOnBackgroundColor),
                     ),
                     SizedBox(width: 7.w),

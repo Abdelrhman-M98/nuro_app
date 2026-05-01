@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/app_assets.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class GoogleButton extends StatelessWidget {
   const GoogleButton({super.key, this.onPressed});
@@ -26,7 +27,7 @@ class GoogleButton extends StatelessWidget {
             Image.asset(AppAssets.kGoogleIcon, width: 22.w, height: 22.h),
             SizedBox(width: 10.w),
             Text(
-              "Google",
+              context.t("Google", "جوجل"),
               style: FontStyles.roboto16.copyWith(
                 color: kOnBackgroundColor,
                 fontWeight: FontWeight.w600,

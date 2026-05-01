@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/view/widget/entry_background.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/view/widget/entry_btn.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class EntrySwitch extends StatelessWidget {
   final bool isSignIn;
@@ -39,14 +40,14 @@ class EntrySwitch extends StatelessWidget {
                 children: [
                   Expanded(
                     child: EntryButton(
-                      text: "Sign In",
+                      text: context.t("Sign In", "تسجيل الدخول"),
                       isActive: isSignIn,
                       onTap: () => onToggle(true),
                     ),
                   ),
                   Expanded(
                     child: EntryButton(
-                      text: "Sign Up",
+                      text: context.t("Sign Up", "إنشاء حساب"),
                       isActive: !isSignIn,
                       onTap: () => onToggle(false),
                     ),

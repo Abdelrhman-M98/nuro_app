@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nervix_app/Features/Home_view/data/models/user_model.dart';
@@ -78,7 +78,12 @@ class ProfileCubit extends Cubit<ProfileState> {
     if (b64.isNotEmpty) return;
     if (url.isNotEmpty) return;
 
-    await ref.set({'profileImageUrl': photo}, SetOptions(merge: true));
+    try {
+      await ref.set({'profileImageUrl': photo}, SetOptions(merge: true))
+          .timeout(const Duration(seconds: 5));
+    } catch (e) {
+      debugPrint('ensureGoogleProfilePhoto error: $e');
+    }
   }
 
   Future<void> updateProfile({
@@ -106,10 +111,12 @@ class ProfileCubit extends Cubit<ProfileState> {
         'name': name,
         'age': age,
         'country': country,
-        'diseases': diseases,
-        'phone': phone,
+        // Save as both for safety/compatibility
+        'chronicDiseases': diseases.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList(),
+        'phoneNumber': phone,
         'gender': gender,
         'email': user?.email ?? '',
+        'hasCompletedProfile': true,
       };
 
       await _firestore.collection('users').doc(uid).set(
@@ -167,13 +174,12 @@ class ProfileCubit extends Cubit<ProfileState> {
       );
       if (pickedFile == null) return;
 
-      final file = File(pickedFile.path);
-      if (!file.existsSync()) {
-        emit(ProfileError('Selected image file not found on device.'));
+      final bytes = await pickedFile.readAsBytes();
+      if (bytes.isEmpty) {
+        emit(ProfileError('Could not read the selected image.'));
         return;
       }
 
-      final bytes = await file.readAsBytes();
       emit(ProfileUpdating());
       final uid = _auth.currentUser?.uid;
       if (uid == null) {

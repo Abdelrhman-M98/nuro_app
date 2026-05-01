@@ -7,6 +7,7 @@ import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/custom_appbar_button.dart';
 import 'package:nervix_app/Core/utils/custom_search_field.dart';
 import 'package:nervix_app/Core/utils/patient_card_button.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class AllPatientsView extends StatelessWidget {
   const AllPatientsView({super.key});
@@ -54,7 +55,7 @@ class _HeaderSection extends StatelessWidget {
                 ),
                 SizedBox(width: 31.w),
                 Text(
-                  "All Patients",
+                  context.t("All Patients", "جميع المرضى"),
                   style: TextStyle(
                     fontSize: 20.sp,
                     fontWeight: FontWeight.w700,

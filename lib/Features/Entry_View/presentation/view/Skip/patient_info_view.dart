@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nervix_app/Core/utils/app_routes.dart';
 import 'package:nervix_app/Core/utils/custom_appbar_button.dart';
 import 'package:nervix_app/Core/utils/custom_button.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class PatientInfoView extends StatelessWidget {
   const PatientInfoView({super.key});
@@ -22,7 +23,7 @@ class PatientInfoView extends StatelessWidget {
                 },
               ),
               CustomButton(
-                text: "Verify Data",
+                text: context.t("Verify Data", "التحقق من البيانات"),
                 onPressed: () {
                   GoRouter.of(context).go(AppRouter.kVerifyDataView);
                 },

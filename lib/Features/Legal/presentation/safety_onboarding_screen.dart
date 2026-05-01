@@ -5,6 +5,7 @@ import 'package:nervix_app/Core/services/app_preferences.dart';
 import 'package:nervix_app/Core/utils/app_routes.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class SafetyOnboardingScreen extends StatefulWidget {
   const SafetyOnboardingScreen({super.key});
@@ -17,24 +18,27 @@ class _SafetyOnboardingScreenState extends State<SafetyOnboardingScreen> {
   final PageController _controller = PageController();
   int _index = 0;
 
-  static const _pages = <({IconData icon, String title, String body})>[
+  List<({IconData icon, String title, String body})> _getPages(BuildContext context) => [
     (
       icon: Icons.health_and_safety_outlined,
-      title: 'Support tool only',
-      body:
+      title: context.t('Support tool only', 'أداة مساعدة فقط'),
+      body: context.t(
           'Nervix helps you monitor trends, but it does not diagnose or replace clinical care.',
+          'نيرفيكس يساعدك في مراقبة الاتجاهات، ولكنه لا يشخص الحالة أو يحل محل الرعاية الطبية.'),
     ),
     (
       icon: Icons.notifications_active_outlined,
-      title: 'Alerts can vary',
-      body:
+      title: context.t('Alerts can vary', 'التنبيهات قد تختلف'),
+      body: context.t(
           'Device settings and connectivity can affect alert timing. Keep notifications enabled.',
+          'إعدادات الجهاز والاتصال قد تؤثر على توقيت التنبيه. يرجى إبقاء الإشعارات مفعلة.'),
     ),
     (
       icon: Icons.emergency_outlined,
-      title: 'Act quickly in emergencies',
-      body:
+      title: context.t('Act quickly in emergencies', 'تصرف بسرعة في الطوارئ'),
+      body: context.t(
           'If symptoms are severe, call your local emergency number immediately.',
+          'إذا كانت الأعراض شديدة، اتصل برقم الطوارئ المحلي فوراً.'),
     ),
   ];
 
@@ -45,7 +49,8 @@ class _SafetyOnboardingScreenState extends State<SafetyOnboardingScreen> {
   }
 
   Future<void> _continue() async {
-    if (_index < _pages.length - 1) {
+    final pages = _getPages(context);
+    if (_index < pages.length - 1) {
       await _controller.nextPage(
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeOut,
@@ -59,6 +64,7 @@ class _SafetyOnboardingScreenState extends State<SafetyOnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final pages = _getPages(context);
     return Scaffold(
       backgroundColor: kBackgroundColor,
       body: SafeArea(
@@ -70,10 +76,10 @@ class _SafetyOnboardingScreenState extends State<SafetyOnboardingScreen> {
               Expanded(
                 child: PageView.builder(
                   controller: _controller,
-                  itemCount: _pages.length,
+                  itemCount: pages.length,
                   onPageChanged: (value) => setState(() => _index = value),
                   itemBuilder: (context, i) {
-                    final page = _pages[i];
+                    final page = pages[i];
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -104,7 +110,7 @@ class _SafetyOnboardingScreenState extends State<SafetyOnboardingScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(
-                  _pages.length,
+                  pages.length,
                   (i) => AnimatedContainer(
                     duration: const Duration(milliseconds: 180),
                     margin: EdgeInsets.symmetric(horizontal: 4.w),
@@ -126,7 +132,7 @@ class _SafetyOnboardingScreenState extends State<SafetyOnboardingScreen> {
                   padding: EdgeInsets.symmetric(vertical: 14.h),
                 ),
                 child: Text(
-                  _index == _pages.length - 1 ? 'Continue' : 'Next',
+                  _index == pages.length - 1 ? context.t('Continue', 'استمرار') : context.t('Next', 'التالي'),
                   style: FontStyles.roboto16.copyWith(fontWeight: FontWeight.w700),
                 ),
               ),

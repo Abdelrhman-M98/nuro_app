@@ -9,6 +9,7 @@ import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/custom_appbar_button.dart';
 import 'package:nervix_app/Core/utils/custom_button.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/forgot_password/forgot_password_cubit.dart';
 
 class VerificationPasswordView extends StatefulWidget {
@@ -79,15 +80,15 @@ class _VerificationPasswordViewState extends State<VerificationPasswordView> {
                         GoRouter.of(context).go(AppRouter.kForgotPasswordView),
                   ),
                   SizedBox(height: 40.h),
-                  Text('Missing email', style: FontStyles.roboto24),
+                  Text(context.t('Missing email', 'البريد مفقود'), style: FontStyles.roboto24),
                   SizedBox(height: 16.h),
                   Text(
-                    'Go back and enter your email to receive a reset link.',
+                    context.t('Go back and enter your email to receive a reset link.', 'عد للخلف وأدخل بريدك لإرسال رابط تعيين كلمة السر.'),
                     style: FontStyles.roboto16,
                   ),
                   SizedBox(height: 32.h),
                   CustomButton(
-                    text: 'Back to forgot password',
+                    text: context.t('Back to forgot password', 'العودة لنسيت كلمة السر'),
                     onPressed: () =>
                         GoRouter.of(context).go(AppRouter.kForgotPasswordView),
                   ),
@@ -109,12 +110,12 @@ class _VerificationPasswordViewState extends State<VerificationPasswordView> {
             ),
           );
         } else if (state is ForgotPasswordEmailSent) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Reset link sent again. Check your inbox and spam.'),
-              backgroundColor: Colors.green,
-            ),
-          );
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(context.t('Reset link sent again. Check your inbox and spam.', 'تم إعادة إرسال الرابط. افحص بريدك والمجلدات المزعجة.')),
+                backgroundColor: Colors.green,
+              ),
+            );
           _startCooldown();
         }
       },
@@ -134,10 +135,10 @@ class _VerificationPasswordViewState extends State<VerificationPasswordView> {
                         GoRouter.of(context).go(AppRouter.kForgotPasswordView),
                   ),
                   SizedBox(height: 32.h),
-                  Text('Check your email', style: FontStyles.roboto24),
+                  Text(context.t('Check your email', 'تحقق من بريدك'), style: FontStyles.roboto24),
                   SizedBox(height: 12.h),
                   Text(
-                    'We sent a password reset link to:',
+                    context.t('We sent a password reset link to:', 'أرسلنا رابط إعادة تعيين كلمة السر إلى:'),
                     style: FontStyles.roboto16,
                   ),
                   SizedBox(height: 8.h),
@@ -150,15 +151,22 @@ class _VerificationPasswordViewState extends State<VerificationPasswordView> {
                   ),
                   SizedBox(height: 20.h),
                   Text(
-                    'Open the email on your phone or computer. The link works '
-                    'with all common providers (Gmail, Outlook, Yahoo, iCloud, '
-                    'company mail, etc.). Check Spam / Junk if you do not see it.',
+                    context.t(
+                      'Open the email on your phone or computer. The link works '
+                      'with all common providers (Gmail, Outlook, Yahoo, iCloud, '
+                      'company mail, etc.). Check Spam / Junk if you do not see it.',
+                      'افتح البريد على هاتفك أو كمبيوترك. الرابط يعمل مع جميع مقدمي '
+                      'الخدمة (Gmail, Outlook, Yahoo, iCloud، وغيرهم). افحص البريد المهمل إذا لم تجده.'
+                    ),
                     style: FontStyles.roboto12,
                   ),
                   SizedBox(height: 28.h),
                   Text(
-                    'After you set a new password in the browser, return here '
-                    'and sign in.',
+                    context.t(
+                      'After you set a new password in the browser, return here '
+                      'and sign in.',
+                      'بعد تعيين كلمة مرور جديدة في المتصفح، عد إلى هنا وسجل الدخول.'
+                    ),
                     style: FontStyles.roboto12.copyWith(color: kOnSurfaceVariantColor),
                   ),
                   SizedBox(height: 32.h),
@@ -171,13 +179,13 @@ class _VerificationPasswordViewState extends State<VerificationPasswordView> {
                         children: [
                           if (_secondsLeft > 0)
                             Text(
-                              'Resend available in ${_secondsLeft}s',
+                              context.t('Resend available in ${_secondsLeft}s', 'إعادة الإرسال متاحة خلال ${_secondsLeft} ثانية'),
                               textAlign: TextAlign.center,
                               style: FontStyles.roboto14,
                             ),
                           SizedBox(height: 12.h),
                           CustomButton(
-                            text: sending ? 'Sending…' : 'Resend email',
+                            text: sending ? context.t('Sending…', 'جاري الإرسال...') : context.t('Resend email', 'إعادة إرسال البريد'),
                             onPressed: canResend
                                 ? () => context
                                     .read<ForgotPasswordCubit>()
@@ -190,7 +198,7 @@ class _VerificationPasswordViewState extends State<VerificationPasswordView> {
                   ),
                   SizedBox(height: 24.h),
                   CustomButton(
-                    text: 'Back to sign in',
+                    text: context.t('Back to sign in', 'العودة لتسجيل الدخول'),
                     onPressed: () =>
                         GoRouter.of(context).go(AppRouter.kLoginView),
                   ),

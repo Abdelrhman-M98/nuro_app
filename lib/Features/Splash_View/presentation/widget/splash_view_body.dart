@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -6,7 +7,11 @@ import 'package:nervix_app/Core/services/app_preferences.dart';
 import 'package:nervix_app/Core/utils/app_assets.dart';
 import 'package:nervix_app/Core/utils/app_routes.dart';
 import 'package:nervix_app/Core/utils/const.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nervix_app/Features/Entry_View/Data/repository/auth_repo.dart';
 import 'package:nervix_app/Features/Splash_View/presentation/widget/signal_wave_painter.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class SplashViewBody extends StatefulWidget {
   const SplashViewBody({super.key});
@@ -142,23 +147,23 @@ class _SplashViewBodyState extends State<SplashViewBody>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Brain Signal Monitoring',
+                        context.t('Nervix', 'نيرفيكس'),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.5,
+                          fontSize: 28.sp,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.2,
                         ),
                       ),
                       SizedBox(height: 8.h),
                       Text(
-                        'Alert when epilepsy matters',
+                        context.t('Your dedicated partner in neural health and safety.', 'شريكك المخلص في الصحة والسلامة العصبية.'),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: kAccentColor.withValues(alpha: 0.9),
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w400,
+                          fontSize: 15.sp,
+                          fontWeight: FontWeight.w500,
                           letterSpacing: 0.3,
                         ),
                       ),
@@ -213,6 +218,25 @@ class _SplashViewBodyState extends State<SplashViewBody>
     if (!mounted) return;
     if (!accepted) {
       GoRouter.of(context).go(AppRouter.kMedicalDisclaimerView);
+      return;
+    }
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      if (!mounted) return;
+      try {
+        final authRepo = context.read<AuthRepository>();
+        final userData = await authRepo.getCurrentUserData(null, Source.server).timeout(const Duration(seconds: 5));
+        if (!mounted) return;
+        if (userData != null && userData.hasCompletedProfile) {
+          GoRouter.of(context).go(AppRouter.kHomeView);
+        } else {
+          GoRouter.of(context).go(AppRouter.kProfileCompletionView);
+        }
+      } catch (e) {
+        debugPrint('Splash navigate error: $e');
+        if (mounted) GoRouter.of(context).go(AppRouter.kLoginView);
+      }
     } else {
       GoRouter.of(context).go(AppRouter.kLoginView);
     }

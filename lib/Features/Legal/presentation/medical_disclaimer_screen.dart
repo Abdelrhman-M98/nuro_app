@@ -5,6 +5,7 @@ import 'package:nervix_app/Core/services/app_preferences.dart';
 import 'package:nervix_app/Core/utils/app_routes.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class MedicalDisclaimerScreen extends StatelessWidget {
   const MedicalDisclaimerScreen({super.key, this.reviewOnly = false});
@@ -12,16 +13,17 @@ class MedicalDisclaimerScreen extends StatelessWidget {
   /// When true (e.g. opened from Profile), show Close only — acceptance was already recorded.
   final bool reviewOnly;
 
-  static const List<String> _points = [
-    'Nervix is designed to assist with monitoring contextual information. It does not diagnose, treat, or prevent any medical condition.',
-    'Readings and alerts are informational. False positives or missed events can occur. Do not rely solely on the app for critical decisions.',
-    'Background behavior and notifications may vary by device and operating system policies. Monitoring may pause or be limited when the app is not active.',
-    'Always follow your clinician\'s advice. Use local emergency services in life-threatening situations.',
-    'By continuing, you acknowledge these limits and agree to use the app responsibly.',
+  static List<String> _getPoints(BuildContext context) => [
+    context.t('Nervix is designed to assist with monitoring contextual information. It does not diagnose, treat, or prevent any medical condition.', 'تم تصميم نيرفيكس للمساعدة في مراقبة المعلومات السياقية. هو لا يشخص أو يعالج أو يمنع أي حالة طبية.'),
+    context.t('Readings and alerts are informational. False positives or missed events can occur. Do not rely solely on the app for critical decisions.', 'القراءات والتنبيهات هي لأغراض إعلامية فقط. قد تحدث تنبيهات خاطئة أو يتم تفويت بعض الأحداث. لا تعتمد فقط على التطبيق في القرارات المصيرية.'),
+    context.t('Background behavior and notifications may vary by device and operating system policies. Monitoring may pause or be limited when the app is not active.', 'سلوك التطبيق في الخلفية والإشعارات قد يختلف حسب نوع الجهاز وسياسات نظام التشغيل. المراقبة قد تتوقف أو تتأثر عندما لا يكون التطبيق نشطاً.'),
+    context.t('Always follow your clinician\'s advice. Use local emergency services in life-threatening situations.', 'اتبع دائماً نصيحة طبيبك. استخدم خدمات الطوارئ المحلية في الحالات التي تهدد الحياة.'),
+    context.t('By continuing, you acknowledge these limits and agree to use the app responsibly.', 'بموافقتك وإكمالك، فإنك تقر بهذه الحدود وتوافق على استخدام التطبيق بمسؤولية.'),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final points = _getPoints(context);
     return Scaffold(
       backgroundColor: kBackgroundColor,
       body: Container(
@@ -39,7 +41,7 @@ class MedicalDisclaimerScreen extends StatelessWidget {
                     size: 52.sp, color: kAccentColor),
                 SizedBox(height: 16.h),
                 Text(
-                  'Important notice',
+                  context.t('Important notice', 'تنبيه هام'),
                   textAlign: TextAlign.center,
                   style: FontStyles.roboto24.copyWith(
                     color: kOnBackgroundColor,
@@ -48,7 +50,7 @@ class MedicalDisclaimerScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 10.h),
                 Text(
-                  'Please read before using Nervix',
+                  context.t('Please read before using Nervix', 'يرجى القراءة قبل استخدام نيرفيكس'),
                   textAlign: TextAlign.center,
                   style: FontStyles.roboto14.copyWith(
                     color: Colors.white70,
@@ -61,7 +63,7 @@ class MedicalDisclaimerScreen extends StatelessWidget {
                     radius: Radius.circular(8.r),
                     child: ListView.separated(
                       physics: const BouncingScrollPhysics(),
-                      itemCount: _points.length,
+                      itemCount: points.length,
                       separatorBuilder: (context, _) => SizedBox(height: 14.h),
                       itemBuilder: (context, i) {
                         return Row(
@@ -75,7 +77,7 @@ class MedicalDisclaimerScreen extends StatelessWidget {
                             SizedBox(width: 12.w),
                             Expanded(
                               child: Text(
-                                _points[i],
+                                points[i],
                                 style: FontStyles.roboto14.copyWith(
                                   color: Colors.white.withValues(alpha: 0.9),
                                   height: 1.45,
@@ -110,7 +112,7 @@ class MedicalDisclaimerScreen extends StatelessWidget {
                       }
                     },
                     child: Text(
-                      reviewOnly ? 'Close' : 'I understand and continue',
+                      reviewOnly ? context.t('Close', 'إغلاق') : context.t('I understand and continue', 'أفهم ذلك وأود الاستمرار'),
                       style: FontStyles.roboto16.copyWith(
                         fontWeight: FontWeight.w800,
                       ),

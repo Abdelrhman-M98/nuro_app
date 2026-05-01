@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/services/app_preferences.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 Future<void> showMonitoringGuideIfNeeded(BuildContext context) async {
   final seen = await AppPreferences.hasSeenMonitoringGuide();
@@ -57,7 +58,7 @@ class _MonitoringGuideBody extends StatelessWidget {
             ),
             SizedBox(height: 18.h),
             Text(
-              'How monitoring works',
+              context.t('How monitoring works', 'كيفية عمل المراقبة'),
               style: FontStyles.roboto18.copyWith(
                 color: kOnBackgroundColor,
                 fontWeight: FontWeight.w800,
@@ -70,26 +71,30 @@ class _MonitoringGuideBody extends StatelessWidget {
                 children: [
                   _GuideLine(
                     icon: Icons.show_chart,
-                    text:
+                    text: context.t(
                         'The chart shows recent neural signal values streamed live when your setup is connected.',
+                        'يوضح الرسم البياني قيم الإشارات العصبية الأخيرة التي يتم بثها مباشرة عند اتصال جهازك.'),
                   ),
                   SizedBox(height: 14.h),
                   _GuideLine(
                     icon: Icons.health_and_safety_outlined,
-                    text:
+                    text: context.t(
                         'When status is abnormal, you get a visual highlight and an alert (sound or vibration based on your choice).',
+                        'عندما تكون الحالة غير طبيعية، ستتلقى تنبيهاً مرئياً وصوتياً (أو هزازاً بناءً على اختيارك).'),
                   ),
                   SizedBox(height: 14.h),
                   _GuideLine(
                     icon: Icons.volume_up_rounded,
-                    text:
+                    text: context.t(
                         'Use the Sound / Silent buttons to choose audible alarm or vibrate-only notifications.',
+                        'استخدم أزرار الصوت / الصامت لاختيار التنبيه المسموع أو الاهتزاز فقط.'),
                   ),
                   SizedBox(height: 14.h),
                   _GuideLine(
                     icon: Icons.cloud_download_rounded,
-                    text:
+                    text: context.t(
                         'Export or share a PDF report from the cloud button when you need a summary for your doctor.',
+                        'قم بتصدير أو مشاركة تقرير PDF من زر السحابة عندما تحتاج إلى ملخص لطبيبك.'),
                   ),
                 ],
               ),
@@ -106,7 +111,7 @@ class _MonitoringGuideBody extends StatelessWidget {
               ),
               onPressed: () => Navigator.of(context).pop(),
               child: Text(
-                'Got it',
+                context.t('Got it', 'فهمت'),
                 style: FontStyles.roboto16.copyWith(
                   fontWeight: FontWeight.w800,
                 ),

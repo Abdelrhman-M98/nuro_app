@@ -1,135 +1,174 @@
+import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:nervix_app/Features/Home_view/data/models/user_model.dart';
 
 class AuthRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  GoogleSignIn get _googleSignIn => GoogleSignIn.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
 
   User? get currentUser => _auth.currentUser;
 
-  Future<UserCredential?> signInWithGoogle() async {
+  Future<bool> isEmailRegisteredWithGoogle(String email) async {
     try {
-      await _googleSignIn.initialize();
-
-      final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
-
-      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
-
-      final OAuthCredential credential = GoogleAuthProvider.credential(
-        idToken: googleAuth.idToken,
-      );
-
-      final cred = await _auth.signInWithCredential(credential);
-      final u = cred.user;
-      if (u != null) {
-        await _syncGoogleProfileImageToFirestoreIfNeeded(u);
-      }
-      return cred;
+      final snap = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: email.trim())
+          .get();
+      if (snap.docs.isEmpty) return false;
+      
+      final userData = snap.docs.first.data();
+      return userData['authProvider'] == 'google' || userData['isGoogle'] == true;
     } catch (e) {
-      if (e is GoogleSignInException &&
-          e.code == GoogleSignInExceptionCode.canceled) {
-        return null;
-      }
-
-      rethrow;
+      debugPrint('Firestore Error (isEmailRegistered): $e');
+      return false;
     }
   }
 
-  Future<UserCredential> signUpWithEmail(String email, String password) async {
-    return await _auth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+  Future<UserModel?> signInWithEmail(String email, String password) async {
+    try {
+      final credential = await _auth.signInWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
+      if (credential.user != null) {
+        debugPrint('Auth Success: UID=${credential.user!.uid}');
+        await _updateLastLogin(credential.user!.uid);
+        return await getCurrentUserData(credential.user!.uid, Source.server);
+      }
+    } catch (e) {
+      debugPrint('SignIn Error: $e');
+      rethrow;
+    }
+    return null;
   }
 
-  Future<UserCredential> signInWithEmail(String email, String password) async {
-    return await _auth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+  Future<UserModel?> signUpWithEmail(String name, String email, String password) async {
+    try {
+      final credential = await _auth.createUserWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
+      if (credential.user != null) {
+        debugPrint('SignUp Success: UID=${credential.user!.uid}');
+        await credential.user!.updateDisplayName(name.trim());
+        
+        final newUser = UserModel(
+          id: credential.user!.uid,
+          email: email.trim(),
+          name: name.trim(),
+          authProvider: 'email',
+          hasCompletedProfile: false,
+          createdAt: DateTime.now(),
+          lastLoginAt: DateTime.now(),
+        );
+        await _firestore.collection('users').doc(credential.user!.uid).set(newUser.toJson());
+        return newUser;
+      }
+    } catch (e) {
+      debugPrint('SignUp Error: $e');
+      rethrow;
+    }
+    return null;
+  }
+
+  Future<UserModel?> signInWithGoogle() async {
+    try {
+      debugPrint('Starting Google Sign-In...');
+      try { await _googleSignIn.signOut(); } catch (_) {}
+      
+      final GoogleSignInAccount? googleUser = await _googleSignIn.authenticate();
+      if (googleUser == null) {
+        debugPrint('Google Sign-In cancelled by user');
+        return null;
+      }
+
+      final dynamic googleAuth = await googleUser.authentication;
+      debugPrint('Google Auth obtained. ID Token: ${googleAuth.idToken != null}');
+      
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+      );
+
+      final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      final User? user = userCredential.user;
+
+      if (user != null) {
+        debugPrint('Firebase Google Auth Success: UID=${user.uid}');
+        final docRef = _firestore.collection('users').doc(user.uid);
+        debugPrint('Attempting to read Firestore: ${docRef.path}');
+        
+        try {
+          final doc = await docRef.get();
+          if (!doc.exists) {
+            debugPrint('Creating new user document in Firestore...');
+            final newUser = UserModel(
+              id: user.uid,
+              email: user.email ?? '',
+              name: user.displayName,
+              profileImageUrl: user.photoURL,
+              authProvider: 'google',
+              hasCompletedProfile: false,
+              createdAt: DateTime.now(),
+              lastLoginAt: DateTime.now(),
+            );
+            await docRef.set(newUser.toJson());
+            return newUser;
+          } else {
+            debugPrint('User document found. Updating last login...');
+            await _updateLastLogin(user.uid);
+            return await getCurrentUserData(user.uid, Source.server);
+          }
+        } catch (e) {
+          debugPrint('Firestore Permission/Access Error: $e');
+          rethrow;
+        }
+      }
+    } catch (e) {
+      debugPrint('Global Google Sign-In Error: $e');
+      rethrow;
+    }
+    return null;
   }
 
   Future<void> sendPasswordResetEmail(String email) async {
     await _auth.sendPasswordResetEmail(email: email.trim());
   }
 
-  Future<void> signOut() async {
+  Future<UserModel?> getCurrentUserData([String? uid, Source source = Source.serverAndCache]) async {
+    final id = uid ?? _auth.currentUser?.uid;
+    if (id == null) return null;
     try {
-      await _auth.signOut();
-      await _googleSignIn.signOut();
-    } catch (e, st) {
-      debugPrint('signOut: $e $st');
+      final doc = await _firestore.collection('users').doc(id).get(GetOptions(source: source));
+      if (doc.exists) {
+        return UserModel.fromFirestore(doc);
+      }
+    } catch (_) {
+      // Fallback if server fetch fails
+      final doc = await _firestore.collection('users').doc(id).get();
+      if (doc.exists) return UserModel.fromFirestore(doc);
     }
+    return null;
   }
 
-  Future<void> _syncGoogleProfileImageToFirestoreIfNeeded(User u) async {
-    final photo = u.photoURL;
-    if (photo == null || photo.isEmpty) return;
-    final isGoogle =
-        u.providerData.any((p) => p.providerId == 'google.com');
-    if (!isGoogle) return;
-
-    final ref = FirebaseFirestore.instance.collection('users').doc(u.uid);
-    final snap = await ref.get();
-    final data = snap.data() ?? {};
-    final url = (data['profileImageUrl'] as String?) ?? '';
-    final b64 = (data['profileImageBase64'] as String?) ?? '';
-    if (b64.isNotEmpty) return;
-    if (url.isNotEmpty) return;
-
-    await ref.set(
-      {
-        'profileImageUrl': photo,
-        if (u.email != null) 'email': u.email,
-      },
-      SetOptions(merge: true),
-    );
-  }
-
-  Future<void> seedInitialProfileFromSignup({
-    required String uid,
-    required String email,
-    String? fullName,
-    String? phone,
-  }) async {
-    final map = <String, dynamic>{'email': email.trim()};
-    if (fullName != null && fullName.trim().isNotEmpty) {
-      map['name'] = fullName.trim();
-    }
-    if (phone != null && phone.trim().isNotEmpty) {
-      map['phone'] = phone.trim();
-    }
-    await FirebaseFirestore.instance
+  Future<void> updateUserProfile(UserModel user) async {
+    if (user.id == null) return;
+    await _firestore
         .collection('users')
-        .doc(uid)
-        .set(map, SetOptions(merge: true));
+        .doc(user.id)
+        .set(user.toJson(), SetOptions(merge: true));
   }
 
-  Future<bool> hasCompletedUserProfile() async {
-    final uid = _auth.currentUser?.uid;
-    if (uid == null) return false;
-    final snap =
-        await FirebaseFirestore.instance.collection('users').doc(uid).get();
-    if (!snap.exists) return false;
-    final data = snap.data() ?? {};
-    final name = data['name'];
-    if (name is! String || name.trim().isEmpty) return false;
+  Future<void> _updateLastLogin(String uid) async {
+    await _firestore.collection('users').doc(uid).set({
+      'lastLoginAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+  }
 
-    final ageRaw = data['age'];
-    int? age;
-    if (ageRaw is int) {
-      age = ageRaw;
-    } else if (ageRaw != null) {
-      age = int.tryParse(ageRaw.toString());
-    }
-    if (age == null || age <= 0) return false;
-
-    final country = data['country'];
-    if (country is! String || country.trim().isEmpty) return false;
-
-    return true;
+  Future<void> logout() async {
+    await _auth.signOut();
+    await _googleSignIn.signOut();
   }
 }

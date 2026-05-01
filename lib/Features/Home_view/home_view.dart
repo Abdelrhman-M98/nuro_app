@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Core/utils/notification_service.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -39,8 +40,8 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
       NotificationService.showStatusNotification(
-        title: "Nervix Background Guard",
-        body: "Neural monitoring is actively running in the background.",
+        title: context.t("Nervix Background Guard", "حارس نيرفيكس في الخلفية"),
+        body: context.t("Neural monitoring is actively running in the background.", "مراقبة النشاط العصبي جارية بفعالية في الخلفية."),
       );
       return;
     }
@@ -85,7 +86,7 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
           automaticallyImplyLeading: false,
           actions: [
             IconButton(
-              tooltip: 'Health notes',
+              tooltip: context.t('Health notes', 'مذكرات الصحة'),
               onPressed:
                   () => GoRouter.of(context).push(AppRouter.kHealthJournalView),
               icon: const Icon(
@@ -95,14 +96,14 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
               ),
             ),
             IconButton(
-              tooltip: 'Abnormal activity log',
+              tooltip: context.t('Abnormal activity log', 'سجل النشاط غير الطبيعي'),
               onPressed:
                   () =>
                       GoRouter.of(context).push(AppRouter.kMedicalHistoryView),
               icon: const Icon(Icons.history, color: Colors.white, size: 28),
             ),
             IconButton(
-              tooltip: 'Profile',
+              tooltip: context.t('Profile', 'الملف الشخصي'),
               onPressed:
                   () => GoRouter.of(context).push(AppRouter.kProfileView),
               icon: const Icon(
@@ -130,7 +131,7 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     _FloatingActionPill(
-                      label: 'Emergency',
+                      label: context.t('Emergency', 'الطوارئ'),
                       icon: Icons.phone_in_talk_rounded,
                       gradientColors: const [
                         Color(0xFFFF6B6B),
@@ -142,7 +143,7 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
                     ),
                     SizedBox(height: 10.h),
                     _FloatingActionPill(
-                      label: 'Contact',
+                      label: context.t('Contact', 'التواصل'),
                       icon: Icons.forum_rounded,
                       gradientColors: const [
                         Color(0xFF2FE576),

@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class MedicalHistoryScreen extends StatelessWidget {
   const MedicalHistoryScreen({super.key});
@@ -16,19 +17,19 @@ class MedicalHistoryScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
-        title: Text("Medical History Log", style: FontStyles.roboto18),
+        title: Text(context.t("Medical History Log", "سجل التاريخ الطبي"), style: FontStyles.roboto18),
         backgroundColor: kBackgroundColor,
         elevation: 0,
         actions: [
           IconButton(
             onPressed: () => _confirmDeleteAll(context, uid),
             icon: const Icon(Icons.delete_sweep, color: Colors.redAccent),
-            tooltip: "Clear All Logs",
+            tooltip: context.t("Clear All Logs", "مسح جميع السجلات"),
           ),
         ],
       ),
       body: uid == null
-          ? const Center(child: Text("Please Login"))
+          ? Center(child: Text(context.t("Please Login", "يرجى تسجيل الدخول")))
           : StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('users')
@@ -43,7 +44,7 @@ class MedicalHistoryScreen extends StatelessWidget {
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                   return Center(
                     child: Text(
-                      "No emergency records found.",
+                      context.t("No emergency records found.", "لا يوجد سجلات طوارئ حالياً."),
                       style: FontStyles.roboto14.copyWith(color: Colors.white70),
                     ),
                   );
@@ -57,7 +58,7 @@ class MedicalHistoryScreen extends StatelessWidget {
                     final timestamp = data['timestamp'] as Timestamp?;
                     final date = timestamp != null
                         ? DateFormat('dd MMM yyyy, hh:mm a').format(timestamp.toDate())
-                        : "Unknown Date";
+                        : context.t("Unknown Date", "تاريخ غير معروف");
                     final signal = data['signalValue'] ?? 0;
 
                     return Card(
@@ -70,7 +71,7 @@ class MedicalHistoryScreen extends StatelessWidget {
                           child: const Icon(Icons.warning_amber_rounded, color: Colors.red),
                         ),
                         title: Text(
-                          "Abnormal Activity",
+                          context.t("Abnormal Activity", "نشاط غير طبيعي"),
                           style: FontStyles.roboto16.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                         subtitle: Text(
@@ -78,7 +79,7 @@ class MedicalHistoryScreen extends StatelessWidget {
                           style: FontStyles.roboto14.copyWith(color: Colors.white70),
                         ),
                         trailing: Text(
-                          "Signal: ${signal.toInt()}",
+                          "${context.t('Signal', 'الإشارة')}: ${signal.toInt()}",
                           style: FontStyles.roboto14.copyWith(color: kAccentColor, fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -97,20 +98,20 @@ class MedicalHistoryScreen extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: kSurfaceColor,
-        title: Text("Clear History?", style: FontStyles.roboto18.copyWith(color: Colors.white)),
-        content: Text("Are you sure you want to delete all medical records? This action cannot be undone.",
+        title: Text(context.t("Clear History?", "مسح السجل؟"), style: FontStyles.roboto18.copyWith(color: Colors.white)),
+        content: Text(context.t("Are you sure you want to delete all medical records? This action cannot be undone.", "هل أنت متأكد من حذف جميع السجلات الطبية؟ لا يمكن التراجع عن هذا الإجراء."),
             style: FontStyles.roboto14.copyWith(color: Colors.white70)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("Cancel"),
+            child: Text(context.t("Cancel", "إلغاء")),
           ),
           TextButton(
             onPressed: () async {
               Navigator.pop(context);
               await _deleteAllHistory(uid);
             },
-            child: const Text("Delete All", style: TextStyle(color: Colors.red)),
+            child: Text(context.t("Delete All", "حذف الكل"), style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),

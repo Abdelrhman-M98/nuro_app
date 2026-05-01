@@ -8,6 +8,7 @@ import 'package:nervix_app/Features/Doctor_Info/Presentation/view/Widget/patient
 import 'package:nervix_app/Features/Home_view/logic/home_cubit.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class HomeViewBody extends StatelessWidget {
   const HomeViewBody({super.key});
@@ -40,7 +41,7 @@ class HomeViewBody extends StatelessWidget {
                   SizedBox(height: 28.h),
                   Semantics(
                     button: true,
-                    label: 'Retry live stream connection',
+                    label: context.t('Retry live stream connection', 'إعادة المحاولة للربط المباشر'),
                     child: FilledButton.icon(
                       style: FilledButton.styleFrom(
                         backgroundColor: kAccentColor,
@@ -78,13 +79,13 @@ class HomeViewBody extends StatelessWidget {
                       children: [
                         SizedBox(height: 12.h),
                         _SectionHeader(
-                          title: 'Patient overview',
-                          subtitle: 'Identity and latest live signal',
+                          title: context.t('Patient overview', 'نظرة عامة على المريض'),
+                          subtitle: context.t('Identity and latest live signal', 'الهوية وآخر إشارة حية'),
                         ),
                         PatientInfoSection(state: state),
                         _SectionHeader(
-                          title: 'Clinical actions',
-                          subtitle: 'Quick tools for reports and monitoring',
+                          title: context.t('Clinical actions', 'الإجراءات الطبية'),
+                          subtitle: context.t('Quick tools for reports and monitoring', 'أدوات سريعة للتقارير والمراقبة'),
                         ),
                         DataSection(
                           currentState: state.currentState,

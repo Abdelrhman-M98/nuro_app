@@ -29,7 +29,9 @@ class _EntryViewBodyState extends State<EntryViewBody> {
         Expanded(
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
-            child: isSignIn ? const SigninBody() : const SignupBody(),
+            child: isSignIn
+                ? SigninBody(onToggleMode: () => setState(() => isSignIn = false))
+                : SignupBody(onToggleMode: () => setState(() => isSignIn = true)),
           ),
         ),
       ],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 import 'package:nervix_app/Core/utils/profile_avatar_widget.dart';
 
 class PatientsCardInfo extends StatelessWidget {
@@ -31,13 +32,13 @@ class PatientsCardInfo extends StatelessWidget {
     return t.isNotEmpty && t != 'unknown';
   }
 
-  static String _shortGender(String g) {
+  String _shortGender(BuildContext context, String g) {
     final s = g.trim();
     if (s.isEmpty) return '—';
     final lower = s.toLowerCase();
-    if (lower == 'male' || lower == 'm') return 'Male';
+    if (lower == 'male' || lower == 'm') return context.t('Male', 'ذكر');
     if (lower == 'female' || lower == 'f' || lower == 'woman') {
-      return 'Female';
+      return context.t('Female', 'أنثى');
     }
     return s[0].toUpperCase() + (s.length > 1 ? s.substring(1) : '');
   }
@@ -46,7 +47,7 @@ class PatientsCardInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isAbnormal = currentState.toLowerCase() == 'abnormal';
     final statusColor = isAbnormal ? const Color(0xFFFF6B6B) : const Color(0xFF4ADE80);
-    final statusLabel = isAbnormal ? 'Attention' : 'Stable';
+    final statusLabel = isAbnormal ? context.t('Attention', 'انتباه') : context.t('Stable', 'مستقر');
     final showCondition = _showCondition(condition);
 
     final avatarWidget = ProfileAvatarFromFields(
@@ -112,7 +113,7 @@ class PatientsCardInfo extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        patientName.isNotEmpty ? patientName : 'Patient',
+                        patientName.isNotEmpty && patientName != 'User' ? patientName : context.t('User', 'مستخدم'),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: FontStyles.roboto18.copyWith(
@@ -164,7 +165,7 @@ class PatientsCardInfo extends StatelessWidget {
                   children: [
                     Icon(Icons.cake_outlined, size: 14.sp, color: Colors.white54),
                     Text(
-                      '$age yrs',
+                      '$age ${context.t('yrs', 'سنة')}',
                       style: FontStyles.roboto14.copyWith(
                         color: Colors.white.withValues(alpha: 0.82),
                         fontWeight: FontWeight.w500,
@@ -183,7 +184,7 @@ class PatientsCardInfo extends StatelessWidget {
                       color: Colors.white54,
                     ),
                     Text(
-                      _shortGender(gender),
+                      _shortGender(context, gender),
                       style: FontStyles.roboto14.copyWith(
                         color: Colors.white.withValues(alpha: 0.82),
                         fontWeight: FontWeight.w500,
@@ -243,7 +244,7 @@ class PatientsCardInfo extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Neural signal (live)',
+                              context.t('Neural signal (live)', 'الإشارة العصبية (مباشر)'),
                               style: FontStyles.roboto12.copyWith(
                                 color: Colors.white.withValues(alpha: 0.55),
                                 fontWeight: FontWeight.w500,

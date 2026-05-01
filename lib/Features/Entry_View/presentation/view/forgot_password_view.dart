@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:go_router/go_router.dart';
-import 'package:nervix_app/Core/utils/app_routes.dart';
 import 'package:nervix_app/Core/utils/const.dart';
-import 'package:nervix_app/Core/utils/custom_appbar_button.dart';
-import 'package:nervix_app/Core/utils/custom_button.dart';
-import 'package:nervix_app/Core/utils/custom_text_field.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
-import 'package:nervix_app/Features/Entry_View/presentation/forgot_password/forgot_password_cubit.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/auth/auth_cubit.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/auth/auth_state.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/view/widget/custom_button.dart';
+import 'package:nervix_app/Features/Entry_View/presentation/view/widget/custom_text_field.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class ForgotPasswordView extends StatefulWidget {
   const ForgotPasswordView({super.key});
@@ -19,8 +17,8 @@ class ForgotPasswordView extends StatefulWidget {
 }
 
 class _ForgotPasswordViewState extends State<ForgotPasswordView> {
-  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -30,87 +28,81 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ForgotPasswordCubit, ForgotPasswordState>(
-      listener: (context, state) {
-        if (state is ForgotPasswordFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: kErrorColor,
-            ),
-          );
-        } else if (state is ForgotPasswordEmailSent) {
-          GoRouter.of(context).go(
-            AppRouter.kVerificationPasswordView,
-            extra: state.email,
-          );
-        }
-      },
-      child: Scaffold(
-        body: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: const BoxDecoration(gradient: kBackgroundGradient),
-          child: SafeArea(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 24.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomAppBarButton(
-                    onPressed: () =>
-                        GoRouter.of(context).go(AppRouter.kLoginView),
-                  ),
-                  SizedBox(height: 32.h),
-                  Text('Forgot password', style: FontStyles.roboto24),
-                  SizedBox(height: 12.h),
-                  Text(
-                    'Enter the email you use with Nervix. We will send you a '
-                    'link to reset your password (works with Gmail, Outlook, '
-                    'iCloud, and other providers).',
-                    style: FontStyles.roboto16,
-                  ),
-                  SizedBox(height: 36.h),
-                  Form(
-                    key: _formKey,
-                    child: CustomTextField(
-                      controller: _emailController,
-                      label: 'Email',
-                      icon: FontAwesomeIcons.envelope,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Email is required';
-                        }
-                        if (!RegExp(
-                          r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-                        ).hasMatch(value.trim())) {
-                          return 'Enter a valid email address';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  SizedBox(height: 40.h),
-                  BlocBuilder<ForgotPasswordCubit, ForgotPasswordState>(
-                    builder: (context, state) {
-                      final loading = state is ForgotPasswordSending;
-                      return CustomButton(
-                        text: loading ? 'Sending…' : 'Send reset link',
-                        onPressed: loading
-                            ? null
-                            : () {
-                                if (_formKey.currentState!.validate()) {
-                                  FocusScope.of(context).unfocus();
-                                  context.read<ForgotPasswordCubit>().sendResetEmail(
-                                        _emailController.text,
-                                      );
-                                }
-                              },
-                      );
-                    },
-                  ),
-                ],
+    return Scaffold(
+      backgroundColor: kBackgroundColor,
+      appBar: AppBar(
+        title: Text(context.t('Reset Password', 'إعادة تعيين كلمة المرور')),
+        backgroundColor: kBackgroundColor,
+        elevation: 0,
+      ),
+      body: BlocListener<AuthCubit, AuthState>(
+        listener: (context, state) {
+          if (state is PasswordResetSent) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(context.t('Password reset link sent to your email!', 'تم إرسال رابط إعادة التعيين لبريدك!')),
+                backgroundColor: Colors.green,
               ),
+            );
+            Navigator.pop(context);
+          } else if (state is PasswordResetFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+            );
+          }
+        },
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 32.w),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: 48.h),
+                Text(
+                  context.t("Forgot Password?", "نسيت كلمة المرور؟"),
+                  style: FontStyles.roboto24.copyWith(color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 12.h),
+                Text(
+                  context.t("Enter your email to receive a password reset link.", "أدخل بريدك الإلكتروني لتلقي رابط إعادة تعيين كلمة المرور."),
+                  style: FontStyles.roboto14.copyWith(color: Colors.white70),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 48.h),
+                CustomTextField(
+                  controller: _emailController,
+                  hintText: context.t("Email Address", "البريد الإلكتروني"),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) return context.t("Email is required", "البريد الإلكتروني مطلوب");
+                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(v)) {
+                      return context.t("Enter a valid email", "أدخل بريداً إلكترونياً صحيحاً");
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 32.h),
+                BlocBuilder<AuthCubit, AuthState>(
+                  builder: (context, state) {
+                    return CustomButton(
+                      onPressed: state is AuthLoading
+                          ? null
+                          : () {
+                              if (_formKey.currentState!.validate()) {
+                                context.read<AuthCubit>().sendPasswordResetEmail(
+                                      _emailController.text.trim(),
+                                    );
+                              }
+                            },
+                      text: state is AuthLoading 
+                        ? context.t("Sending...", "جاري الإرسال...") 
+                        : context.t("Send Reset Link", "إرسال رابط التعيين"),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         ),

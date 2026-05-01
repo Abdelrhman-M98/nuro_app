@@ -6,6 +6,7 @@ import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/custom_appbar_button.dart';
 import 'package:nervix_app/Core/utils/custom_button.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class ResetPasswordView extends StatelessWidget {
   const ResetPasswordView({super.key});
@@ -28,23 +29,28 @@ class ResetPasswordView extends StatelessWidget {
                       GoRouter.of(context).go(AppRouter.kLoginView),
                 ),
                 SizedBox(height: 40.h),
-                Text('Reset via email', style: FontStyles.roboto24),
+                Text(context.t('Reset via email', 'إعادة التعيين عبر البريد'), style: FontStyles.roboto24),
                 SizedBox(height: 16.h),
                 Text(
-                  'Nervix sends a secure link to your email. Open that link in '
-                  'your browser to choose a new password. You do not reset the '
-                  'password on this screen.',
+                  context.t(
+                    'Nervix sends a secure link to your email. Open that link in '
+                    'your browser to choose a new password. You do not reset the '
+                    'password on this screen.',
+                    'يرسل نيرفيك رابطاً آمناً إلى بريدك الإلكتروني. افتح هذا الرابط في '
+                    'متصفحك لاختيار كلمة مرور جديدة. لا يتم إعادة تعيين '
+                    'كلمة المرور في هذه الشاشة.'
+                  ),
                   style: FontStyles.roboto16,
                 ),
                 SizedBox(height: 32.h),
                 CustomButton(
-                  text: 'Request a new link',
+                  text: context.t('Request a new link', 'طلب رابط جديد'),
                   onPressed: () =>
                       GoRouter.of(context).go(AppRouter.kForgotPasswordView),
                 ),
                 SizedBox(height: 16.h),
                 CustomButton(
-                  text: 'Back to sign in',
+                  text: context.t('Back to sign in', 'العودة لتسجيل الدخول'),
                   onPressed: () =>
                       GoRouter.of(context).go(AppRouter.kLoginView),
                 ),

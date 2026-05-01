@@ -19,8 +19,8 @@ class ProfileAvatarImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ProfileAvatarFromFields(
-      profileImageUrl: user.profileImageUrl,
-      profileImageBase64: user.profileImageBase64,
+      profileImageUrl: user.profileImageUrl ?? '',
+      profileImageBase64: user.profileImageBase64 ?? '',
       genderFallback: genderFallback,
       fit: fit,
     );
@@ -48,6 +48,8 @@ class ProfileAvatarFromFields extends StatelessWidget {
         final bytes = base64Decode(profileImageBase64);
         return Image.memory(
           bytes,
+          width: double.infinity,
+          height: double.infinity,
           fit: fit,
           gaplessPlayback: true,
           errorBuilder:
@@ -61,6 +63,8 @@ class ProfileAvatarFromFields extends StatelessWidget {
     if (profileImageUrl.isNotEmpty) {
       return CachedNetworkImage(
         imageUrl: profileImageUrl,
+        width: double.infinity,
+        height: double.infinity,
         fit: fit,
         placeholder:
             (context, url) =>
@@ -89,6 +93,8 @@ class _DefaultGenderAvatar extends StatelessWidget {
             : 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
     return Image.network(
       url,
+      width: double.infinity,
+      height: double.infinity,
       fit: BoxFit.cover,
       errorBuilder:
           (context, error, stackTrace) =>

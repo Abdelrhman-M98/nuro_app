@@ -4,6 +4,7 @@ import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Features/Doctor_Info/Presentation/view/Widget/action_buttons.dart';
 import 'package:nervix_app/Features/Doctor_Info/Presentation/view/Widget/info_row.dart';
 import 'package:nervix_app/Features/Home_view/data/models/user_model.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class DataSection extends StatelessWidget {
   const DataSection({
@@ -32,7 +33,7 @@ class DataSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Patient Analysis",
+                context.t("Patient Analysis", "تحليل حالة المريض"),
                 style: TextStyle(
                   fontSize: 18.sp,
                   fontWeight: FontWeight.w700,
@@ -40,9 +41,17 @@ class DataSection extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 12.h),
-              InfoRow(title: "Status:", value: currentState),
+              InfoRow(
+                title: context.t("Status:", "الحالة:"), 
+                value: currentState == 'normal' 
+                    ? context.t("Normal", "طبيعي") 
+                    : context.t("Abnormal", "غير طبيعي")
+              ),
               SizedBox(height: 6.h),
-              const InfoRow(title: "Analysis:", value: "Monitoring Live"),
+              InfoRow(
+                title: context.t("Analysis:", "التحليل:"), 
+                value: context.t("Monitoring Live", "مراقبة مباشرة")
+              ),
               SizedBox(height: 12.h),
               ActionButtons(user: user),
             ],

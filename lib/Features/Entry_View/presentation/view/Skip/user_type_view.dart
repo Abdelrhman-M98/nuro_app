@@ -6,6 +6,7 @@ import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/custom_button.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/view/widget/custom_user_type.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class UserTypeView extends StatefulWidget {
   const UserTypeView({super.key});
@@ -65,31 +66,31 @@ class UserTypeViewState extends State<UserTypeView> {
                 ],
               ),
               SizedBox(height: 150.h),
-              Text("I'm a", style: FontStyles.roboto24),
+              Text(context.t("I'm a", "أنا..."), style: FontStyles.roboto24),
               SizedBox(height: 64.h),
               CustomUserTypeButton(
                 onPressed: () => selectedUserType.value = "Patient Relative",
                 imagePath: 'assets/images/Patient.png',
-                userType: "Patient Relative",
+                userType: context.t("Patient Relative", "قريب مريض"),
                 selectedUserType: selectedUserType,
               ),
               SizedBox(height: 21.h),
               CustomUserTypeButton(
                 onPressed: () => selectedUserType.value = "Doctor",
                 imagePath: 'assets/images/Doctor.png',
-                userType: "Doctor",
+                userType: context.t("Doctor", "طبيب"),
                 selectedUserType: selectedUserType,
               ),
               SizedBox(height: 21.h),
               CustomUserTypeButton(
                 onPressed: () => selectedUserType.value = "Nurse",
-                userType: "Nurse",
+                userType: context.t("Nurse", "ممرض/ة"),
                 imagePath: "assets/images/Nuers.png",
                 selectedUserType: selectedUserType,
               ),
               SizedBox(height: 91.h),
               CustomButton(
-                text: "Continue Registration",
+                text: context.t("Continue Registration", "متابعة التسجيل"),
                 onPressed: () {
                   if (selectedUserType.value == "Patient Relative") {
                     GoRouter.of(context).go(AppRouter.kPatientInfoView);

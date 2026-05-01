@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/localization/translation_extension.dart';
 
 class CustomSearchField extends StatelessWidget {
   const CustomSearchField({super.key});
@@ -34,7 +35,7 @@ class CustomSearchField extends StatelessWidget {
             child: TextField(
               style: FontStyles.roboto12.copyWith(color: kOnSurfaceColor),
               decoration: InputDecoration(
-                hintText: "Patient ID",
+                hintText: context.t("Patient ID", "اسم المريض"),
                 hintStyle: FontStyles.roboto12.copyWith(
                   color: kOnSurfaceVariantColor,
                 ),
