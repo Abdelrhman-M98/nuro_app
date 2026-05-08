@@ -15,8 +15,37 @@ class DynamicLineChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (dataPoints.isEmpty) return const Center(child: CircularProgressIndicator());
+
     final bool isAbnormal = currentState != 'Normal';
-    final Color lineColor = isAbnormal ? Colors.red : Colors.green;
+    final Color lineColor = isAbnormal ? const Color(0xFFFF4848) : const Color(0xFF00FF9D); 
+    
+    final double minX = dataPoints.first.x;
+    final double maxX = dataPoints.last.x;
+
+    // Fully Dynamic Y-axis scaling logic
+    double minYValue = 0;
+    double maxYValue = 1000;
+    double yInterval = 200;
+    
+    if (dataPoints.isNotEmpty) {
+      final values = dataPoints.map((s) => s.y).toList();
+      final currentMax = values.reduce((a, b) => a > b ? a : b);
+      final currentMin = values.reduce((a, b) => a < b ? a : b);
+      double diff = currentMax - currentMin;
+      
+      if (diff < 1.0) {
+        minYValue = currentMax * 0.9 - 10;
+        maxYValue = currentMax * 1.1 + 10;
+      } else {
+        final padding = diff * 0.1;
+        minYValue = currentMin - padding;
+        maxYValue = currentMax + padding;
+      }
+      
+      final range = maxYValue - minYValue;
+      yInterval = (range / 5).clamp(0.1, 1000.0);
+    }
 
     return ClipRect(
       child: LineChart(
@@ -24,67 +53,106 @@ class DynamicLineChart extends StatelessWidget {
           gridData: FlGridData(
             show: true,
             drawVerticalLine: true,
-            horizontalInterval: 500,
-            verticalInterval: 10,
+            horizontalInterval: yInterval, 
+            verticalInterval: 1,
             getDrawingHorizontalLine: (value) => FlLine(
-              color: Colors.white.withValues(alpha: 0.1),
-              strokeWidth: 1,
+              color: Colors.white.withValues(alpha: 0.05),
+              strokeWidth: 0.5,
+              dashArray: [5, 5],
             ),
             getDrawingVerticalLine: (value) => FlLine(
-              color: Colors.white.withValues(alpha: 0.1),
-              strokeWidth: 1,
+              color: Colors.white.withValues(alpha: 0.05),
+              strokeWidth: 0.5,
+              dashArray: [5, 5],
             ),
           ),
           titlesData: FlTitlesData(
             show: true,
             rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
             topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            bottomTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            bottomTitles: AxisTitles(
+               sideTitles: SideTitles(
+                 showTitles: true,
+                 interval: 2,
+                 reservedSize: 28,
+                 getTitlesWidget: (value, meta) {
+                   if (value % 2 != 0) return const SizedBox.shrink();
+                   if (value < minX || value > maxX) return const SizedBox.shrink();
+                   
+                   return Padding(
+                     padding: EdgeInsets.only(top: 8.h),
+                     child: Text(
+                       '${value.toInt()}s',
+                       textAlign: TextAlign.center,
+                       style: FontStyles.roboto12.copyWith(
+                         fontSize: 10.sp,
+                         color: Colors.white24,
+                         fontWeight: FontWeight.w400,
+                       ),
+                     ),
+                   );
+                 },
+               )
+            ),
             leftTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
-                interval: 500,
-                reservedSize: 42.w,
+                interval: yInterval, 
+                reservedSize: 50.w,
                 getTitlesWidget: (value, meta) {
-                  if (value % 500 == 0) {
-                    return Padding(
-                      padding: EdgeInsets.only(right: 8.w),
-                      child: Text(
-                        value.toInt().toString(),
-                        style: FontStyles.roboto12.copyWith(color: Colors.white54),
+                  final String text = yInterval < 1 
+                    ? value.toStringAsFixed(1)
+                    : value.toInt().toString();
+                    
+                  return Padding(
+                    padding: EdgeInsets.only(right: 12.w),
+                    child: Text(
+                      text,
+                      textAlign: TextAlign.right,
+                      style: FontStyles.roboto12.copyWith(
+                        color: Colors.white38,
+                        fontSize: 10.sp,
                       ),
-                    );
-                  }
-                  return const SizedBox.shrink();
+                    ),
+                  );
                 },
               ),
             ),
           ),
-          borderData: FlBorderData(
-            show: true,
-            border: Border.all(color: Colors.white10),
-          ),
-          minX: dataPoints.isNotEmpty ? dataPoints.first.x : 0,
-          maxX: dataPoints.isNotEmpty ? dataPoints.last.x : 50,
-          minY: 0,
-          maxY: 1200,
+          borderData: FlBorderData(show: false),
+          clipData: const FlClipData.all(),
+          minX: minX,
+          maxX: maxX,
+          minY: minYValue,
+          maxY: maxYValue,
           lineBarsData: [
             LineChartBarData(
-              spots: dataPoints.isNotEmpty ? dataPoints : [const FlSpot(0, 0)],
-              isCurved: true,
+              spots: dataPoints,
+              isCurved: false,
               color: lineColor,
-              barWidth: 3,
+              barWidth: 2,
               isStrokeCapRound: true,
+              shadow: Shadow(
+                color: lineColor.withValues(alpha: 0.3),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
               dotData: const FlDotData(show: false),
               belowBarData: BarAreaData(
                 show: true,
-                color: lineColor.withValues(alpha: 0.15),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    lineColor.withValues(alpha: 0.15),
+                    lineColor.withValues(alpha: 0.0),
+                  ],
+                ),
               ),
             ),
           ],
         ),
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.linear,
+        duration: Duration.zero, 
       ),
     );
   }

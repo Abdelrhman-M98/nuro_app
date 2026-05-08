@@ -17,12 +17,14 @@ class HomeLoading extends HomeState {}
 
 class HomeLoaded extends HomeState {
   final List<FlSpot> signalHistory;
+  final List<FlSpot> streamingHistory;
   final String currentState;
   final double latestSignal;
   final UserModel user;
 
   HomeLoaded({
     required this.signalHistory,
+    required this.streamingHistory,
     required this.currentState,
     required this.latestSignal,
     required this.user,
@@ -48,8 +50,10 @@ class HomeCubit extends Cubit<HomeState> {
   StreamSubscription? _profileSubscription;
 
   final List<FlSpot> _signalHistory = [];
+  final List<FlSpot> _streamingHistory = [const FlSpot(0, 0)];
   double _timeCounter = 0;
-  String _currentState = "normal";
+  double _streamingCounter = 0;
+  String _currentState = "Normal";
   double _latestSignal = 0;
   UserModel? _cachedUser;
   Timer? _reconnectTimer;
@@ -71,7 +75,10 @@ class HomeCubit extends Cubit<HomeState> {
     emit(HomeLoading());
     _cancelSubscriptions();
     _signalHistory.clear();
+    _streamingHistory.clear();
+    _streamingHistory.add(const FlSpot(0, 0));
     _timeCounter = 0;
+    _streamingCounter = 0;
     _latestSignal = 0;
     _currentState = 'Normal';
 
@@ -190,10 +197,16 @@ class HomeCubit extends Cubit<HomeState> {
               _latestSignal = newValue;
               _currentState = newStatus;
               _timeCounter += 1;
+              _streamingCounter += 1;
 
               _signalHistory.add(FlSpot(_timeCounter, newValue));
+              _streamingHistory.add(FlSpot(_streamingCounter, newValue));
+
               if (_signalHistory.length > 50) {
                 _signalHistory.removeAt(0);
+              }
+              if (_streamingHistory.length > 20) {
+                _streamingHistory.removeRange(0, 4);
               }
               _emitUpdate();
               _reconnectAttempt = 0;
@@ -242,6 +255,7 @@ class HomeCubit extends Cubit<HomeState> {
       emit(
         HomeLoaded(
           signalHistory: List.from(_signalHistory),
+          streamingHistory: List.from(_streamingHistory),
           currentState: _currentState,
           latestSignal: _latestSignal,
           user: _cachedUser!,

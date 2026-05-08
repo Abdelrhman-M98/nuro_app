@@ -41,7 +41,7 @@ class PatientInfoSection extends StatelessWidget {
             ),
           ),
           child: DynamicLineChart(
-            dataPoints: state.signalHistory,
+            dataPoints: state.streamingHistory,
             currentState: state.currentState,
           ),
         ),
