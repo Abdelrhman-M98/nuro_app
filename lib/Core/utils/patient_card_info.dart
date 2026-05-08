@@ -45,7 +45,7 @@ class PatientsCardInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isAbnormal = currentState.toLowerCase() == 'abnormal';
+    final bool isAbnormal = currentState != 'Normal';
     final statusColor = isAbnormal ? const Color(0xFFFF6B6B) : const Color(0xFF4ADE80);
     final statusLabel = isAbnormal ? context.t('Attention', 'انتباه') : context.t('Stable', 'مستقر');
     final showCondition = _showCondition(condition);

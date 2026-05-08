@@ -36,7 +36,7 @@ class PatientInfoSection extends StatelessWidget {
             color: kSurfaceColor,
             borderRadius: BorderRadius.circular(20.r),
             border: Border.all(
-              color: (state.currentState == 'abnormal' ? Colors.red : Colors.green).withValues(alpha: 0.3),
+              color: (state.currentState != 'Normal' ? Colors.red : Colors.green).withValues(alpha: 0.3),
               width: 1,
             ),
           ),

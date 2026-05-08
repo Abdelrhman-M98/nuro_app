@@ -48,7 +48,7 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed && mounted) {
       final homeState = _homeCubit.state;
       if (homeState is HomeLoaded &&
-          homeState.currentState.toLowerCase() == 'abnormal') {
+          homeState.currentState != 'Normal') {
         NotificationService.ensureEmergencyAlarmActive();
       }
     }
@@ -178,7 +178,7 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
           builder: (context, state) {
             bool isAbnormal = false;
             if (state is HomeLoaded) {
-              isAbnormal = state.currentState.toLowerCase() == 'abnormal';
+              isAbnormal = state.currentState != 'Normal';
             }
             return Stack(
               children: [

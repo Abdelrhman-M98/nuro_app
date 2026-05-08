@@ -73,7 +73,7 @@ class HomeCubit extends Cubit<HomeState> {
     _signalHistory.clear();
     _timeCounter = 0;
     _latestSignal = 0;
-    _currentState = 'normal';
+    _currentState = 'Normal';
 
     _reconnectAttempt++;
     final user = FirebaseAuth.instance.currentUser;
@@ -162,7 +162,33 @@ class HomeCubit extends Cubit<HomeState> {
             final data = event.snapshot.value;
             if (data != null) {
               double newValue = double.tryParse(data.toString()) ?? 0.0;
+              
+              String oldStatus = _currentState;
+              String newStatus;
+              
+              // Logic moved from device-side/remote-state to signal-based local calculation
+              if (newValue > 1000) {
+                newStatus = "95% Eplipce";
+              } else if (newValue > 800) {
+                newStatus = "90% Eplipce";
+              } else if (newValue > 700) {
+                newStatus = "80% Eplipce";
+              } else {
+                newStatus = "Normal";
+              }
+
+              bool wasAbnormal = oldStatus != "Normal";
+              bool isAbnormal = newStatus != "Normal";
+
+              if (isAbnormal && !wasAbnormal) {
+                NotificationService.showEmergencyNotification();
+                _recordEmergencyEvent();
+              } else if (!isAbnormal && wasAbnormal) {
+                NotificationService.stopAlarm();
+              }
+
               _latestSignal = newValue;
+              _currentState = newStatus;
               _timeCounter += 1;
 
               _signalHistory.add(FlSpot(_timeCounter, newValue));
@@ -184,35 +210,16 @@ class HomeCubit extends Cubit<HomeState> {
           },
         );
 
-    _statusSubscription =
-        _dbRef.child('currentState').onValue.listen(
-          (event) {
-            final data = event.snapshot.value;
-            if (data != null) {
-              String newStatus = data.toString().toLowerCase();
-
-              if (newStatus == 'abnormal' && _currentState != 'abnormal') {
-                NotificationService.showEmergencyNotification();
-                _recordEmergencyEvent();
-              } else if (newStatus == 'normal') {
-                NotificationService.stopAlarm();
-              }
-
-              _currentState = newStatus;
-              _emitUpdate();
-              _reconnectAttempt = 0;
-            }
-          },
-          onError: (e) {
-            emit(HomeError("Status stream error. Check network and tap Retry."));
-            TelemetryService.recordError(
-              e,
-              StackTrace.current,
-              reason: 'status stream error',
-            );
-            _scheduleReconnect('status');
-          },
-        );
+    // Status is now calculated locally from Signals to ensure faster and more reliable warnings.
+    // _statusSubscription =
+    //     _dbRef.child('currentState').onValue.listen(
+    //       (event) {
+    //         // Logic moved to _signalsSubscription
+    //       },
+    //       onError: (e) {
+    //         debugPrint('Status stream error (ignored): $e');
+    //       },
+    //     );
   }
 
   Future<void> _recordEmergencyEvent() async {
@@ -225,7 +232,7 @@ class HomeCubit extends Cubit<HomeState> {
           .add({
             'timestamp': FieldValue.serverTimestamp(),
             'signalValue': _latestSignal,
-            'status': 'abnormal',
+            'status': _currentState,
           });
     }
   }

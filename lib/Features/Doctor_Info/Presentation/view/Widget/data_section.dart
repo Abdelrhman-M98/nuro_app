@@ -43,9 +43,9 @@ class DataSection extends StatelessWidget {
               SizedBox(height: 12.h),
               InfoRow(
                 title: context.t("Status:", "الحالة:"), 
-                value: currentState == 'normal' 
+                value: currentState == 'Normal' 
                     ? context.t("Normal", "طبيعي") 
-                    : context.t("Abnormal", "غير طبيعي")
+                    : currentState
               ),
               SizedBox(height: 6.h),
               InfoRow(

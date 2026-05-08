@@ -28,7 +28,7 @@ class NotificationService {
 
   static bool _emergencyActive = false;
   static DateTime? _lastEmergencyAt;
-  static const Duration _emergencyCooldown = Duration(seconds: 30);
+  static const Duration _emergencyCooldown = Duration(seconds: 2);
 
   static final ValueNotifier<bool> emergencySoundEnabled =
       ValueNotifier<bool>(true);

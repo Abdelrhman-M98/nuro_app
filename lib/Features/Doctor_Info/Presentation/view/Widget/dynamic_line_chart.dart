@@ -15,7 +15,7 @@ class DynamicLineChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isAbnormal = currentState == 'abnormal';
+    final bool isAbnormal = currentState != 'Normal';
     final Color lineColor = isAbnormal ? Colors.red : Colors.green;
 
     return ClipRect(
