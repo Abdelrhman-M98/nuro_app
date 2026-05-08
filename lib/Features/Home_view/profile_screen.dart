@@ -455,7 +455,7 @@ class _ProfileViewBodyState extends State<ProfileViewBody> {
                   height: 50.h,
                   child: OutlinedButton.icon(
                     onPressed: () =>
-                        PdfReportGenerator.generateAndPrintReport(state.user),
+                        PdfReportGenerator.generateAndPrintReport(context, state.user),
                     icon: const Icon(Icons.picture_as_pdf, color: kAccentColor),
                     label: Text(
                       context.t("Generate PDF Report", "استخراج تقرير PDF"),

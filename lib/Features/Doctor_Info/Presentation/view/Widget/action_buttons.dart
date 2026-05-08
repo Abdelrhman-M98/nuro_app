@@ -41,7 +41,7 @@ class ActionButtons extends StatelessWidget {
                 subtitle: context.t('Report', 'تقرير'),
                 isPrimary: true,
                 onPressed: () async {
-                  await PdfReportGenerator.shareReport(user);
+                  await PdfReportGenerator.shareReport(context, user);
                 },
               ),
             ),

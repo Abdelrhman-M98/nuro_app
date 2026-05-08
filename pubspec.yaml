@@ -63,6 +63,8 @@ dependencies:
   pdf: ^3.12.0
   printing: ^5.14.3
   url_launcher: ^6.3.2
+  arabic_reshaper: ^0.0.1
+  bidi: ^2.0.13
 
 dev_dependencies:
   flutter_lints: ^6.0.0
@@ -99,6 +101,9 @@ flutter:
     - family: Roboto
       fonts:
         - asset: fonts/Roboto_Condensed-Regular.ttf
+    - family: Cairo
+      fonts:
+        - asset: assets/fonts/Amiri-Regular.ttf
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

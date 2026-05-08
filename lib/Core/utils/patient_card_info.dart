@@ -4,6 +4,7 @@ import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
 import 'package:nervix_app/Core/utils/profile_avatar_widget.dart';
+import 'package:nervix_app/Core/utils/disease_translator.dart';
 
 class PatientsCardInfo extends StatelessWidget {
   const PatientsCardInfo({
@@ -208,7 +209,7 @@ class PatientsCardInfo extends StatelessWidget {
                       SizedBox(width: 6.w),
                       Expanded(
                         child: Text(
-                          condition,
+                          DiseaseTranslator.translate(context, condition),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: FontStyles.roboto12.copyWith(
