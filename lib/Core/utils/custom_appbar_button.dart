@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/const.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class CustomAppBarButton extends StatelessWidget {
   const CustomAppBarButton({super.key, required this.onPressed});
@@ -9,8 +10,12 @@ class CustomAppBarButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: kSurfaceColor,
+      color: context.colorScheme.surface,
       borderRadius: BorderRadius.circular(12.r),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.r),
+        side: BorderSide(color: context.colorScheme.onSurface.withValues(alpha: 0.1)),
+      ),
       child: InkWell(
         onTap: onPressed,
         borderRadius: BorderRadius.circular(12.r),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/const.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class EntryBackground extends StatelessWidget {
   final bool isSignIn;
@@ -21,7 +22,7 @@ class EntryBackground extends StatelessWidget {
         width: pillWidth,
         height: 32.h,
         decoration: BoxDecoration(
-          color: kSurfaceColor,
+          color: context.colorScheme.surface,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(color: kAccentColor.withValues(alpha: 0.5)),
         ),

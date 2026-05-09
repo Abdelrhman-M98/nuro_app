@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/const.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -22,12 +23,12 @@ class CustomTextField extends StatelessWidget {
       controller: controller,
       keyboardType: keyboardType,
       validator: validator,
-      style: const TextStyle(color: Colors.white),
+      style: TextStyle(color: context.colorScheme.onSurface),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: const TextStyle(color: Colors.white38),
+        hintStyle: TextStyle(color: context.colorScheme.onSurface.withValues(alpha: 0.38)),
         filled: true,
-        fillColor: kSurfaceColor,
+        fillColor: context.colorScheme.surface,
         contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.r),
@@ -35,7 +36,7 @@ class CustomTextField extends StatelessWidget {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.r),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(color: context.colorScheme.onSurface.withValues(alpha: 0.08)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16.r),

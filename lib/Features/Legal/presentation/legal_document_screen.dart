@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class LegalDocumentScreen extends StatelessWidget {
   const LegalDocumentScreen({
@@ -16,11 +16,11 @@ class LegalDocumentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kBackgroundColor,
+      backgroundColor: context.colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: kBackgroundColor,
+        backgroundColor: context.colorScheme.surface,
         elevation: 0,
-        title: Text(title, style: FontStyles.roboto18),
+        title: Text(title, style: FontStyles.getRoboto18(context)),
         centerTitle: true,
       ),
       body: Scrollbar(
@@ -32,8 +32,8 @@ class LegalDocumentScreen extends StatelessWidget {
           itemBuilder: (context, i) {
             return Text(
               paragraphs[i],
-              style: FontStyles.roboto14.copyWith(
-                color: Colors.white.withValues(alpha: 0.88),
+              style: FontStyles.getRoboto14(context).copyWith(
+                color: context.colorScheme.onSurface.withValues(alpha: 0.88),
                 height: 1.5,
               ),
             );

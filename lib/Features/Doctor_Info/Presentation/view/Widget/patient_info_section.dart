@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/patient_card_info.dart';
 import 'package:nervix_app/Features/Doctor_Info/Presentation/view/Widget/dynamic_line_chart.dart';
 import 'package:nervix_app/Features/Home_view/logic/home_cubit.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class PatientInfoSection extends StatelessWidget {
   const PatientInfoSection({super.key, required this.state});
@@ -33,8 +33,9 @@ class PatientInfoSection extends StatelessWidget {
           height: 250.h,
           padding: EdgeInsets.all(12.w),
           decoration: BoxDecoration(
-            color: kSurfaceColor,
+            color: context.colorScheme.surface,
             borderRadius: BorderRadius.circular(20.r),
+
             border: Border.all(
               color: (state.currentState != 'Normal' ? Colors.red : Colors.green).withValues(alpha: 0.3),
               width: 1,

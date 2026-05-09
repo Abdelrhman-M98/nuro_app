@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class DynamicLineChart extends StatelessWidget {
   final List<FlSpot> dataPoints;
@@ -18,7 +19,7 @@ class DynamicLineChart extends StatelessWidget {
     if (dataPoints.isEmpty) return const Center(child: CircularProgressIndicator());
 
     final bool isAbnormal = currentState != 'Normal';
-    final Color lineColor = isAbnormal ? const Color(0xFFFF4848) : const Color(0xFF00FF9D); 
+    final Color lineColor = isAbnormal ? const Color(0xFFEF4444) : const Color(0xFF22C55E); // Standard Red / Green
     
     final double minX = dataPoints.first.x;
     final double maxX = dataPoints.last.x;
@@ -56,12 +57,12 @@ class DynamicLineChart extends StatelessWidget {
             horizontalInterval: yInterval, 
             verticalInterval: 1,
             getDrawingHorizontalLine: (value) => FlLine(
-              color: Colors.white.withValues(alpha: 0.05),
+              color: context.colorScheme.onSurface.withValues(alpha: 0.1),
               strokeWidth: 0.5,
               dashArray: [5, 5],
             ),
             getDrawingVerticalLine: (value) => FlLine(
-              color: Colors.white.withValues(alpha: 0.05),
+              color: context.colorScheme.onSurface.withValues(alpha: 0.1),
               strokeWidth: 0.5,
               dashArray: [5, 5],
             ),
@@ -81,15 +82,15 @@ class DynamicLineChart extends StatelessWidget {
                    
                    return Padding(
                      padding: EdgeInsets.only(top: 8.h),
-                     child: Text(
-                       '${value.toInt()}s',
-                       textAlign: TextAlign.center,
-                       style: FontStyles.roboto12.copyWith(
-                         fontSize: 10.sp,
-                         color: Colors.white24,
-                         fontWeight: FontWeight.w400,
-                       ),
-                     ),
+                      child: Text(
+                        '${value.toInt()}s',
+                        textAlign: TextAlign.center,
+                        style: FontStyles.getRoboto12(context).copyWith(
+                          fontSize: 10.sp,
+                          color: context.colorScheme.onSurface.withValues(alpha: 0.54),
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
                    );
                  },
                )
@@ -109,8 +110,8 @@ class DynamicLineChart extends StatelessWidget {
                     child: Text(
                       text,
                       textAlign: TextAlign.right,
-                      style: FontStyles.roboto12.copyWith(
-                        color: Colors.white38,
+                      style: FontStyles.getRoboto12(context).copyWith(
+                        color: context.colorScheme.onSurface.withValues(alpha: 0.54),
                         fontSize: 10.sp,
                       ),
                     ),

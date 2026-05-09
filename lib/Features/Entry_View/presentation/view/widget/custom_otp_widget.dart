@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/const.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class CustomOtpWidget extends StatelessWidget {
   const CustomOtpWidget({super.key});
@@ -16,7 +17,7 @@ class CustomOtpWidget extends StatelessWidget {
       fieldHeight: 60.h,
       textStyle: TextStyle(
         fontSize: 35.sp,
-        color: Colors.black,
+        color: context.colorScheme.onSurface,
         fontFamily: "Roboto",
         height: 1.h,
       ),
@@ -27,9 +28,9 @@ class CustomOtpWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       filled: true,
       autoFocus: true,
-      borderColor: Colors.white,
-      fillColor: Colors.white,
-      enabledBorderColor: Colors.white,
+      borderColor: context.colorScheme.onSurface.withValues(alpha: 0.1),
+      fillColor: context.colorScheme.surface,
+      enabledBorderColor: context.colorScheme.onSurface.withValues(alpha: 0.1),
       focusedBorderColor: kPrimaryColor,
       onCodeChanged: (String code) {},
       onSubmit: (String verificationCode) {},

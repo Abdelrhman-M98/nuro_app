@@ -12,6 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:nervix_app/Features/Entry_View/Data/repository/auth_repo.dart';
 import 'package:nervix_app/Features/Splash_View/presentation/widget/signal_wave_painter.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class SplashViewBody extends StatefulWidget {
   const SplashViewBody({super.key});
@@ -48,7 +49,9 @@ class _SplashViewBodyState extends State<SplashViewBody>
     return Container(
       width: double.infinity,
       height: double.infinity,
-      decoration: const BoxDecoration(gradient: kBackgroundGradient),
+      decoration: BoxDecoration(
+        gradient: context.isDarkMode ? kDarkGradient : kLightGradient,
+      ),
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -150,7 +153,7 @@ class _SplashViewBodyState extends State<SplashViewBody>
                         context.t('Nervix', 'نيرفيكس'),
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Colors.white,
+                          color: context.colorScheme.onSurface,
                           fontSize: 28.sp,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 1.2,

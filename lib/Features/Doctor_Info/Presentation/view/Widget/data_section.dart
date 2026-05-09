@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/const.dart';
+import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 import 'package:nervix_app/Features/Doctor_Info/Presentation/view/Widget/action_buttons.dart';
 import 'package:nervix_app/Features/Doctor_Info/Presentation/view/Widget/info_row.dart';
 import 'package:nervix_app/Features/Home_view/data/models/user_model.dart';
@@ -21,8 +23,8 @@ class DataSection extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Card(
-        margin: EdgeInsets.zero,
-        color: kSurfaceColor,
+        margin: EdgeInsets.all(2.r),
+        color: context.colorScheme.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.r),
         ),
@@ -34,8 +36,7 @@ class DataSection extends StatelessWidget {
             children: [
               Text(
                 context.t("Patient Analysis", "تحليل حالة المريض"),
-                style: TextStyle(
-                  fontSize: 18.sp,
+                style: FontStyles.getRoboto18(context).copyWith(
                   fontWeight: FontWeight.w700,
                   color: kAccentColor,
                 ),

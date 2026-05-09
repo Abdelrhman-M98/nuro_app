@@ -9,6 +9,7 @@ import 'package:nervix_app/Features/Home_view/logic/home_cubit.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class HomeViewBody extends StatelessWidget {
   const HomeViewBody({super.key});
@@ -28,16 +29,17 @@ class HomeViewBody extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.cloud_off_outlined, size: 56.sp, color: Colors.white54),
+                  Icon(Icons.cloud_off_outlined, size: 56.sp, color: context.colorScheme.onSurface.withValues(alpha: 0.54)),
                   SizedBox(height: 20.h),
                   Text(
                     state.message,
                     textAlign: TextAlign.center,
-                    style: FontStyles.roboto14.copyWith(
-                      color: Colors.white70,
+                    style: FontStyles.getRoboto14(context).copyWith(
+                      color: context.colorScheme.onSurface.withValues(alpha: 0.7),
                       height: 1.45,
                     ),
                   ),
+
                   SizedBox(height: 28.h),
                   Semantics(
                     button: true,
@@ -45,14 +47,14 @@ class HomeViewBody extends StatelessWidget {
                     child: FilledButton.icon(
                       style: FilledButton.styleFrom(
                         backgroundColor: kAccentColor,
-                        foregroundColor: Colors.black87,
+                        foregroundColor: Colors.white,
                         padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 14.h),
                       ),
                       onPressed: () => context.read<HomeCubit>().reconnect(),
                       icon: const Icon(Icons.refresh_rounded),
                       label: Text(
                         l10n.retryConnection,
-                        style: FontStyles.roboto16.copyWith(fontWeight: FontWeight.w700),
+                        style: FontStyles.getRoboto16(context).copyWith(fontWeight: FontWeight.w700),
                       ),
                     ),
                   ),
@@ -121,18 +123,19 @@ class _SectionHeader extends StatelessWidget {
         children: [
           Text(
             title,
-            style: FontStyles.roboto16.copyWith(
-              color: Colors.white,
+            style: FontStyles.getRoboto16(context).copyWith(
+              color: context.colorScheme.onSurface,
               fontWeight: FontWeight.w700,
             ),
           ),
           SizedBox(height: 4.h),
           Text(
             subtitle,
-            style: FontStyles.roboto12.copyWith(
-              color: Colors.white54,
+            style: FontStyles.getRoboto12(context).copyWith(
+              color: context.colorScheme.onSurface.withValues(alpha: 0.54),
             ),
           ),
+
         ],
       ),
     );

@@ -10,6 +10,7 @@ import 'package:nervix_app/Core/services/journal_due_reminder_service.dart';
 import 'package:nervix_app/Core/services/telemetry_service.dart';
 import 'package:nervix_app/Core/utils/app_routes.dart';
 import 'package:nervix_app/Core/utils/app_theme.dart';
+import 'package:nervix_app/Core/theme/theme_cubit.dart';
 import 'package:nervix_app/Features/Entry_View/Data/repository/auth_repo.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/auth/auth_cubit.dart';
 import 'package:nervix_app/firebase_options.dart';
@@ -48,8 +49,11 @@ Future<void> main() async {
       final authRepository = AuthRepository();
       final authCubit = AuthCubit(authRepository);
       runApp(
-        BlocProvider(
-          create: (context) => LocaleCubit(),
+        MultiBlocProvider(
+          providers: [
+            BlocProvider(create: (context) => LocaleCubit()),
+            BlocProvider(create: (context) => ThemeCubit()),
+          ],
           child: MyApp(authRepository: authRepository, authCubit: authCubit),
         ),
       );
@@ -85,24 +89,30 @@ class MyApp extends StatelessWidget {
       ],
       child: BlocBuilder<LocaleCubit, Locale>(
         builder: (context, locale) {
-          return ScreenUtilInit(
-            designSize: const Size(412, 917),
-            minTextAdapt: true,
-            splitScreenMode: true,
-            builder: (context, child) {
-              return MaterialApp.router(
-                locale: locale,
-                theme: AppTheme.darkTheme,
-                debugShowCheckedModeBanner: false,
-                routerConfig: AppRouter.router,
-                supportedLocales: AppLocalizations.supportedLocales,
-                localizationsDelegates: const [
-                  AppLocalizations.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                  CountryLocalizations.delegate,
-                ],
+          return BlocBuilder<ThemeCubit, ThemeMode>(
+            builder: (context, themeMode) {
+              return ScreenUtilInit(
+                designSize: const Size(412, 917),
+                minTextAdapt: true,
+                splitScreenMode: true,
+                builder: (context, child) {
+                  return MaterialApp.router(
+                    locale: locale,
+                    theme: AppTheme.lightTheme,
+                    darkTheme: AppTheme.darkTheme,
+                    themeMode: themeMode,
+                    debugShowCheckedModeBanner: false,
+                    routerConfig: AppRouter.router,
+                    supportedLocales: AppLocalizations.supportedLocales,
+                    localizationsDelegates: const [
+                      AppLocalizations.delegate,
+                      GlobalMaterialLocalizations.delegate,
+                      GlobalWidgetsLocalizations.delegate,
+                      GlobalCupertinoLocalizations.delegate,
+                      CountryLocalizations.delegate,
+                    ],
+                  );
+                },
               );
             },
           );
@@ -111,3 +121,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+

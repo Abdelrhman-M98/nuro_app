@@ -11,7 +11,10 @@ class EntryView extends StatelessWidget {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(gradient: kBackgroundGradient),
+        decoration: BoxDecoration(
+          gradient: Theme.of(context).brightness == Brightness.dark ? kDarkGradient : kLightGradient,
+        ),
+
         child: SafeArea(child: EntryViewBody()),
       ),
     );

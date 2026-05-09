@@ -10,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Core/utils/notification_service.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -89,9 +90,9 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
               tooltip: context.t('Health notes', 'مذكرات الصحة'),
               onPressed:
                   () => GoRouter.of(context).push(AppRouter.kHealthJournalView),
-              icon: const Icon(
+              icon: Icon(
                 Icons.edit_note_rounded,
-                color: Colors.white,
+                color: context.colorScheme.onSurface,
                 size: 28,
               ),
             ),
@@ -100,15 +101,15 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
               onPressed:
                   () =>
                       GoRouter.of(context).push(AppRouter.kMedicalHistoryView),
-              icon: const Icon(Icons.history, color: Colors.white, size: 28),
+              icon: Icon(Icons.history, color: context.colorScheme.onSurface, size: 28),
             ),
             IconButton(
               tooltip: context.t('Profile', 'الملف الشخصي'),
               onPressed:
                   () => GoRouter.of(context).push(AppRouter.kProfileView),
-              icon: const Icon(
+              icon: Icon(
                 Icons.account_circle_outlined,
-                color: Colors.white,
+                color: context.colorScheme.onSurface,
                 size: 28,
               ),
             ),
@@ -164,7 +165,7 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
                 heroTag: 'quick_actions_fab',
                 onPressed: _toggleActions,
                 backgroundColor: kAccentColor,
-                foregroundColor: Colors.black87,
+                foregroundColor: Colors.white,
                 child: Icon(
                   _actionsExpanded ? Icons.close_rounded : Icons.add_rounded,
                 ),
@@ -185,8 +186,8 @@ class _HomeViewState extends State<HomeView> with WidgetsBindingObserver {
                 Container(
                   width: double.infinity,
                   height: double.infinity,
-                  decoration: const BoxDecoration(
-                    gradient: kBackgroundGradient,
+                  decoration: BoxDecoration(
+                    gradient: context.isDarkMode ? kDarkGradient : kLightGradient,
                   ),
                   child: const SafeArea(child: HomeViewBody()),
                 ),

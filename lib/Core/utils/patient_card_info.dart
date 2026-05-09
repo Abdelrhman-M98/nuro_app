@@ -5,6 +5,7 @@ import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
 import 'package:nervix_app/Core/utils/profile_avatar_widget.dart';
 import 'package:nervix_app/Core/utils/disease_translator.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class PatientsCardInfo extends StatelessWidget {
   const PatientsCardInfo({
@@ -57,28 +58,44 @@ class PatientsCardInfo extends StatelessWidget {
       genderFallback: gender,
     );
 
+    final bool isDark = context.isDarkMode;
+    final primaryColor = context.colorScheme.primary;
+    final onSurface = context.colorScheme.onSurface;
+
     return Container(
-      padding: EdgeInsets.fromLTRB(14.w, 14.h, 14.w, 14.h),
+      padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            kPrimaryColor,
-            kPrimaryColor.withValues(alpha: 0.88),
-            kSurfaceLightColor.withValues(alpha: 0.35),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(22.r),
+        color: isDark ? context.colorScheme.surface : const Color(0xFFEDF2FF), // Distinct light Indigo tint
+        gradient: isDark 
+          ? LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                primaryColor.withValues(alpha: 0.12),
+                primaryColor.withValues(alpha: 0.05),
+              ],
+            )
+          : const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFFF5F9FF), // Very soft blue
+                Color(0xFFE0E7FF), // Distinct but light indigo hint
+              ],
+            ),
+        borderRadius: BorderRadius.circular(24.r),
         border: Border.all(
-          color: statusColor.withValues(alpha: 0.85),
-          width: 1.5,
+          color: isAbnormal 
+            ? statusColor.withValues(alpha: 0.4) 
+            : (isDark ? Colors.white.withValues(alpha: 0.06) : primaryColor.withValues(alpha: 0.18)),
+          width: 1.0,
         ),
         boxShadow: [
           BoxShadow(
-            color: statusColor.withValues(alpha: isAbnormal ? 0.28 : 0.15),
-            blurRadius: 14,
-            offset: const Offset(0, 6),
+            color: (isDark ? Colors.black : primaryColor).withValues(alpha: isDark ? 0.25 : 0.08),
+            blurRadius: 28,
+            offset: const Offset(0, 10),
+            spreadRadius: -2,
           ),
         ],
       ),
@@ -91,14 +108,14 @@ class PatientsCardInfo extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: statusColor.withValues(alpha: 0.65),
-                width: 2,
+                color: statusColor.withValues(alpha: 0.4),
+                width: 2.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.25),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+                  color: (isDark ? Colors.black : primaryColor).withValues(alpha: 0.1),
+                  blurRadius: 12,
+                  spreadRadius: 2,
                 ),
               ],
             ),
@@ -117,10 +134,10 @@ class PatientsCardInfo extends StatelessWidget {
                         patientName.isNotEmpty && patientName != 'User' ? patientName : context.t('User', 'مستخدم'),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: FontStyles.roboto18.copyWith(
-                          color: kOnBackgroundColor,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 0.2,
+                        style: FontStyles.getRoboto18(context).copyWith(
+                          color: onSurface,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -0.2,
                         ),
                       ),
                     ),
@@ -128,10 +145,10 @@ class PatientsCardInfo extends StatelessWidget {
                     Container(
                       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
                       decoration: BoxDecoration(
-                        color: statusColor.withValues(alpha: 0.22),
+                        color: statusColor.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(20.r),
                         border: Border.all(
-                          color: statusColor.withValues(alpha: 0.5),
+                          color: statusColor.withValues(alpha: 0.25),
                         ),
                       ),
                       child: Row(
@@ -147,10 +164,10 @@ class PatientsCardInfo extends StatelessWidget {
                           SizedBox(width: 4.w),
                           Text(
                             statusLabel,
-                            style: FontStyles.roboto12.copyWith(
+                            style: FontStyles.getRoboto12(context).copyWith(
                               color: statusColor,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.3,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0.5,
                             ),
                           ),
                         ],
@@ -164,17 +181,17 @@ class PatientsCardInfo extends StatelessWidget {
                   runSpacing: 4.h,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    Icon(Icons.cake_outlined, size: 14.sp, color: Colors.white54),
+                    Icon(Icons.cake_outlined, size: 14.sp, color: onSurface.withValues(alpha: 0.5)),
                     Text(
                       '$age ${context.t('yrs', 'سنة')}',
-                      style: FontStyles.roboto14.copyWith(
-                        color: Colors.white.withValues(alpha: 0.82),
-                        fontWeight: FontWeight.w500,
+                      style: FontStyles.getRoboto14(context).copyWith(
+                        color: onSurface.withValues(alpha: 0.7),
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     Text(
                       '·',
-                      style: TextStyle(color: Colors.white38, fontSize: 14.sp),
+                      style: TextStyle(color: onSurface.withValues(alpha: 0.3), fontSize: 14.sp),
                     ),
                     Icon(
                       gender.toLowerCase().contains('female') ||
@@ -182,13 +199,13 @@ class PatientsCardInfo extends StatelessWidget {
                           ? Icons.female
                           : Icons.male,
                       size: 15.sp,
-                      color: Colors.white54,
+                      color: onSurface.withValues(alpha: 0.5),
                     ),
                     Text(
                       _shortGender(context, gender),
-                      style: FontStyles.roboto14.copyWith(
-                        color: Colors.white.withValues(alpha: 0.82),
-                        fontWeight: FontWeight.w500,
+                      style: FontStyles.getRoboto14(context).copyWith(
+                        color: onSurface.withValues(alpha: 0.7),
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
@@ -212,8 +229,8 @@ class PatientsCardInfo extends StatelessWidget {
                           DiseaseTranslator.translate(context, condition),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: FontStyles.roboto12.copyWith(
-                            color: Colors.white.withValues(alpha: 0.75),
+                          style: FontStyles.getRoboto12(context).copyWith(
+                            color: onSurface.withValues(alpha: 0.65),
                             height: 1.35,
                           ),
                         ),
@@ -226,10 +243,12 @@ class PatientsCardInfo extends StatelessWidget {
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.22),
-                    borderRadius: BorderRadius.circular(14.r),
+                    color: isDark 
+                        ? Colors.black.withValues(alpha: 0.12)
+                        : primaryColor.withValues(alpha: 0.08), // Slightly darker for contrast
+                    borderRadius: BorderRadius.circular(16.r),
                     border: Border.all(
-                      color: kAccentColor.withValues(alpha: 0.25),
+                      color: primaryColor.withValues(alpha: isDark ? 0.08 : 0.12),
                     ),
                   ),
                   child: Row(
@@ -246,16 +265,16 @@ class PatientsCardInfo extends StatelessWidget {
                           children: [
                             Text(
                               context.t('Neural signal (live)', 'الإشارة العصبية (مباشر)'),
-                              style: FontStyles.roboto12.copyWith(
-                                color: Colors.white.withValues(alpha: 0.55),
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: 0.2,
+                              style: FontStyles.getRoboto12(context).copyWith(
+                                color: onSurface.withValues(alpha: 0.5),
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.3,
                               ),
                             ),
                             SizedBox(height: 2.h),
                             Text(
                               signalValue.toStringAsFixed(0),
-                              style: FontStyles.roboto24.copyWith(
+                              style: FontStyles.getRoboto24(context).copyWith(
                                 color: kAccentColor,
                                 fontWeight: FontWeight.w800,
                                 height: 1.1,

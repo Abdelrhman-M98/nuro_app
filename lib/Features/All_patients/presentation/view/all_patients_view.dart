@@ -8,6 +8,7 @@ import 'package:nervix_app/Core/utils/custom_appbar_button.dart';
 import 'package:nervix_app/Core/utils/custom_search_field.dart';
 import 'package:nervix_app/Core/utils/patient_card_button.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class AllPatientsView extends StatelessWidget {
   const AllPatientsView({super.key});
@@ -18,7 +19,9 @@ class AllPatientsView extends StatelessWidget {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(gradient: kBackgroundGradient),
+        decoration: BoxDecoration(
+          gradient: Theme.of(context).brightness == Brightness.dark ? kDarkGradient : kLightGradient,
+        ),
         child: SafeArea(
           child: const CustomScrollView(
             physics: ClampingScrollPhysics(),
@@ -41,7 +44,7 @@ class _HeaderSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 16.w),
-      color: kSurfaceColor,
+      color: context.colorScheme.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
       child: SizedBox(
         width: double.infinity,

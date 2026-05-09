@@ -10,6 +10,7 @@ import 'package:nervix_app/Features/Entry_View/presentation/auth/auth_state.dart
 import 'package:nervix_app/Features/Entry_View/presentation/view/widget/custom_button.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/view/widget/custom_divider.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/view/widget/custom_password_field.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/view/widget/custom_text_field.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/view/widget/google_button.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
@@ -69,13 +70,13 @@ class _SigninBodyState extends State<SigninBody> {
               SizedBox(height: 60.h),
               Text(
                 context.t("Welcome Back", "أهلاً بك مجدداً"),
-                style: FontStyles.roboto24.copyWith(color: Colors.white),
+                style: FontStyles.getRoboto24(context).copyWith(color: context.colorScheme.onSurface, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 8.h),
               Text(
                 context.t("Sign in to continue your monitoring", "سجل دخولك لمتابعة التقارير"),
-                style: FontStyles.roboto14.copyWith(color: Colors.white70),
+                style: FontStyles.getRoboto14(context).copyWith(color: context.colorScheme.onSurface.withValues(alpha: 0.7)),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 48.h),
@@ -137,7 +138,7 @@ class _SigninBodyState extends State<SigninBody> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(context.t("Don't have an account?", "ليس لديك حساب؟"), style: TextStyle(color: Colors.white70, fontSize: 13.sp)),
+                  Text(context.t("Don't have an account?", "ليس لديك حساب؟"), style: TextStyle(color: context.colorScheme.onSurface.withValues(alpha: 0.7), fontSize: 13.sp)),
                   TextButton(
                     onPressed: widget.onToggleMode,
                     child: Text(context.t("Sign Up", "إنشاء حساب"), style: TextStyle(color: kAccentColor, fontWeight: FontWeight.bold)),

@@ -10,6 +10,7 @@ import 'package:nervix_app/Core/utils/custom_appbar_button.dart';
 import 'package:nervix_app/Core/utils/custom_button.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/forgot_password/forgot_password_cubit.dart';
 
 class VerificationPasswordView extends StatefulWidget {
@@ -68,7 +69,9 @@ class _VerificationPasswordViewState extends State<VerificationPasswordView> {
     if (widget.email.isEmpty) {
       return Scaffold(
         body: Container(
-          decoration: const BoxDecoration(gradient: kBackgroundGradient),
+          decoration: BoxDecoration(
+            gradient: context.isDarkMode ? kDarkGradient : kLightGradient,
+          ),
           child: SafeArea(
             child: Padding(
               padding: EdgeInsets.all(24.w),
@@ -80,7 +83,7 @@ class _VerificationPasswordViewState extends State<VerificationPasswordView> {
                         GoRouter.of(context).go(AppRouter.kForgotPasswordView),
                   ),
                   SizedBox(height: 40.h),
-                  Text(context.t('Missing email', 'البريد مفقود'), style: FontStyles.roboto24),
+                  Text(context.t('Missing email', 'البريد مفقود'), style: FontStyles.getRoboto24(context).copyWith(color: context.colorScheme.onSurface)),
                   SizedBox(height: 16.h),
                   Text(
                     context.t('Go back and enter your email to receive a reset link.', 'عد للخلف وأدخل بريدك لإرسال رابط تعيين كلمة السر.'),
@@ -123,7 +126,9 @@ class _VerificationPasswordViewState extends State<VerificationPasswordView> {
         body: Container(
           width: double.infinity,
           height: double.infinity,
-          decoration: const BoxDecoration(gradient: kBackgroundGradient),
+          decoration: BoxDecoration(
+            gradient: context.isDarkMode ? kDarkGradient : kLightGradient,
+          ),
           child: SafeArea(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -135,11 +140,11 @@ class _VerificationPasswordViewState extends State<VerificationPasswordView> {
                         GoRouter.of(context).go(AppRouter.kForgotPasswordView),
                   ),
                   SizedBox(height: 32.h),
-                  Text(context.t('Check your email', 'تحقق من بريدك'), style: FontStyles.roboto24),
+                  Text(context.t('Check your email', 'تحقق من بريدك'), style: FontStyles.getRoboto24(context).copyWith(color: context.colorScheme.onSurface)),
                   SizedBox(height: 12.h),
                   Text(
                     context.t('We sent a password reset link to:', 'أرسلنا رابط إعادة تعيين كلمة السر إلى:'),
-                    style: FontStyles.roboto16,
+                    style: FontStyles.getRoboto16(context).copyWith(color: context.colorScheme.onSurface.withValues(alpha: 0.7)),
                   ),
                   SizedBox(height: 8.h),
                   Text(
@@ -158,7 +163,7 @@ class _VerificationPasswordViewState extends State<VerificationPasswordView> {
                       'افتح البريد على هاتفك أو كمبيوترك. الرابط يعمل مع جميع مقدمي '
                       'الخدمة (Gmail, Outlook, Yahoo, iCloud، وغيرهم). افحص البريد المهمل إذا لم تجده.'
                     ),
-                    style: FontStyles.roboto12,
+                    style: FontStyles.getRoboto12(context).copyWith(color: context.colorScheme.onSurface.withValues(alpha: 0.6)),
                   ),
                   SizedBox(height: 28.h),
                   Text(
@@ -167,7 +172,7 @@ class _VerificationPasswordViewState extends State<VerificationPasswordView> {
                       'and sign in.',
                       'بعد تعيين كلمة مرور جديدة في المتصفح، عد إلى هنا وسجل الدخول.'
                     ),
-                    style: FontStyles.roboto12.copyWith(color: kOnSurfaceVariantColor),
+                    style: FontStyles.getRoboto12(context).copyWith(color: context.colorScheme.onSurface.withValues(alpha: 0.5)),
                   ),
                   SizedBox(height: 32.h),
                   BlocBuilder<ForgotPasswordCubit, ForgotPasswordState>(

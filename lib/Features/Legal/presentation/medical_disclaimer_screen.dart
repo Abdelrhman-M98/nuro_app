@@ -6,6 +6,7 @@ import 'package:nervix_app/Core/utils/app_routes.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class MedicalDisclaimerScreen extends StatelessWidget {
   const MedicalDisclaimerScreen({super.key, this.reviewOnly = false});
@@ -25,11 +26,13 @@ class MedicalDisclaimerScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final points = _getPoints(context);
     return Scaffold(
-      backgroundColor: kBackgroundColor,
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(gradient: kBackgroundGradient),
+        decoration: BoxDecoration(
+          gradient: context.isDarkMode ? kDarkGradient : kLightGradient,
+        ),
+
         child: SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 16.h),
@@ -43,19 +46,21 @@ class MedicalDisclaimerScreen extends StatelessWidget {
                 Text(
                   context.t('Important notice', 'تنبيه هام'),
                   textAlign: TextAlign.center,
-                  style: FontStyles.roboto24.copyWith(
-                    color: kOnBackgroundColor,
+                  style: FontStyles.getRoboto24(context).copyWith(
+                    color: context.colorScheme.onSurface,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
+
                 SizedBox(height: 10.h),
                 Text(
                   context.t('Please read before using Nervix', 'يرجى القراءة قبل استخدام نيرفيكس'),
                   textAlign: TextAlign.center,
-                  style: FontStyles.roboto14.copyWith(
-                    color: Colors.white70,
+                  style: FontStyles.getRoboto14(context).copyWith(
+                    color: context.colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
+
                 SizedBox(height: 22.h),
                 Expanded(
                   child: Scrollbar(
@@ -78,11 +83,12 @@ class MedicalDisclaimerScreen extends StatelessWidget {
                             Expanded(
                               child: Text(
                                 points[i],
-                                style: FontStyles.roboto14.copyWith(
-                                  color: Colors.white.withValues(alpha: 0.9),
+                                style: FontStyles.getRoboto14(context).copyWith(
+                                  color: context.colorScheme.onSurface.withValues(alpha: 0.9),
                                   height: 1.45,
                                 ),
                               ),
+
                             ),
                           ],
                         );
@@ -113,10 +119,12 @@ class MedicalDisclaimerScreen extends StatelessWidget {
                     },
                     child: Text(
                       reviewOnly ? context.t('Close', 'إغلاق') : context.t('I understand and continue', 'أفهم ذلك وأود الاستمرار'),
-                      style: FontStyles.roboto16.copyWith(
+                      style: FontStyles.getRoboto16(context).copyWith(
                         fontWeight: FontWeight.w800,
+                        color: Colors.white,
                       ),
                     ),
+
                   ),
                 ),
               ],

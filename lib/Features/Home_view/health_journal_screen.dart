@@ -9,6 +9,7 @@ import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/notification_service.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class HealthJournalScreen extends StatefulWidget {
   const HealthJournalScreen({super.key});
@@ -162,9 +163,10 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
         builder: (context, setSheetState) => Container(
           padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
           decoration: BoxDecoration(
-            color: kSurfaceColor,
+            color: context.colorScheme.surface,
             borderRadius: BorderRadius.vertical(top: Radius.circular(28.r)),
           ),
+
           child: Padding(
             padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 24.h),
             child: Column(
@@ -175,7 +177,7 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
                   child: Container(
                     width: 40.w,
                     height: 4.h,
-                    decoration: BoxDecoration(color: Colors.white12, borderRadius: BorderRadius.circular(2.r)),
+                    decoration: BoxDecoration(color: context.colorScheme.onSurface.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(2.r)),
                   ),
                 ),
                 SizedBox(height: 20.h),
@@ -185,7 +187,7 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
                     const Spacer(),
                     IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.close_rounded, color: Colors.white38),
+                      icon: Icon(Icons.close_rounded, color: context.colorScheme.onSurface.withValues(alpha: 0.38)),
                     ),
                   ],
                 ),
@@ -195,12 +197,13 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
                   minLines: 3,
                   autofocus: true,
                   maxLength: _maxNoteLength,
-                  style: const TextStyle(color: Colors.white, height: 1.5, fontSize: 16),
+                  style: TextStyle(color: context.colorScheme.onSurface, height: 1.5, fontSize: 16),
                   decoration: InputDecoration(
                     hintText: context.t('Share your thoughts...', 'شارك أفكارك...'), 
                     border: InputBorder.none,
-                    counterStyle: const TextStyle(color: Colors.white24),
+                    counterStyle: TextStyle(color: context.colorScheme.onSurface.withValues(alpha: 0.24)),
                   ),
+
                   onChanged: (_) => setSheetState(() {}),
                 ),
                 SizedBox(height: 12.h),
@@ -219,7 +222,8 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
                           onSelected: (_) => setSheetState(() => _selectedTag = tag),
                           selectedColor: color,
                           backgroundColor: color.withValues(alpha: 0.1),
-                          side: BorderSide(color: color.withValues(alpha: 0.3)),
+                          side: BorderSide(color: selected ? Colors.transparent : color.withValues(alpha: 0.2)),
+                          labelStyle: TextStyle(color: selected ? Colors.white : color, fontWeight: selected ? FontWeight.bold : FontWeight.normal),
                         ),
                       );
                     }).toList(),
@@ -236,17 +240,18 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
                         decoration: BoxDecoration(
-                          color: _reminderAt != null ? kAccentColor.withValues(alpha: 0.1) : Colors.white.withValues(alpha: 0.05),
+                          color: _reminderAt != null ? kAccentColor.withValues(alpha: 0.1) : context.colorScheme.onSurface.withValues(alpha: 0.05),
                           borderRadius: BorderRadius.circular(12.r),
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.alarm_rounded, size: 18, color: _reminderAt != null ? kAccentColor : Colors.white38),
+                            Icon(Icons.alarm_rounded, size: 18, color: _reminderAt != null ? kAccentColor : context.colorScheme.onSurface.withValues(alpha: 0.38)),
                             SizedBox(width: 8.w),
                             Text(
                               _reminderAt == null ? context.t('Set Reminder', 'ضبط تذكير') : DateFormat('hh:mm a').format(_reminderAt!),
-                              style: TextStyle(color: _reminderAt != null ? kAccentColor : Colors.white38, fontSize: 13),
+                              style: TextStyle(color: _reminderAt != null ? kAccentColor : context.colorScheme.onSurface.withValues(alpha: 0.38), fontSize: 13),
                             ),
+
                           ],
                         ),
                       ),
@@ -259,8 +264,9 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
                         padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 14.h),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
                       ),
-                      child: Text(_editingDocId == null ? context.t('Add', 'إضافة') : context.t('Update', 'تحديث'), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                      child: Text(_editingDocId == null ? context.t('Add', 'إضافة') : context.t('Update', 'تحديث'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                     ),
+
                   ],
                 ),
               ],
@@ -298,8 +304,9 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: kSurfaceColor,
-        title: Text(context.t('Delete Entry?', 'حذف التدوينة؟'), style: const TextStyle(color: Colors.white)),
+        backgroundColor: context.colorScheme.surface,
+        title: Text(context.t('Delete Entry?', 'حذف التدوينة؟'), style: TextStyle(color: context.colorScheme.onSurface)),
+
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: Text(context.t('Cancel', 'إلغاء'))),
           TextButton(onPressed: () => Navigator.pop(context, true), child: Text(context.t('Delete', 'حذف'), style: const TextStyle(color: Colors.redAccent))),
@@ -324,120 +331,129 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
   @override
   Widget build(BuildContext context) {
     final uid = FirebaseAuth.instance.currentUser?.uid;
-    return Scaffold(
-      backgroundColor: kBackgroundColor,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showComposer(),
-        backgroundColor: kAccentColor,
-        icon: const Icon(Icons.add_rounded, color: Colors.black),
-        label: Text(context.t('Add Entry', 'إضافة تدوينة'), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: context.isDarkMode ? kDarkGradient : kLightGradient,
       ),
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context).journalTitle, style: FontStyles.roboto18),
-        backgroundColor: kBackgroundColor,
-        elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(105.h),
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 10.h),
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: context.t('Search your journal...', 'ابحث في مذكراتك...'),
-                    prefixIcon: const Icon(Icons.search_rounded, color: kAccentColor),
-                    filled: true,
-                    fillColor: kSurfaceColor.withValues(alpha: 0.5),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.r), borderSide: BorderSide.none),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () => _showComposer(),
+          backgroundColor: kAccentColor,
+          icon: const Icon(Icons.add_rounded, color: Colors.white),
+          label: Text(context.t('Add Entry', 'إضافة تدوينة'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        ),
+        appBar: AppBar(
+          title: Text(AppLocalizations.of(context).journalTitle, style: FontStyles.getRoboto18(context).copyWith(color: context.colorScheme.onSurface)),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(105.h),
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 10.h),
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: context.t('Search your journal...', 'ابحث في مذكراتك...'),
+                      prefixIcon: const Icon(Icons.search_rounded, color: kAccentColor),
+                      filled: true,
+                      fillColor: context.colorScheme.surfaceContainer,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16.r),
+                        borderSide: BorderSide(color: context.colorScheme.onSurface.withValues(alpha: 0.05)),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 38.h,
-                child: ListView.separated(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, i) {
-                    final tag = _filterTags[i];
-                    final selected = tag == _filterTag;
-                    final color = tag == 'All' ? kAccentColor : _tagColor(tag);
-                    final label = tag == 'All' ? context.t('All', 'الكل') : _tagLabel(tag);
-                    return ChoiceChip(
-                      label: Text(label, style: TextStyle(fontSize: 11.sp)),
-                      selected: selected,
-                      onSelected: (_) => setState(() => _filterTag = tag),
-                      selectedColor: color,
-                      backgroundColor: color.withValues(alpha: 0.05),
-                      side: BorderSide(color: selected ? color : color.withValues(alpha: 0.2)),
-                    );
-                  },
-                  separatorBuilder: (_, __) => SizedBox(width: 8.w),
-                  itemCount: _filterTags.length,
+                SizedBox(
+                  height: 38.h,
+                  child: ListView.separated(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, i) {
+                      final tag = _filterTags[i];
+                      final selected = tag == _filterTag;
+                      final color = tag == 'All' ? kAccentColor : _tagColor(tag);
+                      final label = tag == 'All' ? context.t('All', 'الكل') : _tagLabel(tag);
+                      return ChoiceChip(
+                        label: Text(label, style: TextStyle(fontSize: 11.sp)),
+                        selected: selected,
+                        onSelected: (_) => setState(() => _filterTag = tag),
+                        selectedColor: color,
+                        backgroundColor: color.withValues(alpha: 0.05),
+                        side: BorderSide(color: selected ? color : color.withValues(alpha: 0.2)),
+                      );
+                    },
+                    separatorBuilder: (_, __) => SizedBox(width: 8.w),
+                    itemCount: _filterTags.length,
+                  ),
                 ),
-              ),
-              SizedBox(height: 10.h),
-            ],
+                SizedBox(height: 10.h),
+              ],
+            ),
           ),
         ),
-      ),
-      body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-        stream: FirebaseFirestore.instance.collection('users').doc(uid).collection('health_journal').orderBy('createdAt', descending: true).snapshots(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-          
-          var docs = snapshot.data!.docs;
-          
-          // Apply Search Query & Category Filter
-          if (_searchQuery.isNotEmpty || _filterTag != 'All') {
-            docs = docs.where((d) {
-              final note = (d['note'] as String? ?? '').toLowerCase();
-              final tag = (d['tag'] as String? ?? '').toLowerCase();
-              
-              final matchesSearch = _searchQuery.isEmpty || note.contains(_searchQuery) || tag.contains(_searchQuery);
-              final matchesTag = _filterTag == 'All' || tag == _filterTag.toLowerCase();
-              
-              return matchesSearch && matchesTag;
-            }).toList();
-          }
+        body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+          stream: FirebaseFirestore.instance.collection('users').doc(uid).collection('health_journal').orderBy('createdAt', descending: true).snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+            
+            var docs = snapshot.data!.docs;
+            
+            // Apply Search Query & Category Filter
+            if (_searchQuery.isNotEmpty || _filterTag != 'All') {
+              docs = docs.where((d) {
+                final note = (d['note'] as String? ?? '').toLowerCase();
+                final tag = (d['tag'] as String? ?? '').toLowerCase();
+                
+                final matchesSearch = _searchQuery.isEmpty || note.contains(_searchQuery) || tag.contains(_searchQuery);
+                final matchesTag = _filterTag == 'All' || tag == _filterTag.toLowerCase();
+                
+                return matchesSearch && matchesTag;
+              }).toList();
+            }
 
-          if (docs.isEmpty) return _buildEmptyState();
+            if (docs.isEmpty) return _buildEmptyState();
 
-          // Grouping logic
-          Map<String, List<QueryDocumentSnapshot<Map<String, dynamic>>>> groups = {};
-          for (var doc in docs) {
-            final date = (doc['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
-            final header = _dateHeader(date);
-            groups.putIfAbsent(header, () => []).add(doc);
-          }
+            // Grouping logic
+            Map<String, List<QueryDocumentSnapshot<Map<String, dynamic>>>> groups = {};
+            for (var doc in docs) {
+              final date = (doc['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
+              final header = _dateHeader(date);
+              groups.putIfAbsent(header, () => []).add(doc);
+            }
 
-          return RefreshIndicator(
-            onRefresh: () async {
-              await JournalDueReminderService.instance.scanDueRemindersNow();
-            },
-            color: kAccentColor,
-            backgroundColor: kSurfaceColor,
-            child: ListView.builder(
-              padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 100.h),
-              physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: groups.keys.length,
-              itemBuilder: (context, index) {
-                final header = groups.keys.elementAt(index);
-                final items = groups[header]!;
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 4.w),
-                      child: Text(header, style: FontStyles.roboto12.copyWith(color: kAccentColor, fontWeight: FontWeight.bold, letterSpacing: 1.1)),
-                    ),
-                    ...items.map((doc) => _buildNoteCard(doc)),
-                  ],
-                );
+            return RefreshIndicator(
+              onRefresh: () async {
+                await JournalDueReminderService.instance.scanDueRemindersNow();
               },
-            ),
-          );
-        },
+              color: kAccentColor,
+              backgroundColor: context.colorScheme.surface,
+              child: ListView.builder(
+                padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 100.h),
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: groups.keys.length,
+                itemBuilder: (context, index) {
+                  final header = groups.keys.elementAt(index);
+                  final items = groups[header]!;
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 4.w),
+                        child: Text(header, style: FontStyles.getRoboto12(context).copyWith(color: kAccentColor, fontWeight: FontWeight.bold, letterSpacing: 1.1)),
+                      ),
+
+                      ...items.map((doc) => _buildNoteCard(doc)),
+                    ],
+                  );
+                },
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -449,10 +465,11 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
     return Container(
       margin: EdgeInsets.only(bottom: 12.h),
       decoration: BoxDecoration(
-        color: kSurfaceColor.withValues(alpha: 0.5),
+        color: context.colorScheme.surface,
         borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(color: color.withValues(alpha: 0.1)),
+        border: Border.all(color: color.withValues(alpha: 0.15)),
       ),
+
       child: ListTile(
         contentPadding: EdgeInsets.all(16.r),
         onTap: () => _showComposer(editId: doc.id, initialData: data),
@@ -464,11 +481,12 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
             const Spacer(),
             Text(
               data['createdAt'] != null ? DateFormat('hh:mm a').format((data['createdAt'] as Timestamp).toDate()) : '',
-              style: const TextStyle(color: Colors.white24, fontSize: 10),
+              style: TextStyle(color: context.colorScheme.onSurface.withValues(alpha: 0.24), fontSize: 10),
             ),
             SizedBox(width: 8.w),
             PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert_rounded, size: 18, color: Colors.white24),
+              icon: Icon(Icons.more_vert_rounded, size: 18, color: context.colorScheme.onSurface.withValues(alpha: 0.24)),
+
               onSelected: (val) {
                 if (val == 'delete' && uid != null) _deleteNote(uid, doc.id);
                 if (val == 'edit') _showComposer(editId: doc.id, initialData: data);
@@ -484,7 +502,8 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 10.h),
-            Text(data['note'] ?? '', style: const TextStyle(color: Colors.white, height: 1.4, fontSize: 15)),
+            Text(data['note'] ?? '', style: TextStyle(color: context.colorScheme.onSurface, height: 1.4, fontSize: 15)),
+
             if (data['reminderAt'] != null)
               Container(
                 margin: EdgeInsets.only(top: 12.h),
@@ -510,11 +529,12 @@ class _HealthJournalScreenState extends State<HealthJournalScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.auto_awesome_motion_rounded, size: 80, color: Colors.white10),
+          Icon(Icons.auto_awesome_motion_rounded, size: 80, color: context.colorScheme.onSurface.withValues(alpha: 0.1)),
           SizedBox(height: 20.h),
-          Text(context.t('Your space for thoughts is empty.', 'مساحة أفكارك فارغة.'), style: const TextStyle(color: Colors.white38, fontSize: 16)),
-          Text(context.t('Tap the "+" to start journaling.', 'اضغط على "+" لبدء التدوين.'), style: const TextStyle(color: Colors.white24, fontSize: 12)),
+          Text(context.t('Your space for thoughts is empty.', 'مساحة أفكارك فارغة.'), style: TextStyle(color: context.colorScheme.onSurface.withValues(alpha: 0.38), fontSize: 16)),
+          Text(context.t('Tap the "+" to start journaling.', 'اضغط على "+" لبدء التدوين.'), style: TextStyle(color: context.colorScheme.onSurface.withValues(alpha: 0.24), fontSize: 12)),
         ],
+
       ),
     );
   }

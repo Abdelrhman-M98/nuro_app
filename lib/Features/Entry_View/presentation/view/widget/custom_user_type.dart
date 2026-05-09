@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class CustomUserTypeButton extends StatelessWidget {
   const CustomUserTypeButton({
@@ -26,10 +27,14 @@ class CustomUserTypeButton extends StatelessWidget {
         return MaterialButton(
           minWidth: 321.w,
           height: 69.h,
+          color: isSelected ? kPrimaryColor : context.colorScheme.surface,
+          elevation: isSelected ? 4 : 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(17.r),
+            side: BorderSide(
+              color: isSelected ? Colors.transparent : context.colorScheme.onSurface.withValues(alpha: 0.1),
+            ),
           ),
-          color: isSelected ? kPrimaryColor : Colors.white,
           onPressed: onPressed,
           child: Row(
             children: [
@@ -37,8 +42,8 @@ class CustomUserTypeButton extends StatelessWidget {
               SizedBox(width: 16.w),
               Text(
                 userType,
-                style: FontStyles.roboto16.copyWith(
-                  color: isSelected ? Colors.white : Colors.black,
+                style: FontStyles.getRoboto16(context).copyWith(
+                  color: isSelected ? Colors.white : context.colorScheme.onSurface,
                 ),
               ),
             ],

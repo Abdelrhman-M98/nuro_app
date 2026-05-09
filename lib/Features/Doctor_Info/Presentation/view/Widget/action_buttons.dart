@@ -5,6 +5,7 @@ import 'package:nervix_app/Core/utils/notification_service.dart';
 import 'package:nervix_app/Core/utils/pdf_generator.dart';
 import 'package:nervix_app/Features/Home_view/data/models/user_model.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class ActionButtons extends StatelessWidget {
   const ActionButtons({super.key, required this.user});
@@ -78,8 +79,8 @@ class _ChartControlButton extends StatelessWidget {
         ? kAccentColor.withValues(alpha: 0.18)
         : (isHighlighted
             ? kAccentColor.withValues(alpha: 0.12)
-            : kBackgroundColor.withValues(alpha: 0.45));
-    final iconColor = isPrimary ? kAccentColor : Colors.white;
+            : context.colorScheme.surfaceContainerLow);
+    final iconColor = isPrimary ? kAccentColor : context.colorScheme.onSurface;
 
     return Tooltip(
       message: tooltip,
@@ -96,7 +97,7 @@ class _ChartControlButton extends StatelessWidget {
               border: Border.all(color: borderColor, width: 1.5),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.25),
+                  color: (context.isDarkMode ? Colors.black : borderColor).withValues(alpha: context.isDarkMode ? 0.25 : 0.08),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -110,7 +111,7 @@ class _ChartControlButton extends StatelessWidget {
                 Text(
                   subtitle,
                   style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.85),
+                    color: context.colorScheme.onSurface.withValues(alpha: 0.85),
                     fontSize: 11.sp,
                     fontWeight: FontWeight.w600,
                   ),

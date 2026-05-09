@@ -4,6 +4,7 @@ import 'package:nervix_app/Core/services/app_preferences.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 Future<void> showMonitoringGuideIfNeeded(BuildContext context) async {
   final seen = await AppPreferences.hasSeenMonitoringGuide();
@@ -35,9 +36,9 @@ class _MonitoringGuideBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: kSurfaceColor,
+        color: context.colorScheme.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
-        border: Border.all(color: kAccentColor.withValues(alpha: 0.35)),
+        border: Border.all(color: context.colorScheme.secondary.withValues(alpha: 0.15)),
       ),
       padding: EdgeInsets.fromLTRB(22.w, 12.h, 22.w, 24.h),
       child: SafeArea(
@@ -51,7 +52,7 @@ class _MonitoringGuideBody extends StatelessWidget {
                 width: 40.w,
                 height: 4.h,
                 decoration: BoxDecoration(
-                  color: Colors.white24,
+                  color: context.colorScheme.onSurface.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(2.r),
                 ),
               ),
@@ -59,8 +60,8 @@ class _MonitoringGuideBody extends StatelessWidget {
             SizedBox(height: 18.h),
             Text(
               context.t('How monitoring works', 'كيفية عمل المراقبة'),
-              style: FontStyles.roboto18.copyWith(
-                color: kOnBackgroundColor,
+              style: FontStyles.getRoboto18(context).copyWith(
+                color: context.colorScheme.onSurface,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -103,7 +104,7 @@ class _MonitoringGuideBody extends StatelessWidget {
             FilledButton(
               style: FilledButton.styleFrom(
                 backgroundColor: kAccentColor,
-                foregroundColor: Colors.black87,
+                foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(vertical: 14.h),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14.r),
@@ -140,8 +141,8 @@ class _GuideLine extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: FontStyles.roboto14.copyWith(
-              color: Colors.white.withValues(alpha: 0.88),
+            style: FontStyles.getRoboto14(context).copyWith(
+              color: context.colorScheme.onSurface.withValues(alpha: 0.8),
               height: 1.45,
             ),
           ),

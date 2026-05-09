@@ -6,6 +6,7 @@ import 'package:nervix_app/Core/utils/app_routes.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class SafetyOnboardingScreen extends StatefulWidget {
   const SafetyOnboardingScreen({super.key});
@@ -66,7 +67,6 @@ class _SafetyOnboardingScreenState extends State<SafetyOnboardingScreen> {
   Widget build(BuildContext context) {
     final pages = _getPages(context);
     return Scaffold(
-      backgroundColor: kBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 24.h),
@@ -88,20 +88,22 @@ class _SafetyOnboardingScreenState extends State<SafetyOnboardingScreen> {
                         Text(
                           page.title,
                           textAlign: TextAlign.center,
-                          style: FontStyles.roboto24.copyWith(
-                            color: Colors.white,
+                          style: FontStyles.getRoboto24(context).copyWith(
+                            color: context.colorScheme.onSurface,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
+
                         SizedBox(height: 14.h),
                         Text(
                           page.body,
                           textAlign: TextAlign.center,
-                          style: FontStyles.roboto14.copyWith(
-                            color: Colors.white70,
+                          style: FontStyles.getRoboto14(context).copyWith(
+                            color: context.colorScheme.onSurface.withValues(alpha: 0.7),
                             height: 1.45,
                           ),
                         ),
+
                       ],
                     );
                   },
@@ -117,8 +119,9 @@ class _SafetyOnboardingScreenState extends State<SafetyOnboardingScreen> {
                     width: _index == i ? 20.w : 8.w,
                     height: 8.h,
                     decoration: BoxDecoration(
-                      color: _index == i ? kAccentColor : Colors.white24,
+                      color: _index == i ? kAccentColor : context.colorScheme.onSurface.withValues(alpha: 0.24),
                       borderRadius: BorderRadius.circular(99.r),
+
                     ),
                   ),
                 ),
@@ -133,8 +136,9 @@ class _SafetyOnboardingScreenState extends State<SafetyOnboardingScreen> {
                 ),
                 child: Text(
                   _index == pages.length - 1 ? context.t('Continue', 'استمرار') : context.t('Next', 'التالي'),
-                  style: FontStyles.roboto16.copyWith(fontWeight: FontWeight.w700),
+                  style: FontStyles.getRoboto16(context).copyWith(fontWeight: FontWeight.w700, color: Colors.white),
                 ),
+
               ),
             ],
           ),

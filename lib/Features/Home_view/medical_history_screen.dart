@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class MedicalHistoryScreen extends StatelessWidget {
   const MedicalHistoryScreen({super.key});
@@ -14,80 +15,89 @@ class MedicalHistoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final uid = FirebaseAuth.instance.currentUser?.uid;
 
-    return Scaffold(
-      backgroundColor: kBackgroundColor,
-      appBar: AppBar(
-        title: Text(context.t("Medical History Log", "سجل التاريخ الطبي"), style: FontStyles.roboto18),
-        backgroundColor: kBackgroundColor,
-        elevation: 0,
-        actions: [
-          IconButton(
-            onPressed: () => _confirmDeleteAll(context, uid),
-            icon: const Icon(Icons.delete_sweep, color: Colors.redAccent),
-            tooltip: context.t("Clear All Logs", "مسح جميع السجلات"),
-          ),
-        ],
+    return Container(
+      decoration: BoxDecoration(
+        gradient: context.isDarkMode ? kDarkGradient : kLightGradient,
       ),
-      body: uid == null
-          ? Center(child: Text(context.t("Please Login", "يرجى تسجيل الدخول")))
-          : StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(uid)
-                  .collection('history')
-                  .orderBy('timestamp', descending: true)
-                  .snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(
-                    child: Text(
-                      context.t("No emergency records found.", "لا يوجد سجلات طوارئ حالياً."),
-                      style: FontStyles.roboto14.copyWith(color: Colors.white70),
-                    ),
-                  );
-                }
-
-                return ListView.builder(
-                  padding: EdgeInsets.all(16.r),
-                  itemCount: snapshot.data!.docs.length,
-                  itemBuilder: (context, index) {
-                    final data = snapshot.data!.docs[index].data() as Map<String, dynamic>;
-                    final timestamp = data['timestamp'] as Timestamp?;
-                    final date = timestamp != null
-                        ? DateFormat('dd MMM yyyy, hh:mm a').format(timestamp.toDate())
-                        : context.t("Unknown Date", "تاريخ غير معروف");
-                    final signal = data['signalValue'] ?? 0;
-
-                    return Card(
-                      color: kSurfaceColor,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-                      margin: EdgeInsets.only(bottom: 12.h),
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: Colors.red.withValues(alpha: 0.1),
-                          child: const Icon(Icons.warning_amber_rounded, color: Colors.red),
-                        ),
-                        title: Text(
-                          context.t("Abnormal Activity", "نشاط غير طبيعي"),
-                          style: FontStyles.roboto16.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text(
-                          date,
-                          style: FontStyles.roboto14.copyWith(color: Colors.white70),
-                        ),
-                        trailing: Text(
-                          "${context.t('Signal', 'الإشارة')}: ${signal.toInt()}",
-                          style: FontStyles.roboto14.copyWith(color: kAccentColor, fontWeight: FontWeight.bold),
-                        ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(
+            context.t("Medical History Log", "سجل التاريخ الطبي"),
+            style: FontStyles.getRoboto18(context).copyWith(color: context.colorScheme.onSurface),
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: IconThemeData(color: context.colorScheme.onSurface),
+          actions: [
+            IconButton(
+              onPressed: () => _confirmDeleteAll(context, uid),
+              icon: const Icon(Icons.delete_sweep, color: Colors.redAccent),
+              tooltip: context.t("Clear All Logs", "مسح جميع السجلات"),
+            ),
+          ],
+        ),
+        body: uid == null
+            ? Center(child: Text(context.t("Please Login", "يرجى تسجيل الدخول")))
+            : StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(uid)
+                    .collection('history')
+                    .orderBy('timestamp', descending: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return Center(
+                      child: Text(
+                        context.t("No emergency records found.", "لا يوجد سجلات طوارئ حالياً."),
+                        style: FontStyles.getRoboto14(context).copyWith(color: context.colorScheme.onSurface.withValues(alpha: 0.7)),
                       ),
                     );
-                  },
-                );
-              },
-            ),
+                  }
+
+                  return ListView.builder(
+                    padding: EdgeInsets.all(16.r),
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      final data = snapshot.data!.docs[index].data() as Map<String, dynamic>;
+                      final timestamp = data['timestamp'] as Timestamp?;
+                      final date = timestamp != null
+                          ? DateFormat('dd MMM yyyy, hh:mm a').format(timestamp.toDate())
+                          : context.t("Unknown Date", "تاريخ غير معروف");
+                      final signal = data['signalValue'] ?? 0;
+
+                      return Card(
+                        color: context.colorScheme.surface.withValues(alpha: 0.8),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r), side: BorderSide(color: context.colorScheme.onSurface.withValues(alpha: 0.05))),
+                        margin: EdgeInsets.only(bottom: 12.h),
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: Colors.red.withValues(alpha: 0.1),
+                            child: const Icon(Icons.warning_amber_rounded, color: Colors.red),
+                          ),
+                          title: Text(
+                            context.t("Abnormal Activity", "نشاط غير طبيعي"),
+                            style: FontStyles.getRoboto16(context).copyWith(color: context.colorScheme.onSurface, fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Text(
+                            date,
+                            style: FontStyles.getRoboto14(context).copyWith(color: context.colorScheme.onSurface.withValues(alpha: 0.7)),
+                          ),
+                          trailing: Text(
+                            "${context.t('Signal', 'الإشارة')}: ${signal.toInt()}",
+                            style: FontStyles.getRoboto14(context).copyWith(color: kAccentColor, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+      ),
     );
   }
 
@@ -97,10 +107,12 @@ class MedicalHistoryScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: kSurfaceColor,
-        title: Text(context.t("Clear History?", "مسح السجل؟"), style: FontStyles.roboto18.copyWith(color: Colors.white)),
-        content: Text(context.t("Are you sure you want to delete all medical records? This action cannot be undone.", "هل أنت متأكد من حذف جميع السجلات الطبية؟ لا يمكن التراجع عن هذا الإجراء."),
-            style: FontStyles.roboto14.copyWith(color: Colors.white70)),
+        backgroundColor: context.colorScheme.surface,
+        title: Text(context.t("Clear History?", "مسح السجل؟"), style: FontStyles.getRoboto18(context).copyWith(color: context.colorScheme.onSurface)),
+        content: Text(
+          context.t("Are you sure you want to delete all medical records? This action cannot be undone.", "هل أنت متأكد من حذف جميع السجلات الطبية؟ لا يمكن التراجع عن هذا الإجراء."),
+          style: FontStyles.getRoboto14(context).copyWith(color: context.colorScheme.onSurface.withValues(alpha: 0.7)),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

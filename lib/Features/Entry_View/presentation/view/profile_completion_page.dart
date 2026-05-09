@@ -15,6 +15,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/view/widget/custom_button.dart';
 import 'package:nervix_app/Features/Home_view/data/models/user_model.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class ProfileCompletionPage extends StatefulWidget {
   const ProfileCompletionPage({super.key});
@@ -155,15 +156,16 @@ class _ProfileCompletionPageState extends State<ProfileCompletionPage> {
         },
         builder: (context, profileState) {
           return Scaffold(
-            backgroundColor: kBackgroundColor,
+            backgroundColor: context.colorScheme.surface,
             appBar: AppBar(
-              backgroundColor: Colors.transparent,
+              backgroundColor: context.colorScheme.surface,
               elevation: 0,
               leading: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                icon: Icon(Icons.arrow_back, color: context.colorScheme.onSurface),
                 onPressed: _cancelRegistration,
               ),
-              title: Text(context.t("Complete Your Profile", "أكمل ملفك الشخصي"), style: FontStyles.roboto18.copyWith(color: Colors.white)),
+              title: Text(context.t("Complete Your Profile", "أكمل ملفك الشخصي"), 
+                style: FontStyles.getRoboto18(context).copyWith(color: context.colorScheme.onSurface)),
               centerTitle: true,
             ),
             body: PopScope(
@@ -197,7 +199,7 @@ class _ProfileCompletionPageState extends State<ProfileCompletionPage> {
                               children: [
                                 CircleAvatar(
                                   radius: 70.r,
-                                  backgroundColor: kSurfaceColor,
+                                  backgroundColor: context.colorScheme.surfaceContainer,
                                   child: ClipOval(
                                     child: ProfileAvatarFromFields(
                                       profileImageUrl: _profileImageUrl ?? '',
@@ -210,12 +212,11 @@ class _ProfileCompletionPageState extends State<ProfileCompletionPage> {
                                   bottom: 0,
                                   right: 0,
                                   child: CircleAvatar(
-                                    radius: 22.r,
                                     backgroundColor: kAccentColor,
                                     child: profileState is ProfileUpdating
-                                        ? const CircularProgressIndicator(strokeWidth: 2, color: Colors.black)
+                                        ? CircularProgressIndicator(strokeWidth: 2, color: context.colorScheme.onPrimary)
                                         : IconButton(
-                                            icon: Icon(Icons.camera_alt, size: 20.sp, color: Colors.black),
+                                            icon: Icon(Icons.camera_alt, size: 20.sp, color: context.colorScheme.onPrimary),
                                             onPressed: () { _pickAndUploadImage(context); },
                                           ),
                                   ),
@@ -243,7 +244,7 @@ class _ProfileCompletionPageState extends State<ProfileCompletionPage> {
                 TextFormField(
                   controller: _ageController,
                   keyboardType: TextInputType.number,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: context.colorScheme.onSurface),
                   decoration: _inputDecoration(context.t("Age", "العمر"), Icons.calendar_today),
                   inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'[^\x00-\x7F]'))],
                   validator: (v) {
@@ -273,18 +274,18 @@ class _ProfileCompletionPageState extends State<ProfileCompletionPage> {
                       },
                       countryListTheme: CountryListThemeData(
                         borderRadius: BorderRadius.circular(20.r),
-                        backgroundColor: kSurfaceColor,
-                        textStyle: const TextStyle(color: Colors.white),
-                        searchTextStyle: const TextStyle(color: Colors.white),
+                        backgroundColor: context.colorScheme.surface,
+                        textStyle: TextStyle(color: context.colorScheme.onSurface),
+                        searchTextStyle: TextStyle(color: context.colorScheme.onSurface),
                         inputDecoration: InputDecoration(
                           hintText: context.t("Search Country", "ابحث عن بلد"),
-                          hintStyle: const TextStyle(color: Colors.white54),
+                          hintStyle: TextStyle(color: context.colorScheme.onSurface.withValues(alpha: 0.38)),
                           prefixIcon: const Icon(Icons.search, color: kAccentColor),
                           filled: true,
-                          fillColor: kSurfaceLightColor,
+                          fillColor: context.colorScheme.surfaceContainer,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12.r),
-                            borderSide: BorderSide.none,
+                            borderSide: BorderSide(color: context.colorScheme.onSurface.withValues(alpha: 0.1)),
                           ),
                         ),
                       ),
@@ -293,8 +294,9 @@ class _ProfileCompletionPageState extends State<ProfileCompletionPage> {
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
                     decoration: BoxDecoration(
-                      color: kSurfaceColor,
+                      color: context.colorScheme.surfaceContainer,
                       borderRadius: BorderRadius.circular(16.r),
+                      border: Border.all(color: context.colorScheme.onSurface.withValues(alpha: 0.05)),
                     ),
                     child: Row(
                       children: [
@@ -302,10 +304,10 @@ class _ProfileCompletionPageState extends State<ProfileCompletionPage> {
                         SizedBox(width: 12.w),
                         Text(
                           _selectedCountry ?? context.t("Select Country", "اختر البلد"),
-                          style: TextStyle(color: _selectedCountry == null ? Colors.white38 : Colors.white),
+                          style: TextStyle(color: _selectedCountry == null ? context.colorScheme.onSurface.withValues(alpha: 0.38) : context.colorScheme.onSurface),
                         ),
                         const Spacer(),
-                        const Icon(Icons.arrow_drop_down, color: Colors.white70),
+                        Icon(Icons.arrow_drop_down, color: context.colorScheme.onSurface.withValues(alpha: 0.54)),
                       ],
                     ),
                   ),
@@ -317,7 +319,7 @@ class _ProfileCompletionPageState extends State<ProfileCompletionPage> {
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
                   textDirection: TextDirection.ltr,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: context.colorScheme.onSurface),
                   decoration: _inputDecoration(context.t("Phone Number", "رقم الهاتف"), Icons.phone),
                   inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'[^\x00-\x7F]'))],
                   validator: (v) {
@@ -343,8 +345,8 @@ class _ProfileCompletionPageState extends State<ProfileCompletionPage> {
                           selected: isSelected,
                           onSelected: (val) => setState(() => _selectedGender = g),
                           selectedColor: kAccentColor,
-                          labelStyle: TextStyle(color: isSelected ? Colors.black : Colors.white),
-                          backgroundColor: kSurfaceColor,
+                          labelStyle: TextStyle(color: isSelected ? Colors.white : context.colorScheme.onSurface),
+                          backgroundColor: context.colorScheme.surfaceContainer,
                         ),
                       ),
                     );
@@ -378,9 +380,9 @@ class _ProfileCompletionPageState extends State<ProfileCompletionPage> {
                         });
                       },
                       selectedColor: kAccentColor,
-                      labelStyle: TextStyle(color: isSelected ? Colors.black : Colors.white),
-                      backgroundColor: kSurfaceColor,
-                      checkmarkColor: Colors.black,
+                      labelStyle: TextStyle(color: isSelected ? Colors.white : context.colorScheme.onSurface),
+                      backgroundColor: context.colorScheme.surfaceContainer,
+                      checkmarkColor: Colors.white,
                     );
                   }).toList(),
                 ),
@@ -418,11 +420,18 @@ class _ProfileCompletionPageState extends State<ProfileCompletionPage> {
   InputDecoration _inputDecoration(String hint, IconData icon) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: Colors.white38),
+      hintStyle: TextStyle(color: context.colorScheme.onSurface.withValues(alpha: 0.38)),
       prefixIcon: Icon(icon, color: kAccentColor, size: 20.sp),
       filled: true,
-      fillColor: kSurfaceColor,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.r), borderSide: BorderSide.none),
+      fillColor: context.colorScheme.surfaceContainer,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16.r),
+        borderSide: BorderSide(color: context.colorScheme.onSurface.withValues(alpha: 0.05)),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16.r),
+        borderSide: BorderSide(color: context.colorScheme.onSurface.withValues(alpha: 0.05)),
+      ),
     );
   }
 }

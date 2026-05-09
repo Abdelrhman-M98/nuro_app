@@ -7,6 +7,7 @@ import 'package:nervix_app/Core/utils/custom_appbar_button.dart';
 import 'package:nervix_app/Core/utils/custom_button.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class ResetPasswordView extends StatelessWidget {
   const ResetPasswordView({super.key});
@@ -17,7 +18,9 @@ class ResetPasswordView extends StatelessWidget {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(gradient: kBackgroundGradient),
+        decoration: BoxDecoration(
+          gradient: context.isDarkMode ? kDarkGradient : kLightGradient,
+        ),
         child: SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -29,7 +32,7 @@ class ResetPasswordView extends StatelessWidget {
                       GoRouter.of(context).go(AppRouter.kLoginView),
                 ),
                 SizedBox(height: 40.h),
-                Text(context.t('Reset via email', 'إعادة التعيين عبر البريد'), style: FontStyles.roboto24),
+                Text(context.t('Reset via email', 'إعادة التعيين عبر البريد'), style: FontStyles.getRoboto24(context).copyWith(color: context.colorScheme.onSurface)),
                 SizedBox(height: 16.h),
                 Text(
                   context.t(
@@ -40,7 +43,7 @@ class ResetPasswordView extends StatelessWidget {
                     'متصفحك لاختيار كلمة مرور جديدة. لا يتم إعادة تعيين '
                     'كلمة المرور في هذه الشاشة.'
                   ),
-                  style: FontStyles.roboto16,
+                  style: FontStyles.getRoboto16(context).copyWith(color: context.colorScheme.onSurface.withValues(alpha: 0.7)),
                 ),
                 SizedBox(height: 32.h),
                 CustomButton(

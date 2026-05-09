@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class EntryButton extends StatelessWidget {
   final String text;
@@ -25,8 +25,9 @@ class EntryButton extends StatelessWidget {
         alignment: Alignment.center,
         child: Text(
           text,
-          style: FontStyles.roboto12.copyWith(
-            color: isActive ? kOnBackgroundColor : kOnSurfaceVariantColor,
+          style: FontStyles.getRoboto12(context).copyWith(
+            color: isActive ? context.colorScheme.onSurface : context.colorScheme.onSurface.withValues(alpha: 0.5),
+            fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
           ),
         ),
       ),

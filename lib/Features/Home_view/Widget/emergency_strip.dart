@@ -4,6 +4,7 @@ import 'package:nervix_app/Core/localization/app_localizations.dart';
 import 'package:nervix_app/Core/services/telemetry_service.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class EmergencyStrip extends StatelessWidget {
@@ -26,7 +27,7 @@ class EmergencyStrip extends StatelessWidget {
         button: true,
         label: 'Emergency contact shortcut',
         child: Material(
-          color: Colors.red.withValues(alpha: 0.15),
+          color: Colors.red.withValues(alpha: context.isDarkMode ? 0.15 : 0.08),
           borderRadius: BorderRadius.circular(14.r),
           child: InkWell(
             onTap: _openEmergency,
@@ -43,16 +44,16 @@ class EmergencyStrip extends StatelessWidget {
                       children: [
                         Text(
                           l10n.emergencyTitle,
-                          style: FontStyles.roboto14.copyWith(
-                            color: Colors.white,
+                          style: FontStyles.getRoboto14(context).copyWith(
+                            color: Colors.red,
                             fontWeight: FontWeight.w800,
                           ),
                         ),
                         SizedBox(height: 2.h),
                         Text(
                           '${l10n.emergencyHint} ($kEmergencyDisplayNumber)',
-                          style: FontStyles.roboto12.copyWith(
-                            color: Colors.white70,
+                          style: FontStyles.getRoboto12(context).copyWith(
+                            color: Colors.red.withValues(alpha: 0.8),
                             height: 1.3,
                           ),
                         ),

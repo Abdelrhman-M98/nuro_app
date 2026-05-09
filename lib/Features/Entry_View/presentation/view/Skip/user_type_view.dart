@@ -7,6 +7,7 @@ import 'package:nervix_app/Core/utils/custom_button.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/view/widget/custom_user_type.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class UserTypeView extends StatefulWidget {
   const UserTypeView({super.key});
@@ -27,6 +28,7 @@ class UserTypeViewState extends State<UserTypeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: context.colorScheme.surface,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -57,16 +59,16 @@ class UserTypeViewState extends State<UserTypeView> {
                   SizedBox(width: 5.w),
                   Text(
                     "50 %",
-                    style: FontStyles.roboto12.copyWith(
+                    style: FontStyles.getRoboto12(context).copyWith(
                       fontSize: 14.sp,
-                      color: Colors.black,
+                      color: context.colorScheme.onSurface,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
               ),
               SizedBox(height: 150.h),
-              Text(context.t("I'm a", "أنا..."), style: FontStyles.roboto24),
+              Text(context.t("I'm a", "أنا..."), style: FontStyles.getRoboto24(context).copyWith(color: context.colorScheme.onSurface)),
               SizedBox(height: 64.h),
               CustomUserTypeButton(
                 onPressed: () => selectedUserType.value = "Patient Relative",

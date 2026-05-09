@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class JournalReminderDialog extends StatelessWidget {
   final String tag;
@@ -96,8 +97,9 @@ class JournalReminderDialog extends StatelessWidget {
         ),
         child: Container(
           decoration: BoxDecoration(
-            color: kSurfaceColor,
+            color: context.colorScheme.surface,
             borderRadius: BorderRadius.circular(22.r),
+            border: Border.all(color: context.colorScheme.onSurface.withValues(alpha: 0.1)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -126,14 +128,14 @@ class JournalReminderDialog extends StatelessWidget {
                         children: [
                           Text(
                             context.t('Reminder Due', 'حان وقت التذكير'),
-                            style: FontStyles.roboto18.copyWith(
-                              color: Colors.white,
+                            style: FontStyles.getRoboto18(context).copyWith(
+                              color: context.colorScheme.onSurface,
                               letterSpacing: 0.5,
                             ),
                           ),
                           Text(
                             tag.toUpperCase(),
-                            style: FontStyles.roboto12.copyWith(
+                            style: FontStyles.getRoboto12(context).copyWith(
                               color: color,
                               fontWeight: FontWeight.w900,
                               letterSpacing: 1.2,
@@ -153,8 +155,8 @@ class JournalReminderDialog extends StatelessWidget {
                     Text(
                       note,
                       textAlign: TextAlign.center,
-                      style: FontStyles.roboto16.copyWith(
-                        color: Colors.white.withValues(alpha: 0.9),
+                      style: FontStyles.getRoboto16(context).copyWith(
+                        color: context.colorScheme.onSurface.withValues(alpha: 0.8),
                         height: 1.5,
                         fontWeight: FontWeight.w400,
                       ),

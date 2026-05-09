@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/view/widget/entry_background.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/view/widget/entry_btn.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class EntrySwitch extends StatelessWidget {
   final bool isSignIn;
@@ -24,7 +24,7 @@ class EntrySwitch extends StatelessWidget {
           width: double.infinity,
           height: 44.h,
           decoration: BoxDecoration(
-            color: kFloatingButtonColor,
+            color: context.colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(17.r),
           ),
           child: Stack(

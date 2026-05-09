@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class CustomDivider extends StatelessWidget {
   const CustomDivider({super.key});
@@ -9,19 +10,19 @@ class CustomDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Expanded(child: Divider(color: Colors.white24, thickness: 1)),
+        Expanded(child: Divider(color: context.colorScheme.onSurface.withValues(alpha: 0.1), thickness: 1)),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w),
           child: Text(
             context.t("OR", "أو"),
             style: TextStyle(
-              color: Colors.white38,
+              color: context.colorScheme.onSurface.withValues(alpha: 0.38),
               fontSize: 12.sp,
               fontWeight: FontWeight.bold,
             ),
           ),
         ),
-        const Expanded(child: Divider(color: Colors.white24, thickness: 1)),
+        Expanded(child: Divider(color: context.colorScheme.onSurface.withValues(alpha: 0.1), thickness: 1)),
       ],
     );
   }

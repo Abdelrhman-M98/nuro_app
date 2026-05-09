@@ -29,10 +29,11 @@ class CustomButton extends StatelessWidget {
           disabledBackgroundColor: (color ?? kAccentColor).withValues(alpha: 0.5),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
           elevation: 4,
+          shadowColor: (color ?? kAccentColor).withValues(alpha: 0.3),
         ),
         child: Text(
           text,
-          style: FontStyles.roboto18.copyWith(
+          style: FontStyles.getRoboto18(context).copyWith(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),

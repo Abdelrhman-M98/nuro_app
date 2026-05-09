@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/auth/auth_cubit.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/auth/auth_state.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/view/widget/custom_button.dart';
 import 'package:nervix_app/Features/Entry_View/presentation/view/widget/custom_text_field.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
+import 'package:nervix_app/Core/utils/theme_extensions.dart';
 
 class ForgotPasswordView extends StatefulWidget {
   const ForgotPasswordView({super.key});
@@ -29,11 +29,12 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kBackgroundColor,
+      backgroundColor: context.colorScheme.surface,
       appBar: AppBar(
-        title: Text(context.t('Reset Password', 'إعادة تعيين كلمة المرور')),
-        backgroundColor: kBackgroundColor,
+        title: Text(context.t('Reset Password', 'إعادة تعيين كلمة المرور'), style: FontStyles.getRoboto18(context)),
+        backgroundColor: context.colorScheme.surface,
         elevation: 0,
+        iconTheme: IconThemeData(color: context.colorScheme.onSurface),
       ),
       body: BlocListener<AuthCubit, AuthState>(
         listener: (context, state) {
@@ -61,13 +62,13 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                 SizedBox(height: 48.h),
                 Text(
                   context.t("Forgot Password?", "نسيت كلمة المرور؟"),
-                  style: FontStyles.roboto24.copyWith(color: Colors.white),
+                  style: FontStyles.getRoboto24(context).copyWith(color: context.colorScheme.onSurface),
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 12.h),
                 Text(
                   context.t("Enter your email to receive a password reset link.", "أدخل بريدك الإلكتروني لتلقي رابط إعادة تعيين كلمة المرور."),
-                  style: FontStyles.roboto14.copyWith(color: Colors.white70),
+                  style: FontStyles.getRoboto14(context).copyWith(color: context.colorScheme.onSurface.withValues(alpha: 0.7)),
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 48.h),

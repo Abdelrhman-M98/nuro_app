@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:nervix_app/Core/utils/const.dart';
 import 'package:nervix_app/Core/utils/styles.dart';
 import 'package:nervix_app/Core/localization/translation_extension.dart';
 
@@ -32,62 +31,71 @@ class PatientsCardButton extends StatelessWidget {
       buttonColor = Color(0XFFFF0000);
     }
 
-    return MaterialButton(
-      splashColor: Colors.transparent,
-      padding: EdgeInsets.zero,
-      onPressed: onPressed ?? () {},
-      color: buttonColor,
-
+    return SizedBox(
       height: 69.h,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17.r)),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 5.h),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            CircleAvatar(radius: 30.r, backgroundImage: NetworkImage(imageUrl)),
-            SizedBox(width: 18.w),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  patientName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: FontStyles.roboto16.copyWith(
-                    color: kOnBackgroundColor,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                Row(
+      child: ElevatedButton(
+        onPressed: onPressed ?? () {},
+        style: ElevatedButton.styleFrom(
+          backgroundColor: buttonColor,
+          elevation: 3,
+          shadowColor: buttonColor.withValues(alpha: 0.5),
+          padding: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(17.r)),
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 5.h),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              CircleAvatar(radius: 26.r, backgroundImage: NetworkImage(imageUrl)),
+              SizedBox(width: 14.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "$age ${context.t('Y.O', 'سنة')}",
-                      style: FontStyles.roboto12.copyWith(color: kOnBackgroundColor),
+                      patientName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: FontStyles.getRoboto16(context).copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
-                    SizedBox(width: 7.w),
-                    Text(
-                      condition,
-                      style: FontStyles.roboto12.copyWith(color: kOnBackgroundColor),
+                    Row(
+                      children: [
+                        Text(
+                          "$age ${context.t('Y.O', 'سنة')}",
+                          style: FontStyles.getRoboto12(context).copyWith(color: Colors.white.withValues(alpha: 0.9)),
+                        ),
+                        SizedBox(width: 7.w),
+                        Expanded(
+                          child: Text(
+                            condition,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: FontStyles.getRoboto12(context).copyWith(color: Colors.white.withValues(alpha: 0.9)),
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(width: 7.w),
                   ],
                 ),
-              ],
-            ),
-            Spacer(),
-            Padding(
-              padding: EdgeInsets.only(right: 29.w),
-              child: Text(
-                "$percentage%",
-                style: TextStyle(
-                  fontSize: 32.sp,
-                  fontWeight: FontWeight.w700,
-                  color: kOnBackgroundColor,
+              ),
+              Padding(
+                padding: EdgeInsets.only(right: 15.w, left: 15.w),
+                child: Text(
+                  "$percentage%",
+                  style: TextStyle(
+                    fontSize: 26.sp,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
