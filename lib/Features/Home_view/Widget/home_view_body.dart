@@ -29,13 +29,21 @@ class HomeViewBody extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.cloud_off_outlined, size: 56.sp, color: context.colorScheme.onSurface.withValues(alpha: 0.54)),
+                  Icon(
+                    Icons.cloud_off_outlined,
+                    size: 56.sp,
+                    color: context.colorScheme.onSurface.withValues(
+                      alpha: 0.54,
+                    ),
+                  ),
                   SizedBox(height: 20.h),
                   Text(
                     state.message,
                     textAlign: TextAlign.center,
                     style: FontStyles.getRoboto14(context).copyWith(
-                      color: context.colorScheme.onSurface.withValues(alpha: 0.7),
+                      color: context.colorScheme.onSurface.withValues(
+                        alpha: 0.7,
+                      ),
                       height: 1.45,
                     ),
                   ),
@@ -43,18 +51,26 @@ class HomeViewBody extends StatelessWidget {
                   SizedBox(height: 28.h),
                   Semantics(
                     button: true,
-                    label: context.t('Retry live stream connection', 'إعادة المحاولة للربط المباشر'),
+                    label: context.t(
+                      'Retry live stream connection',
+                      'إعادة المحاولة للربط المباشر',
+                    ),
                     child: FilledButton.icon(
                       style: FilledButton.styleFrom(
                         backgroundColor: kAccentColor,
                         foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 14.h),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 24.w,
+                          vertical: 14.h,
+                        ),
                       ),
                       onPressed: () => context.read<HomeCubit>().reconnect(),
                       icon: const Icon(Icons.refresh_rounded),
                       label: Text(
                         l10n.retryConnection,
-                        style: FontStyles.getRoboto16(context).copyWith(fontWeight: FontWeight.w700),
+                        style: FontStyles.getRoboto16(
+                          context,
+                        ).copyWith(fontWeight: FontWeight.w700),
                       ),
                     ),
                   ),
@@ -79,15 +95,26 @@ class HomeViewBody extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        SizedBox(height: 12.h),
                         _SectionHeader(
-                          title: context.t('Patient overview', 'نظرة عامة على المريض'),
-                          subtitle: context.t('Identity and latest live signal', 'الهوية وآخر إشارة حية'),
+                          title: context.t(
+                            'Patient overview',
+                            'نظرة عامة على المريض',
+                          ),
+                          subtitle: context.t(
+                            'Identity and latest live signal',
+                            'الهوية وآخر إشارة حية',
+                          ),
                         ),
                         PatientInfoSection(state: state),
                         _SectionHeader(
-                          title: context.t('Clinical actions', 'الإجراءات الطبية'),
-                          subtitle: context.t('Quick tools for reports and monitoring', 'أدوات سريعة للتقارير والمراقبة'),
+                          title: context.t(
+                            'Clinical actions',
+                            'الإجراءات الطبية',
+                          ),
+                          subtitle: context.t(
+                            'Quick tools for reports and monitoring',
+                            'أدوات سريعة للتقارير والمراقبة',
+                          ),
                         ),
                         DataSection(
                           currentState: state.currentState,
@@ -135,7 +162,6 @@ class _SectionHeader extends StatelessWidget {
               color: context.colorScheme.onSurface.withValues(alpha: 0.54),
             ),
           ),
-
         ],
       ),
     );

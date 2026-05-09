@@ -47,7 +47,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   StreamSubscription? _signalsSubscription;
   StreamSubscription? _statusSubscription;
-  StreamSubscription? _profileSubscription;
+  Timer? _visualTimer; // Replicates window.setInterval(mycallback, 1000)
 
   final List<FlSpot> _signalHistory = [];
   final List<FlSpot> _streamingHistory = [const FlSpot(0, 0)];
@@ -63,10 +63,10 @@ class HomeCubit extends Cubit<HomeState> {
   void _cancelSubscriptions() {
     _signalsSubscription?.cancel();
     _statusSubscription?.cancel();
-    _profileSubscription?.cancel();
+    _visualTimer?.cancel();
     _signalsSubscription = null;
     _statusSubscription = null;
-    _profileSubscription = null;
+    _visualTimer = null;
     _reconnectTimer?.cancel();
     _reconnectTimer = null;
   }
@@ -89,10 +89,8 @@ class HomeCubit extends Cubit<HomeState> {
       return;
     }
     
-    // Add a small delay for session stabilization
     await Future.delayed(const Duration(seconds: 1));
     
-    debugPrint('HomeCubit: Attempting one-time get for ${user.uid}');
     try {
       final doc = await FirebaseFirestore.instance
           .collection('users')
@@ -100,11 +98,9 @@ class HomeCubit extends Cubit<HomeState> {
           .get();
           
       if (doc.exists) {
-        debugPrint('HomeCubit: Profile fetched successfully via get()');
         _cachedUser = UserModel.fromFirestore(doc);
         _emitUpdate();
       } else {
-        debugPrint('HomeCubit: Document not found via get(), creating default');
         _cachedUser = UserModel(
           id: user.uid,
           email: user.email ?? "",
@@ -123,21 +119,15 @@ class HomeCubit extends Cubit<HomeState> {
         _emitUpdate();
       }
     } catch (e) {
-      debugPrint('HomeCubit One-time Get Error: $e');
-      emit(HomeError("Profile connection issue: $e"));
-      TelemetryService.recordError(
-        e,
-        StackTrace.current,
-        reason: 'profile fetch error',
-      );
+      emit(HomeError("Profile issue: $e"));
     }
 
     _startListening();
+    _startVisualTimer(); // Start the 1-second interval
   }
 
   Future<void> reconnect() async {
     _reconnectAttempt = 0;
-    await TelemetryService.logEvent('manual_reconnect');
     await init();
   }
 
@@ -150,15 +140,26 @@ class HomeCubit extends Cubit<HomeState> {
     _reconnectAttempt += 1;
     _reconnectTimer?.cancel();
     _reconnectTimer = Timer(Duration(seconds: delaySeconds), () async {
-      await TelemetryService.logEvent(
-        'auto_reconnect_attempt',
-        parameters: {
-          'attempt': _reconnectAttempt,
-          'source': source,
-          'delay_seconds': delaySeconds,
-        },
-      );
       await init();
+    });
+  }
+
+  void _startVisualTimer() {
+    _visualTimer?.cancel();
+    _visualTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _streamingCounter += 1;
+      
+      // Just like JS: ch.data.datasets[0].data.push(Signals);
+      _streamingHistory.add(FlSpot(_streamingCounter, _latestSignal));
+
+      // Provide a continuous smooth scroll by ONLY removing points 
+      // that have completely fallen off the left edge. 
+      // We keep one point just off-screen (minVisibleX - 1) 
+      // so the line stays firmly connected to the left wall!
+      double minVisibleX = _streamingCounter - 20;
+      _streamingHistory.removeWhere((spot) => spot.x < minVisibleX - 1);
+      
+      _emitUpdate();
     });
   }
 
@@ -173,7 +174,6 @@ class HomeCubit extends Cubit<HomeState> {
               String oldStatus = _currentState;
               String newStatus;
               
-              // Logic moved from device-side/remote-state to signal-based local calculation
               if (newValue > 1000) {
                 newStatus = "95% Eplipce";
               } else if (newValue > 800) {
@@ -197,42 +197,19 @@ class HomeCubit extends Cubit<HomeState> {
               _latestSignal = newValue;
               _currentState = newStatus;
               _timeCounter += 1;
-              _streamingCounter += 1;
 
+              // We only add to full history here, the visible graph is handled by the visual Timer
               _signalHistory.add(FlSpot(_timeCounter, newValue));
-              _streamingHistory.add(FlSpot(_streamingCounter, newValue));
-
               if (_signalHistory.length > 50) {
                 _signalHistory.removeAt(0);
               }
-              if (_streamingHistory.length > 20) {
-                _streamingHistory.removeRange(0, 4);
-              }
-              _emitUpdate();
               _reconnectAttempt = 0;
             }
           },
           onError: (e) {
-            emit(HomeError("Live signal stream error. Check network and tap Retry."));
-            TelemetryService.recordError(
-              e,
-              StackTrace.current,
-              reason: 'signals stream error',
-            );
             _scheduleReconnect('signals');
           },
         );
-
-    // Status is now calculated locally from Signals to ensure faster and more reliable warnings.
-    // _statusSubscription =
-    //     _dbRef.child('currentState').onValue.listen(
-    //       (event) {
-    //         // Logic moved to _signalsSubscription
-    //       },
-    //       onError: (e) {
-    //         debugPrint('Status stream error (ignored): $e');
-    //       },
-    //     );
   }
 
   Future<void> _recordEmergencyEvent() async {

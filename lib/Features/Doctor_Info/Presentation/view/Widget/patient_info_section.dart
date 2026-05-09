@@ -30,8 +30,8 @@ class PatientInfoSection extends StatelessWidget {
         SizedBox(height: 24.h),
         Container(
           margin: EdgeInsets.symmetric(horizontal: 16.w),
-          height: 250.h,
-          padding: EdgeInsets.all(12.w),
+          height: 260.h,
+          padding: EdgeInsets.only(top: 20.h, bottom: 12.h, left: 12.w, right: 20.w),
           decoration: BoxDecoration(
             color: context.colorScheme.surface,
             borderRadius: BorderRadius.circular(20.r),
