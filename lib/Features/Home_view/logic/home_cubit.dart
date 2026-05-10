@@ -119,7 +119,12 @@ class HomeCubit extends Cubit<HomeState> {
         _emitUpdate();
       }
     } catch (e) {
-      emit(HomeError("Profile issue: $e"));
+      if (_cachedUser != null) {
+        // Fallback to cache silently
+        _emitUpdate();
+      } else {
+        emit(HomeError("Profile issue: $e"));
+      }
     }
 
     _startListening();
@@ -133,14 +138,14 @@ class HomeCubit extends Cubit<HomeState> {
 
   void _scheduleReconnect(String source) {
     if (_reconnectAttempt >= _maxReconnectAttempts) {
-      emit(HomeError("Connection unstable. Pull to refresh or tap Retry."));
-      return;
+      // Don't destroy UI if we are already loaded, just stop trying to reconnect manually
+      return; 
     }
     final delaySeconds = [2, 5, 10, 15, 20, 30][_reconnectAttempt];
     _reconnectAttempt += 1;
     _reconnectTimer?.cancel();
-    _reconnectTimer = Timer(Duration(seconds: delaySeconds), () async {
-      await init();
+    _reconnectTimer = Timer(Duration(seconds: delaySeconds), () {
+      _startListening();
     });
   }
 
